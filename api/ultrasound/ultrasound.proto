@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package service;
+
+import "google/protobuf/empty.proto";
+import "api/service/entity/udevice.proto";
+
+option go_package = "ultrasound/pkg/api/service";
+
+service Ultrasound {
+  rpc CreateUzi(CreateUziRequest) returns (CreateUziResponse);
+  rpc GetUziDevices(GetUziDevicesRequest) returns (GetUziDevicesResponse);
+}
+
+message CreateUziRequest {
+  int32 uzi_device_id = 1;
+  string projection_type = 2;
+  int32 patient_card_id = 3;
+}
+
+message CreateUziResponse {
+  uint64 uzi_device_id = 1;
+  string projection_type = 2;
+  uint64 patient_card_id = 3;
+  string original_image = 4;
+}
+
+message GetUziDevicesRequest {
+  // *Параметры для фильтрации или пагинации
+}
+
+message UziDevice {
+  uint64 id = 1;
+  string name = 2;
+}
+
+message GetUziDevicesResponse {
+  uint64 count = 1;
+  string next = 2;
+  string previous = 3;
+  repeated UziDevice results = 4;
+}
