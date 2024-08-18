@@ -8,6 +8,20 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+/*
+
+1. Почекайте библиотеку zap
+
+2. Логировать парами перед этим сообщив о самом логе, например берем данные с DB по ID:
+
+	log.Debug("Response data from med_worker db", zap.Int("id": 1))
+
+	Уровни логгирования Debug/Info/Warn/Error
+
+	Логи все летят в консоль(можно перенастроить в файл, но оставим для прода)
+
+*/
+
 // develop config only
 func New() (*zap.Logger, error) {
 	encoderCfg := zap.NewDevelopmentEncoderConfig()
