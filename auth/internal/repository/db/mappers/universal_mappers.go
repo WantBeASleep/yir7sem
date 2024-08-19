@@ -9,20 +9,20 @@ import (
 
 func DomainUserToAuthInfo(user enity.DomainUser) (models.AuthInfo, error) {
 	return models.AuthInfo{
-		ID: user.ID,
-		Login: user.Login,
+		ID:           user.ID,
+		Login:        user.Login,
 		PasswordHash: user.PasswordHash,
 		RefreshToken: user.RefreshToken,
-		MedWorkerID: user.MedWorkerID,
+		MedWorkerID:  user.MedWorkerID,
 	}, nil
 }
 
 func AuthInfoToDomainUser(auth models.AuthInfo) (enity.DomainUser, error) {
 	return enity.DomainUser{
-		ID: auth.ID,
-		Login: auth.Login,
+		ID:           auth.ID,
+		Login:        auth.Login,
 		PasswordHash: auth.PasswordHash,
 		RefreshToken: auth.RefreshToken,
-		MedWorkerID: auth.MedWorkerID,
+		MedWorkerID:  auth.MedWorkerID,
 	}, nil
 }

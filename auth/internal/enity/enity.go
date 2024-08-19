@@ -1,19 +1,19 @@
 package enity
 
 type RequestLogin struct {
-	Email string
+	Email    string
 	Password string
 }
 
 type DomainLogin struct {
-	Email string
+	Email        string
 	PasswordHash string
 }
 
 type DomainUser struct {
-	ID uint 
-	Login string 
+	ID           uint
+	Login        string
 	PasswordHash string
 	RefreshToken string
-	MedWorkerID uint
+	MedWorkerID  uint
 }

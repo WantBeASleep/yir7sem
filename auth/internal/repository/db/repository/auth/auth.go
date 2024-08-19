@@ -9,15 +9,15 @@ import (
 	"gorm.io/gorm"
 
 	"yir/auth/internal/enity"
-	"yir/auth/internal/repository/db/models"
 	"yir/auth/internal/repository/db/mappers"
+	"yir/auth/internal/repository/db/models"
 )
 
 type Repository struct {
 	db *gorm.DB
 }
 
-func (r *Repository) GetUserByID (ctx context.Context, ID uint) (*enity.DomainUser, error) {
+func (r *Repository) GetUserByID(ctx context.Context, ID uint) (*enity.DomainUser, error) {
 	var resp models.AuthInfo
 
 	query := r.db.WithContext(ctx).
@@ -30,7 +30,7 @@ func (r *Repository) GetUserByID (ctx context.Context, ID uint) (*enity.DomainUs
 		}
 		return nil, err
 	}
-	
+
 	user, err := mappers.AuthInfoToDomainUser(resp)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (r *Repository) GetUserByID (ctx context.Context, ID uint) (*enity.DomainUs
 	return &user, nil
 }
 
-func (r *Repository) GetUserByLogin (ctx context.Context, login string) (*enity.DomainUser, error) {
+func (r *Repository) GetUserByLogin(ctx context.Context, login string) (*enity.DomainUser, error) {
 	var resp models.AuthInfo
 
 	query := r.db.WithContext(ctx).
@@ -52,7 +52,7 @@ func (r *Repository) GetUserByLogin (ctx context.Context, login string) (*enity.
 		}
 		return nil, err
 	}
-	
+
 	user, err := mappers.AuthInfoToDomainUser(resp)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (r *Repository) GetUserByLogin (ctx context.Context, login string) (*enity.
 }
 
 // не уверен что стоит возвращать ID, а не DomainUser. (покурить на этот счет)
-func (r *Repository) Create (ctx context.Context, user enity.DomainUser) (uint, error) {
+func (r *Repository) Create(ctx context.Context, user enity.DomainUser) (uint, error) {
 	auth, err := mappers.DomainUserToAuthInfo(user)
 	if err != nil {
 		return 0, err
@@ -74,7 +74,7 @@ func (r *Repository) Create (ctx context.Context, user enity.DomainUser) (uint, 
 	return auth.ID, nil
 }
 
-func (r *Repository) UpdateRefreshTokenByID (ctx context.Context, ID uint, newToken string) error {
+func (r *Repository) UpdateRefreshTokenByID(ctx context.Context, ID uint, newToken string) error {
 	err := r.db.WithContext(ctx).
 		Where("id = ?", ID).
 		Update("refresh_token", newToken).
