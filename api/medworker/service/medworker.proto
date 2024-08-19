@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package service;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "yir7sem/pkg/api/medworker/service";
+
+message PatientCard {
+  uint64 id = 1;
+  string acceptance_datetime = 2;
+  bool has_nodules = 3;
+  string diagnosis = 4;
+  uint64 patient_id = 5;
+  uint64 med_worker_id = 6;
+}
+
+service MedWorker {
+  rpc GetCardList(GetCardListRequest) returns (GetCardListResponse);
+  rpc CreateCard(CreateCardRequest) returns (CreateCardResponse);
+  rpc ReadCard(ReadCardRequest) returns (ReadCardResponse);
+  rpc UpdateCard(UpdateCardRequest) returns (UpdateCardResponse);
+  rpc UpdateCardPartial(UpdateCardPartialRequest) returns (UpdateCardPartialResponse);
+  rpc DeleteCard(DeleteCardRequest) returns (google.protobuf.Empty);
+}
+
+message GetCardListRequest {
+  int64 limit = 1;
+  int64 offset = 2;
+}
+
+message GetCardListResponse {
+  uint64 count = 1;
+  string next = 2;
+  string previous = 3;
+  repeated PatientCard results = 4;
+}
+
+message CreateCardRequest {
+  bool has_nodules = 1;
+  string diagnosis = 2;
+  uint64 patient = 3;
+  uint64 med_worker_id = 4;
+}
+
+message CreateCardResponse {
+  int64 id = 1;
+  string acceptance_datetime = 2;
+  bool has_nodules = 3;
+  string diagnosis = 4;
+  uint64 patient_id = 5;
+  uint64 med_worker_id = 6;
+}
+
+message ReadCardRequest {
+  uint64 id = 1;
+}
+
+message ReadCardResponse {
+  int64 id = 1;
+  string acceptance_datetime = 2;
+  bool has_nodules = 3;
+  string diagnosis = 4;
+  uint64 patient_id = 5;
+  uint64 med_worker_id = 6;
+}
+
+message UpdateCardRequest {
+  int64 id = 1;
+  bool has_nodules = 3;
+  string diagnosis = 4;
+  uint64 patient_id = 5;
+  uint64 med_worker_id = 6;
+}
+
+message UpdateCardResponse {
+  int64 id = 1;
+  string acceptance_datetime = 2;
+  bool has_nodules = 3;
+  string diagnosis = 4;
+  uint64 patient_id = 5;
+  uint64 med_worker_id = 6;
+}
+
+message UpdateCardPartialRequest {
+  int64 id = 1;
+  bool has_nodules = 3;
+  string diagnosis = 4;
+  uint64 patient_id = 5;
+  uint64 med_worker_id = 6;
+}
+
+message UpdateCardPartialResponse {
+  int64 id = 1;
+  string acceptance_datetime = 2;
+  bool has_nodules = 3;
+  string diagnosis = 4;
+  uint64 patient_id = 5;
+  uint64 med_worker_id = 6;
+}
+
+message DeleteCardRequest {
+  uint64 id = 1;
+}
