@@ -3,9 +3,8 @@ syntax = "proto3";
 package service;
 
 import "google/protobuf/empty.proto";
-import "api/service/entity/udevice.proto";
 
-option go_package = "ultrasound/pkg/api/service";
+option go_package = "yir7sem/pkg/api/uzi/service";
 
 service Ultrasound {
   rpc CreateUzi(CreateUziRequest) returns (CreateUziResponse);
@@ -26,7 +25,8 @@ message CreateUziResponse {
 }
 
 message GetUziDevicesRequest {
-  // *Параметры для фильтрации или пагинации
+  int64 limit = 1;
+  int64 offset = 2;
 }
 
 message UziDevice {
