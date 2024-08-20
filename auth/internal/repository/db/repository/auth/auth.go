@@ -5,9 +5,12 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
 
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	"yir/auth/internal/config"
 	"yir/auth/internal/enity"
 	"yir/auth/internal/repository/db/mappers"
 	"yir/auth/internal/repository/db/models"
@@ -15,6 +18,19 @@ import (
 
 type Repository struct {
 	db *gorm.DB
+}
+
+func NewRepository(cfg config.DBConfig) (*Repository, error) {
+	db, err := gorm.Open(postgres.New(postgres.Config{
+		DSN: mappers.GetDSN(cfg),
+	}), &gorm.Config{})
+	if err != nil {
+		return nil, fmt.Errorf("create db gorm obj: %w", err)
+	}
+
+	return &Repository{
+		db: db,
+	}, nil
 }
 
 func (r *Repository) GetUserByID(ctx context.Context, ID uint) (*enity.DomainUser, error) {
