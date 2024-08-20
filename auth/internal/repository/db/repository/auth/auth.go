@@ -78,7 +78,7 @@ func (r *Repository) GetUserByLogin(ctx context.Context, login string) (*enity.D
 }
 
 // не уверен что стоит возвращать ID, а не DomainUser. (покурить на этот счет)
-func (r *Repository) Create(ctx context.Context, user enity.DomainUser) (uint, error) {
+func (r *Repository) CreateUser(ctx context.Context, user enity.DomainUser) (uint, error) {
 	auth, err := mappers.DomainUserToAuthInfo(user)
 	if err != nil {
 		return 0, err
