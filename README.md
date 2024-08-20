@@ -26,10 +26,10 @@ go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
 ```
 
 Здесь: 
-    * *protoc-gen-go* - намутит нам го файлики
-    * *protoc-gen-go-grpc* - оформит сочный grpc
-    * *protoc-gen-grpc-gateway* - накрафтит крутейшие *http* ручки
-    * *protoc-gen-openapiv2* - насуетит разрывной swagger
++ *protoc-gen-go* - намутит нам го файлики
++ *protoc-gen-go-grpc* - оформит сочный grpc
++ *protoc-gen-grpc-gateway* - накрафтит крутейшие *http* ручки
++ *protoc-gen-openapiv2* - насуетит разрывной swagger
 
 Что бы сделать *http* ручки из *gRPC* ручек, дописываем *option*:
 ```
