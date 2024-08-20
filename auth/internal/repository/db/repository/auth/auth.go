@@ -87,7 +87,7 @@ func (r *Repository) CreateUser(ctx context.Context, user enity.DomainUser) (uin
 	if err := r.db.WithContext(ctx).Create(&auth).Error; err != nil {
 		return 0, err
 	}
-	return auth.ID, nil
+	return uint(auth.ID), nil
 }
 
 func (r *Repository) UpdateRefreshTokenByID(ctx context.Context, ID uint, newToken string) error {

@@ -1,7 +1,7 @@
 package models
 
 type AuthInfo struct {
-	ID           uint   `gorm:"primaryKey"`
+	ID           uint64 `gorm:"primaryKey"`
 	Login        string `gorm:"unique"`
 	PasswordHash string
 	RefreshToken string
