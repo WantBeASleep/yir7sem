@@ -5,5 +5,5 @@ type AuthInfo struct {
 	Login        string `gorm:"unique"`
 	PasswordHash string
 	RefreshToken string
-	MedWorkerID  uint `gorm:"unique"`
+	MedWorkerID  uint64 `gorm:"unique"`
 }

@@ -31,6 +31,16 @@ tasks:
       - '{{.proto_out}}/*.pb.gw.go'
       - '{{.proto_out}}/*.swagger.json'
 
+  build:
+    deps: [generate]
+    cmds:
+      - go build -v -o cmd/app/auth cmd/app/main.go
+
+  run:
+    deps: [build]
+    cmds:
+      - ./cmd/app/auth
+
   default:
     cmds:
-      - task: generate
+      - task: run

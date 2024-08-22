@@ -1,3 +1,4 @@
+// ПОКУРИТЬ НАД ЭТИМ КРИНЖОМ, ВЫХОД ВВИЖУ ТОЛЬКО В ОБЩЕМ КОНИФГЕ НА ВСЕ ЧТО ФУЛ ЗАЛУПИЧИ
 package log
 
 import (
@@ -8,36 +9,36 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-/*
+// panic if have error!
+// only DEV && PROD env accepted
+// if env == DEV, outPath will be ommited
+func New(env string, outPath string) *zap.Logger {
+	var cfg zap.Config
+	var encoderCfg zapcore.EncoderConfig
 
-1. Почекайте библиотеку zap
+	switch env {
+	case "DEV":
+		encoderCfg = zap.NewDevelopmentEncoderConfig()
+		encoderCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		encoderCfg.EncodeTime = func(t time.Time, pae zapcore.PrimitiveArrayEncoder) {
+			pae.AppendString(t.Format(time.DateTime))
+		}
 
-2. Логировать парами перед этим сообщив о самом логе, например берем данные с DB по ID:
+		cfg = zap.NewDevelopmentConfig()
+		cfg.DisableCaller = true
+		cfg.DisableStacktrace = true
+		cfg.EncoderConfig = encoderCfg
 
-	log.Debug("Response data from med_worker db", zap.Int("id": 1))
+	case "PROD":
+		panic("not implemented")
 
-	Уровни логгирования Debug/Info/Warn/Error
-
-	Логи все летят в консоль(можно перенастроить в файл, но оставим для прода)
-
-*/
-
-// develop config only
-func New() (*zap.Logger, error) {
-	encoderCfg := zap.NewDevelopmentEncoderConfig()
-	encoderCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	encoderCfg.EncodeTime = func(t time.Time, pae zapcore.PrimitiveArrayEncoder) {
-		pae.AppendString(t.Format(time.DateTime))
+	default:
+		panic("wrong env type")
 	}
-
-	cfg := zap.NewDevelopmentConfig()
-	cfg.DisableCaller = true
-	cfg.DisableStacktrace = true
-	cfg.EncoderConfig = encoderCfg
 
 	logger, err := cfg.Build()
 	if err != nil {
-		return nil, fmt.Errorf("build logger: %w", err)
+		panic(fmt.Errorf("build logger: %w", err))
 	}
-	return logger, nil
+	return logger
 }
