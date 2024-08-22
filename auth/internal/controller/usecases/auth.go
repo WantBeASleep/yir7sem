@@ -7,6 +7,7 @@ import (
 
 type Auth interface {
 	// подумать над неймингом переменных, выглядит как кринжатина
-	Login(ctx context.Context, loginData *enity.RequestLogin) (*enity.TokenPair, error)
-	Register(ctx context.Context, regData *enity.RequestRegister) (uint64, error)
+	Login(ctx context.Context, request *enity.RequestLogin) (*enity.TokenPair, error)
+	Register(ctx context.Context, request *enity.RequestRegister) (uint64, error)
+	TokenRefresh(ctx context.Context, refreshToken string) (*enity.TokenPair, error)
 }
