@@ -16,20 +16,20 @@ type DomainLogin struct {
 }
 
 type TokenPair struct {
-	AccessToken string
+	AccessToken  string
 	RefreshToken string
 }
 
 type RequestRegister struct {
-	Email string
-	LastName string
-	FirstName string
+	Email       string
+	LastName    string
+	FirstName   string
 	FathersName string
-	MedOrg string
-	Password string
+	MedOrg      string
+	Password    string
 }
 
-// разделил слои и uint будет появляться только на самом нижнем 
+// разделил слои и uint будет появляться только на самом нижнем
 type DomainUser struct {
 	ID           int
 	Login        string

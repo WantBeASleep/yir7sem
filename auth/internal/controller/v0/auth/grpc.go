@@ -3,8 +3,8 @@ package auth
 import (
 	"context"
 	"go.uber.org/zap"
-	"yir/auth/internal/controller/usecases"
 	pb "yir/auth/api/v0/auth"
+	"yir/auth/internal/controller/usecases"
 )
 
 // Тут вроде можно просто server, но я не определился
@@ -12,7 +12,7 @@ type AuthServer struct {
 	pb.UnimplementedAuthServer
 
 	authUseCase usecases.Auth
-	logger *zap.Logger
+	logger      *zap.Logger
 }
 
 func NewAuthServer(
@@ -21,7 +21,7 @@ func NewAuthServer(
 ) *AuthServer {
 	return &AuthServer{
 		authUseCase: authUseCase,
-		logger: logger,
+		logger:      logger,
 	}
 }
 

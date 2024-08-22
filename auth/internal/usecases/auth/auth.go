@@ -11,7 +11,7 @@ import (
 
 type AuthUseCase struct {
 	authRepo repositories.Auth
-	logger *zap.Logger
+	logger   *zap.Logger
 }
 
 func NewAuthUseCase(
@@ -20,10 +20,9 @@ func NewAuthUseCase(
 ) *AuthUseCase {
 	return &AuthUseCase{
 		authRepo: authRepo,
-		logger: logger,
+		logger:   logger,
 	}
 }
-
 
 func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*enity.TokenPair, error) {
 	a.logger.Debug("Login usecase started", zap.Any("Request", request))
@@ -39,6 +38,5 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 	if err != nil {
 		return nil, fmt.Errorf("password hash: %v", err)
 	}
-
 
 }

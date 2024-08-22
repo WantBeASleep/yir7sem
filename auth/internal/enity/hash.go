@@ -1,8 +1,8 @@
 package enity
 
 import (
-	"fmt"
 	"crypto/sha256"
+	"fmt"
 
 	"github.com/brianvoe/gofakeit/v7"
 	"golang.org/x/crypto/scrypt"
