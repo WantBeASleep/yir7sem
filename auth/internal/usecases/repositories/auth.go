@@ -6,8 +6,8 @@ import (
 )
 
 type Auth interface {
-	GetUserByID(ctx context.Context, ID uint) (*enity.DomainUser, error)
-	GetUserByLogin(ctx context.Context, login string) (*enity.DomainUser, error)
-	CreateUser(ctx context.Context, user enity.DomainUser) (uint, error)
-	UpdateRefreshTokenByID(ctx context.Context, ID uint, newToken string) error
+	GetUserByID(ctx context.Context, ID int) (*enity.User, error)
+	GetUserByLogin(ctx context.Context, login string) (*enity.User, error)
+	CreateUser(ctx context.Context, user enity.User) (int, error)
+	UpdateRefreshTokenByID(ctx context.Context, ID int, newToken string) error
 }

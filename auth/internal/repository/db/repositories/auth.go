@@ -37,7 +37,7 @@ func NewRepository(cfg *config.DB) (*AuthRepo, error) {
 	}, nil
 }
 
-func (r *AuthRepo) GetUserByID(ctx context.Context, ID uint) (*enity.DomainUser, error) {
+func (r *AuthRepo) GetUserByID(ctx context.Context, ID uint) (*enity.User, error) {
 	var resp models.AuthInfo
 
 	query := r.db.WithContext(ctx).
@@ -51,7 +51,7 @@ func (r *AuthRepo) GetUserByID(ctx context.Context, ID uint) (*enity.DomainUser,
 		return nil, err
 	}
 
-	user, err := mappers.AuthInfoToDomainUser(&resp)
+	user, err := mappers.AuthInfoToUser(&resp)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (r *AuthRepo) GetUserByID(ctx context.Context, ID uint) (*enity.DomainUser,
 	return user, nil
 }
 
-func (r *AuthRepo) GetUserByLogin(ctx context.Context, login string) (*enity.DomainUser, error) {
+func (r *AuthRepo) GetUserByLogin(ctx context.Context, login string) (*enity.User, error) {
 	var resp models.AuthInfo
 
 	query := r.db.WithContext(ctx).
@@ -73,7 +73,7 @@ func (r *AuthRepo) GetUserByLogin(ctx context.Context, login string) (*enity.Dom
 		return nil, err
 	}
 
-	user, err := mappers.AuthInfoToDomainUser(&resp)
+	user, err := mappers.AuthInfoToUser(&resp)
 	if err != nil {
 		return nil, err
 	}
@@ -81,9 +81,9 @@ func (r *AuthRepo) GetUserByLogin(ctx context.Context, login string) (*enity.Dom
 	return user, nil
 }
 
-// не уверен что стоит возвращать ID, а не DomainUser. (покурить на этот счет)
-func (r *AuthRepo) CreateUser(ctx context.Context, user *enity.DomainUser) (uint, error) {
-	auth, err := mappers.DomainUserToAuthInfo(user)
+// не уверен что стоит возвращать ID, а не User. (покурить на этот счет)
+func (r *AuthRepo) CreateUser(ctx context.Context, user *enity.User) (uint, error) {
+	auth, err := mappers.UserToAuthInfo(user)
 	if err != nil {
 		return 0, err
 	}

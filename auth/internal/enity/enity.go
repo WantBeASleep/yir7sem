@@ -30,7 +30,7 @@ type RequestRegister struct {
 }
 
 // разделил слои и uint будет появляться только на самом нижнем
-type DomainUser struct {
+type User struct {
 	ID           int
 	Login        string
 	PasswordHash string

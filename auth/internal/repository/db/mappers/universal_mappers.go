@@ -7,7 +7,7 @@ import (
 	"yir/auth/internal/repository/db/models"
 )
 
-func DomainUserToAuthInfo(user *enity.DomainUser) (*models.AuthInfo, error) {
+func UserToAuthInfo(user *enity.User) (*models.AuthInfo, error) {
 	return &models.AuthInfo{
 		ID:           uint64(user.ID),
 		Login:        user.Login,
@@ -17,8 +17,8 @@ func DomainUserToAuthInfo(user *enity.DomainUser) (*models.AuthInfo, error) {
 	}, nil
 }
 
-func AuthInfoToDomainUser(auth *models.AuthInfo) (*enity.DomainUser, error) {
-	return &enity.DomainUser{
+func AuthInfoToUser(auth *models.AuthInfo) (*enity.User, error) {
+	return &enity.User{
 		// переполнение?
 		ID:           int(auth.ID),
 		Login:        auth.Login,

@@ -1,6 +1,8 @@
 package enity
 
-import "errors"
+import (
+	"errors"
+)
 
 /*
 - codes.OK: Операция прошла успешно.
@@ -22,6 +24,15 @@ import "errors"
 - codes.Unauthenticated: Клиент не авторизован.
 */
 
+// type NotFoundError struct {
+// 	err error
+// }
+
+// func (e *NotFoundError) Error() string {
+// 	return e.err.Error()
+// }
+
 var (
-	ErrNotFound = errors.New("not found")
+	ErrNotFound         = errors.New("not found")
+	ErrPassHashNotEqual = errors.New("password hash not equal")
 )

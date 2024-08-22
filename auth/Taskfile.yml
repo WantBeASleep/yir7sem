@@ -1,7 +1,7 @@
 version: '3'
 
 vars:
-  proto_libs_path: '{{.proto_libs | default "../src"}}'
+  proto_libs_path: '{{.proto_libs | default "../vendor.protogen"}}'
   proto_target: '{{.proto_target | default "api/v0/auth/auth.proto"}}'
   proto_out: '{{.proto_out | default "api/v0/auth"}}'
   swagger_out: '{{.swagger_out | default "api/v0/auth"}}'
