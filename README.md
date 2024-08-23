@@ -72,7 +72,9 @@ service Auth {
 
 **НУЖНЫ БИБЛИОТЕКИ**
 *-I* флаг указывает каталоги в которых стоит искать протики. Для *http* ручек **нужна библиотека** *import "google/api/annotations.proto";* (или соседняя, 2 ночи, я сейчас клаву носом продырявлю).
-поэтому качаем ее: *git clone https://github.com/googleapis/googleapis.git third_party/googleapis*, закидываем например в папку *src*, и в -I указываем /src/googleapis/ *далее там как раз и будет google/api/ann...*
+поэтому качаем ее: *git clone https://github.com/googleapis/googleapis.git third_party/googleapis*, закидываем например в папку **vendor.proogen**, и в -I указываем /vendor.protogen/googleapis/ *далее там как раз и будет google/api/ann...*
+
+*note: лучше просто копируйте taskfile и собирайте им, там норм сделано*
 
 # Правила сборки
 
