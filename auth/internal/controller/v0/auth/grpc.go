@@ -74,6 +74,8 @@ func (s *AuthServer) TokenRefresh(ctx context.Context, request *pb.TokenRefreshR
 			return nil, status.Error(codes.Unauthenticated, err.Error())
 		case errors.Is(err, enity.ErrInvalidToken):
 			return nil, status.Error(codes.InvalidArgument, err.Error())
+		case errors.Is(err, enity.ErrNotFound):
+			return nil, status.Error(codes.NotFound, err.Error())
 		default:
 			return nil, status.Error(codes.Internal, err.Error())
 		}

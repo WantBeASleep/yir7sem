@@ -142,12 +142,10 @@ func (s *Service) parseID(claims jwt.MapClaims) (int, error) {
 		return 0, enity.ErrInvalidToken
 	}
 
-	s.logger.Sugar().Debugf("%T\n", IDInterface)
-
-	ID, ok := IDInterface.(int)
+	ID, ok := IDInterface.(float64)
 	if !ok {
 		return 0, enity.ErrInvalidToken
 	}
 
-	return ID, nil
+	return int(ID), nil
 }
