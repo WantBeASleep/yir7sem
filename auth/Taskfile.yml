@@ -8,8 +8,8 @@ vars:
   
 env:
   DB_PASS: 1234
-  TOKEN_PRIVATE_KEY: |
-                    {{cat "private.key"}}
+  TOKEN_PRIVATE_KEY:
+    sh: cat "private_key.pem"
 
 tasks:
   generate:

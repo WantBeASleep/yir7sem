@@ -3,6 +3,7 @@ package jwt
 import (
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 	"time"
 	"yir/auth/internal/config"
@@ -21,7 +22,9 @@ type Service struct {
 }
 
 func NewService(cfg *config.Token, logger *zap.Logger) (*Service, error) {
-	pkey, err := x509.ParsePKCS1PrivateKey([]byte(cfg.PrivateKey))
+	block, _ := pem.Decode([]byte(cfg.PrivateKey))
+
+	pkey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 	if err != nil {
 		return nil, fmt.Errorf("parse private key: %w", err)
 	}
@@ -29,7 +32,7 @@ func NewService(cfg *config.Token, logger *zap.Logger) (*Service, error) {
 	return &Service{
 		accessLifeTime:  cfg.AccessLifeTime,
 		refreshLifeTime: cfg.RefreshLifeTime,
-		privateKey:      pkey,
+		privateKey:      pkey.(*rsa.PrivateKey),
 
 		logger: logger,
 	}, nil

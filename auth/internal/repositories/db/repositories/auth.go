@@ -89,7 +89,10 @@ func (r *AuthRepo) CreateUser(ctx context.Context, user *enity.User) (int, error
 		return 0, err
 	}
 
-	if err := r.db.WithContext(ctx).Create(&auth).Error; err != nil {
+	if err := r.db.WithContext(ctx).
+		Model(&models.AuthInfo{}).
+		Create(&auth).
+		Error; err != nil {
 		return 0, err
 	}
 	return int(auth.ID), nil
@@ -97,6 +100,7 @@ func (r *AuthRepo) CreateUser(ctx context.Context, user *enity.User) (int, error
 
 func (r *AuthRepo) UpdateRefreshTokenByID(ctx context.Context, ID int, newToken string) error {
 	err := r.db.WithContext(ctx).
+		Model(&models.AuthInfo{}).
 		Where("id = ?", ID).
 		Update("refresh_token", newToken).
 		Error

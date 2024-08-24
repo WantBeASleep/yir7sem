@@ -39,6 +39,7 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 	a.logger.Debug("[Request] Get user by login", zap.String("Request", request.Email))
 	user, err := a.authRepo.GetUserByLogin(ctx, request.Email)
 	if err != nil {
+		a.logger.Error("Get user by login", zap.Error(err))
 		return nil, fmt.Errorf("get user by login: %w", err)
 	}
 	a.logger.Debug("[Response] Get user by login", zap.Any("Response", user))
@@ -46,6 +47,7 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 	salt := user.PasswordHash[64:]
 	passHash, err := enity.HashByScrypt(request.Password, salt)
 	if err != nil {
+		a.logger.Error("Password hashing", zap.Error(err))
 		return nil, fmt.Errorf("password hashing: %w", err)
 	}
 	a.logger.Debug("pass params", zap.String("salt", salt), zap.String("pass hash", passHash))
@@ -64,12 +66,14 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 		refreshTokenWord,
 	)
 	if err != nil {
+		a.logger.Error("Generate tokens", zap.Error(err))
 		return nil, fmt.Errorf("generate tokens: %w", err)
 	}
 	a.logger.Info("[Response] Get Tokens")
 
 	a.logger.Info("[Request] Update JWT tokens in DB")
 	if err = a.authRepo.UpdateRefreshTokenByID(ctx, user.ID, tokenPair.RefreshToken); err != nil {
+		a.logger.Error("Update refresh token", zap.Error(err))
 		return nil, fmt.Errorf("update refresh token: %w", err)
 	}
 	a.logger.Info("[Response] Update JWT tokens in DB")
