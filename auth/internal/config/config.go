@@ -33,6 +33,7 @@ type Token struct {
 	AccessLifeTime  time.Duration `yaml:"access_time" env:"TOKEN_AC_TIME" env-default:"5m"`
 	RefreshLifeTime time.Duration `yaml:"refresh_time" env:"TOKEN_RT_TIME" env-default:"1h"`
 	PrivateKey      string        `env:"TOKEN_PRIVATE_KEY" env-required:"true"`
+	PublicKey       string        `env:"TOKEN_PUBLIC_KEY" env-required:"true"`
 }
 
 func MustLoad(cfgPath string) *Config {

@@ -1,4 +1,3 @@
-// плохое решение создавать в ините
 package validation
 
 import (

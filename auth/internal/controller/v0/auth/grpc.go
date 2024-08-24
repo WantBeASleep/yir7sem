@@ -44,7 +44,7 @@ func (s *AuthServer) Login(ctx context.Context, request *pb.LoginRequest) (*pb.L
 		Password: request.Password,
 	}
 
-	tokenPair, err := s.authUseCase.Login(ctx, &domainRequest)
+	tokensPair, err := s.authUseCase.Login(ctx, &domainRequest)
 	if err != nil {
 		switch {
 		case errors.Is(err, enity.ErrNotFound):
@@ -57,7 +57,30 @@ func (s *AuthServer) Login(ctx context.Context, request *pb.LoginRequest) (*pb.L
 	}
 
 	return &pb.LoginResponse{
-		AccessToken:  tokenPair.AccessToken,
-		RefreshToken: tokenPair.RefreshToken,
+		AccessToken:  tokensPair.AccessToken,
+		RefreshToken: tokensPair.RefreshToken,
+	}, nil
+}
+
+func (s *AuthServer) TokenRefresh(ctx context.Context, request *pb.TokenRefreshRequest) (*pb.TokenRefreshResponse, error) {
+	if err := validation.ValidateTokenRefreshRequest(request); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "validation token refresh request: %v", err.Error())
+	}
+
+	tokensPair, err := s.authUseCase.TokenRefresh(ctx, request.RefreshToken)
+	if err != nil {
+		switch {
+		case errors.Is(err, enity.ErrExpiredSession):
+			return nil, status.Error(codes.Unauthenticated, err.Error())
+		case errors.Is(err, enity.ErrInvalidToken):
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		default:
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+	}
+
+	return &pb.TokenRefreshResponse{
+		AccessToken:  tokensPair.AccessToken,
+		RefreshToken: tokensPair.RefreshToken,
 	}, nil
 }

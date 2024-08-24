@@ -36,8 +36,8 @@ func main() {
 	hash, _ := enity.HashByScrypt(pass, salt)
 
 	authRepo.CreateUser(context.TODO(), &enity.User{
-		Login:        login,
-		PasswordHash: hash + salt,
-		RefreshToken: "tachanka",
+		Login:            login,
+		PasswordHash:     hash + salt,
+		RefreshTokenWord: "tachanka",
 	})
 }

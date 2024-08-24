@@ -1,3 +1,4 @@
+// плохое решение создавать в ините
 package validation
 
 import (
@@ -11,6 +12,7 @@ var validate = validator.New()
 
 func init() {
 	validate.RegisterValidation("password", passValidate)
+	validate.RegisterValidation("token", tokenValidate)
 }
 
 func passValidate(fl validator.FieldLevel) bool {
@@ -40,7 +42,23 @@ func passValidate(fl validator.FieldLevel) bool {
 
 	if upperCase && lowerCase && digit {
 		return true
-	} else {
+	}
+	return false
+}
+
+func tokenValidate(fl validator.FieldLevel) bool {
+	// там не может быть не строка
+	pass := fl.Field().String()
+
+	dotsCounter := 0
+	for _, r := range pass {
+		if r == '.' {
+			dotsCounter++
+		}
+	}
+
+	if dotsCounter != 2 {
 		return false
 	}
+	return true
 }

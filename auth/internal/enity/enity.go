@@ -15,7 +15,7 @@ type DomainLogin struct {
 	PasswordHash string
 }
 
-type TokenPair struct {
+type TokensPair struct {
 	AccessToken  string
 	RefreshToken string
 }
@@ -31,9 +31,14 @@ type RequestRegister struct {
 
 // разделил слои и uint будет появляться только на самом нижнем
 type User struct {
-	ID           int
-	Login        string
-	PasswordHash string
-	RefreshToken string
-	MedWorkerID  int
+	ID               int
+	Login            string
+	PasswordHash     string
+	RefreshTokenWord string
+	MedWorkerID      int
+}
+
+type UserTokenVerify struct {
+	UserID           int
+	RefreshTokenWord string
 }

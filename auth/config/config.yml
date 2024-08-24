@@ -11,5 +11,5 @@ db:
   user: postgres
 
 token:
-  access_time: 1s
-  refresh_time: 5s
+  access_time: 1m
+  refresh_time: 5m

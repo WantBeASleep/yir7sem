@@ -5,5 +5,6 @@ import (
 )
 
 type JWTService interface {
-	Generate(claims map[string]any, refreshWord string) (*enity.TokenPair, error)
+	GeneratePair(claims map[string]any, refreshWord string) (*enity.TokensPair, error)
+	ParseUserData(refreshToken string) (*enity.UserTokenVerify, error)
 }

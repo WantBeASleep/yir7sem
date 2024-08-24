@@ -31,6 +31,7 @@ service Auth {
     //
     // При устаревании access JWT токена, вызывается эта ручка с refresh токеном
     // При правильном refresh токене вернет новую пару access и refresh токенов
+    // При расхождении с базой данных, вернет ошибку "expired session"
     rpc TokenRefresh (TokenRefreshRequest) returns (TokenRefreshResponse) {
         option (google.api.http) = {
             post: "/v0/auth/token/refresh"
@@ -68,6 +69,6 @@ message TokenRefreshRequest {
 }
 
 message TokenRefreshResponse {
-    string accept_token = 1;
+    string access_token = 1;
     string refresh_token = 2;
 }

@@ -1,5 +1,5 @@
 // покурить над фильтрами при get
-
+// прописать column names!
 package repositories
 
 import (
@@ -98,11 +98,11 @@ func (r *AuthRepo) CreateUser(ctx context.Context, user *enity.User) (int, error
 	return int(auth.ID), nil
 }
 
-func (r *AuthRepo) UpdateRefreshTokenByID(ctx context.Context, ID int, newToken string) error {
+func (r *AuthRepo) UpdateRefreshTokenByID(ctx context.Context, ID int, refreshTokenWord string) error {
 	err := r.db.WithContext(ctx).
 		Model(&models.AuthInfo{}).
 		Where("id = ?", ID).
-		Update("refresh_token", newToken).
+		Update("refresh_token_word", refreshTokenWord).
 		Error
 
 	return err
