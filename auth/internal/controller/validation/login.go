@@ -18,6 +18,6 @@ func ValidateLoginRequest(req *pb.LoginRequest) error {
 	if validate.Var(req.Password, "required,password") != nil {
 		return fmt.Errorf("password must not nul, contains upper, lower case, digit(s) and min 8 length")
 	}
-	
+
 	return nil
 }

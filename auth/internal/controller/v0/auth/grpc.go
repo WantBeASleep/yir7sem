@@ -14,8 +14,8 @@ import (
 	"google.golang.org/grpc/status"
 	pb "yir/auth/api/v0/auth"
 	"yir/auth/internal/controller/usecases"
-	"yir/auth/internal/enity"
 	"yir/auth/internal/controller/validation"
+	"yir/auth/internal/enity"
 )
 
 // Тут вроде можно просто server, но я не определился
@@ -34,7 +34,7 @@ func NewAuthServer(
 }
 
 func (s *AuthServer) Login(ctx context.Context, request *pb.LoginRequest) (*pb.LoginResponse, error) {
-	if err :=validation.ValidateLoginRequest(request); err != nil {
+	if err := validation.ValidateLoginRequest(request); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 

@@ -7,8 +7,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-
-
 var validate = validator.New()
 
 func init() {
@@ -26,7 +24,7 @@ func passValidate(fl validator.FieldLevel) bool {
 	var (
 		upperCase bool
 		lowerCase bool
-		digit bool
+		digit     bool
 	)
 
 	for _, uni := range pass {
