@@ -36,7 +36,7 @@ func NewAuthServer(
 
 func (s *AuthServer) Login(ctx context.Context, request *pb.LoginRequest) (*pb.LoginResponse, error) {
 	if err := validation.ValidateLoginRequest(request); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, status.Errorf(codes.InvalidArgument, "validation login request: %v", err.Error())
 	}
 
 	domainRequest := enity.RequestLogin{

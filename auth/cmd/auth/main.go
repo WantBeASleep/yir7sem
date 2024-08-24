@@ -3,6 +3,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"yir/auth/internal/apps"
 	"yir/auth/internal/config"
 	authApi "yir/auth/internal/controller/v0/auth"
@@ -41,9 +42,15 @@ func main() {
 	}
 	logger.Info("CFG && logger load")
 
-	jwtService := jwt.NewService(&cfg.Token)
+	jwtService, err := jwt.NewService(&cfg.Token, logger)
+	if err != nil {
+		panic(fmt.Errorf("jwt service create: %w", err))
+	}
 
-	authRepo, _ := repositories.NewRepository(&cfg.DB)
+	authRepo, err := repositories.NewRepository(&cfg.DB)
+	if err != nil {
+		panic(fmt.Errorf("auth repo create: %w", err))
+	}
 	logger.Info("DB load")
 
 	usecases := authUsecases.NewAuthUseCase(authRepo, jwtService, logger)

@@ -2,25 +2,27 @@ package enity
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 
-	"github.com/brianvoe/gofakeit/v7"
 	"golang.org/x/crypto/scrypt"
 )
 
-func HashByScrypt(password string) (string, error) {
-	hash, err := scrypt.Key(
+// return hash + salt
+func HashByScrypt(password string, salt string) (string, error) {
+	hexHash, err := scrypt.Key(
 		[]byte(password),
-		[]byte(gofakeit.MinecraftFood()),
+		[]byte(salt),
 		1<<13,
 		8,
 		1,
-		200, // 50 unicode символов по 4 байта
+		32,
 	)
 	if err != nil {
 		return "", fmt.Errorf("hash pass: %v", err)
 	}
 
+	hash := hex.EncodeToString(hexHash)
 	return string(hash), nil
 }
 

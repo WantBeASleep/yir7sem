@@ -14,7 +14,8 @@ import (
 type AuthUseCase struct {
 	authRepo   repositories.Auth
 	jwtService core.JWTService
-	logger     *zap.Logger
+
+	logger *zap.Logger
 }
 
 func NewAuthUseCase(
@@ -23,8 +24,9 @@ func NewAuthUseCase(
 	logger *zap.Logger,
 ) *AuthUseCase {
 	return &AuthUseCase{
-		authRepo: authRepo,
-		logger:   logger,
+		authRepo:   authRepo,
+		jwtService: jwtService,
+		logger:     logger,
 	}
 }
 
@@ -41,12 +43,14 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 	}
 	a.logger.Debug("[Response] Get user by login", zap.Any("Response", user))
 
-	passHash, err := enity.HashByScrypt(request.Password)
+	salt := user.PasswordHash[64:]
+	passHash, err := enity.HashByScrypt(request.Password, salt)
 	if err != nil {
-		return nil, fmt.Errorf("password hash: %w", err)
+		return nil, fmt.Errorf("password hashing: %w", err)
 	}
+	a.logger.Debug("pass params", zap.String("salt", salt), zap.String("pass hash", passHash))
 
-	if user.PasswordHash != passHash {
+	if user.PasswordHash != passHash+salt {
 		return nil, enity.ErrPassHashNotEqual
 	}
 

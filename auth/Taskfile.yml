@@ -6,6 +6,10 @@ vars:
   proto_out: '{{.proto_out | default "api/v0/auth"}}'
   swagger_out: '{{.swagger_out | default "api/v0/auth"}}'
   
+env:
+  DB_PASS: 1234
+  TOKEN_PRIVATE_KEY: |
+                    {{cat "private.key"}}
 
 tasks:
   generate:
@@ -34,12 +38,20 @@ tasks:
   build:
     deps: [generate]
     cmds:
-      - go build -v -o bin/auth cmd/app/main.go
+      - go fmt ./...
+      - goimports -w .
+      - go build -v -o bin/auth cmd/auth/main.go
+      - go build -v -o bin/tools cmd/tools/main.go
 
   run:
     deps: [build]
     cmds:
-      - ./cmd/app/auth
+      - ./bin/auth
+
+  tools:
+    deps: [build]
+    cmds:
+      - ./bin/tools
 
   default:
     cmds:

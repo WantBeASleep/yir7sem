@@ -1,26 +1,38 @@
 package jwt
 
 import (
+	"crypto/rsa"
+	"crypto/x509"
 	"fmt"
 	"time"
 	"yir/auth/internal/config"
 	"yir/auth/internal/enity"
 
 	"github.com/golang-jwt/jwt/v5"
+	"go.uber.org/zap"
 )
 
 type Service struct {
 	accessLifeTime  time.Duration
 	refreshLifeTime time.Duration
-	privateKey      string
+	privateKey      *rsa.PrivateKey
+
+	logger *zap.Logger
 }
 
-func NewService(cfg *config.Token) *Service {
+func NewService(cfg *config.Token, logger *zap.Logger) (*Service, error) {
+	pkey, err := x509.ParsePKCS1PrivateKey([]byte(cfg.PrivateKey))
+	if err != nil {
+		return nil, fmt.Errorf("parse private key: %w", err)
+	}
+
 	return &Service{
 		accessLifeTime:  cfg.AccessLifeTime,
 		refreshLifeTime: cfg.RefreshLifeTime,
-		privateKey:      cfg.PrivateKey,
-	}
+		privateKey:      pkey,
+
+		logger: logger,
+	}, nil
 }
 
 // rt claims add "rtw"!
@@ -32,6 +44,8 @@ func (s *Service) Generate(claims map[string]any, refreshWord string) (*enity.To
 		accessClaims[k] = v
 	}
 	accessClaims["exp"] = time.Now().Add(s.accessLifeTime).Unix()
+
+	s.logger.Debug("Access claims ready", zap.Any("claims", accessClaims))
 
 	token = jwt.NewWithClaims(jwt.SigningMethodRS256, accessClaims)
 	accessToken, err := token.SignedString(s.privateKey)
@@ -45,6 +59,8 @@ func (s *Service) Generate(claims map[string]any, refreshWord string) (*enity.To
 	}
 	refreshClaims["rtw"] = refreshWord
 	refreshClaims["exp"] = time.Now().Add(s.refreshLifeTime).Unix()
+
+	s.logger.Debug("Refresh claims ready", zap.Any("claims", refreshClaims))
 
 	token = jwt.NewWithClaims(jwt.SigningMethodRS256, refreshClaims)
 	refreshToken, err := token.SignedString(s.privateKey)

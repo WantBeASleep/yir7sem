@@ -13,11 +13,13 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Auth struct {
 	controller *authApi.AuthServer
-	logger     *zap.Logger
+
+	logger *zap.Logger
 }
 
 func New(
@@ -35,7 +37,7 @@ func (a *Auth) Run(cfg *config.App) error {
 	pb.RegisterAuthServer(s, a.controller)
 
 	mux := runtime.NewServeMux()
-	if err := pb.RegisterAuthHandlerFromEndpoint(context.TODO(), mux, cfg.Host+":"+cfg.GRPCPort, []grpc.DialOption{}); err != nil {
+	if err := pb.RegisterAuthHandlerFromEndpoint(context.TODO(), mux, cfg.Host+":"+cfg.GRPCPort, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
 		return fmt.Errorf("register http handlers: %w", err)
 	}
 

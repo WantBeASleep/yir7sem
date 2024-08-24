@@ -31,7 +31,7 @@ func New(env Env, outPath string) *zap.Logger {
 		}
 
 		cfg = zap.NewDevelopmentConfig()
-		cfg.DisableCaller = true
+		// cfg.DisableCaller = true
 		cfg.DisableStacktrace = true
 		cfg.EncoderConfig = encoderCfg
 
