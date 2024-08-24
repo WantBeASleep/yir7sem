@@ -62,6 +62,30 @@ func (s *AuthServer) Login(ctx context.Context, request *pb.LoginRequest) (*pb.L
 	}, nil
 }
 
+func (s *AuthServer) Register(ctx context.Context, request *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+	if err := validation.ValidateRegisterRequest(request); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "validation register request: %v", err.Error())
+	}
+
+	domainRegister := enity.RequestRegister{
+		Email:       request.Email,
+		LastName:    request.LastName,
+		FirstName:   request.FirstName,
+		FathersName: request.FathersName,
+		MedOrg:      request.MedOrganization,
+		Password:    request.Password,
+	}
+
+	userID, err := s.authUseCase.Register(ctx, &domainRegister)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &pb.RegisterResponse{
+		UserId: userID,
+	}, nil
+}
+
 func (s *AuthServer) TokenRefresh(ctx context.Context, request *pb.TokenRefreshRequest) (*pb.TokenRefreshResponse, error) {
 	if err := validation.ValidateTokenRefreshRequest(request); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "validation token refresh request: %v", err.Error())

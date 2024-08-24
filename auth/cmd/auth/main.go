@@ -8,7 +8,8 @@ import (
 	"yir/auth/internal/config"
 	authApi "yir/auth/internal/controller/v0/auth"
 	"yir/auth/internal/core/jwt"
-	"yir/auth/internal/repositories/db/repositories"
+	dbRepos "yir/auth/internal/repositories/db/repositories"
+	serviceRepos "yir/auth/internal/repositories/services"
 	authUsecases "yir/auth/internal/usecases/auth"
 	"yir/internal/log"
 
@@ -47,13 +48,15 @@ func main() {
 		panic(fmt.Errorf("jwt service create: %w", err))
 	}
 
-	authRepo, err := repositories.NewRepository(&cfg.DB)
+	authRepo, err := dbRepos.NewRepository(&cfg.DB)
 	if err != nil {
 		panic(fmt.Errorf("auth repo create: %w", err))
 	}
 	logger.Info("DB load")
 
-	usecases := authUsecases.NewAuthUseCase(authRepo, jwtService, logger)
+	medRepo := serviceRepos.NewService()
+
+	usecases := authUsecases.NewAuthUseCase(authRepo, medRepo, jwtService, logger)
 
 	authGRPCController := authApi.NewAuthServer(usecases)
 

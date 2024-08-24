@@ -13,6 +13,7 @@ import (
 
 type AuthUseCase struct {
 	authRepo   repositories.Auth
+	medRepo    repositories.MedRepo
 	jwtService core.JWTService
 
 	logger *zap.Logger
@@ -20,11 +21,13 @@ type AuthUseCase struct {
 
 func NewAuthUseCase(
 	authRepo repositories.Auth,
+	medRepo repositories.MedRepo,
 	jwtService core.JWTService,
 	logger *zap.Logger,
 ) *AuthUseCase {
 	return &AuthUseCase{
 		authRepo:   authRepo,
+		medRepo:    medRepo,
 		jwtService: jwtService,
 		logger:     logger,
 	}
@@ -33,6 +36,8 @@ func NewAuthUseCase(
 // покурить что может это сразу в уровень INFO логов
 // ДОБАВИТЬ КОНТЕКСТ
 // Дебаги здесь потом менять на инфу вырезать приватное из логов
+// чекать unexpected errors
+// В JWT написать валидатор перед тем как запуститсья
 func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*enity.TokensPair, error) {
 	a.logger.Debug("Login usecase started", zap.Any("Request", request))
 
@@ -74,7 +79,49 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 }
 
 func (a *AuthUseCase) Register(ctx context.Context, request *enity.RequestRegister) (uint64, error) {
-	panic("unimplemented")
+	a.logger.Debug("Register usecases started", zap.Any("Request", request))
+
+	// заглушка
+	err := a.medRepo.AddMed()
+	if err != nil {
+		a.logger.Warn("Med Repo not implemented")
+	}
+	medWorkerID := gofakeit.Number(0, 1<<10)
+
+	salt := gofakeit.MinecraftBiome()
+	passHash, err := enity.HashByScrypt(request.Password, salt)
+	if err != nil {
+		a.logger.Error("Password hashing", zap.Error(err))
+		return 0, fmt.Errorf("password hashing: %w", err)
+	}
+
+	a.logger.Info("[Request] Add new user")
+	user := enity.User{
+		Login:        request.Email,
+		PasswordHash: passHash + salt,
+		MedWorkerID:  medWorkerID,
+	}
+	userID, err := a.authRepo.CreateUser(ctx, &user)
+	if err != nil {
+		a.logger.Error("Create new user")
+		return 0, fmt.Errorf("create new user: %w", err)
+	}
+	a.logger.Info("[Response] Added new user")
+
+	refreshTokenWord := gofakeit.MinecraftVillagerJob()
+	_, err = a.generateTokenPair(ctx, userID, refreshTokenWord)
+	if err != nil {
+		return 0, fmt.Errorf("generate tokens: %w", err)
+	}
+
+	a.logger.Info("[Request] Update refresh token")
+	if err := a.authRepo.UpdateRefreshTokenByID(ctx, userID, refreshTokenWord); err != nil {
+		a.logger.Error("Update refresh token in DB")
+		return 0, fmt.Errorf("update refresh token: %w", err)
+	}
+	a.logger.Error("[Response] Updated refresh token")
+
+	return uint64(userID), nil
 }
 
 func (a *AuthUseCase) TokenRefresh(ctx context.Context, refreshToken string) (*enity.TokensPair, error) {
@@ -114,23 +161,4 @@ func (a *AuthUseCase) TokenRefresh(ctx context.Context, refreshToken string) (*e
 	a.logger.Info("[Reponse] Updated user refresh token in repo")
 
 	return tokensPair, nil
-}
-
-// внедрить контекст в jwt
-func (a *AuthUseCase) generateTokenPair(_ context.Context, userID int, refreshTokenWord string) (*enity.TokensPair, error) {
-	a.logger.Info("[Request] Generate new JWT pair tokens")
-	tokenPair, err := a.jwtService.GeneratePair(
-		map[string]any{
-			"id":        userID,
-			"likesFood": gofakeit.MinecraftFood(),
-		},
-		refreshTokenWord,
-	)
-	if err != nil {
-		a.logger.Error("Generate tokens", zap.Error(err))
-		return nil, err
-	}
-	a.logger.Info("[Response] Generated JWT Tokens")
-
-	return tokenPair, nil
 }
