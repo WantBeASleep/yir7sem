@@ -34,7 +34,7 @@ tasks:
   build:
     deps: [generate]
     cmds:
-      - go build -v -o cmd/app/auth cmd/app/main.go
+      - go build -v -o bin/auth cmd/app/main.go
 
   run:
     deps: [build]
@@ -43,4 +43,4 @@ tasks:
 
   default:
     cmds:
-      - task: run
+      - task: build

@@ -10,12 +10,13 @@ package auth
 import (
 	"context"
 	"errors"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	pb "yir/auth/api/v0/auth"
 	"yir/auth/internal/controller/usecases"
 	"yir/auth/internal/controller/validation"
 	"yir/auth/internal/enity"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Тут вроде можно просто server, но я не определился

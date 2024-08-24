@@ -30,6 +30,7 @@ func NewAuthUseCase(
 
 // покурить что может это сразу в уровень INFO логов
 // ДОБАВИТЬ КОНТЕКСТ
+// Дебаги здесь потом менять на инфу вырезать приватное из логов
 func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*enity.TokenPair, error) {
 	a.logger.Debug("Login usecase started", zap.Any("Request", request))
 
@@ -49,7 +50,7 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 		return nil, enity.ErrPassHashNotEqual
 	}
 
-	a.logger.Debug("[Request] Generate new JWT pair tokens")
+	a.logger.Info("[Request] Generate new JWT pair tokens")
 	refreshTokenWord := gofakeit.MinecraftVillagerJob()
 	tokenPair, err := a.jwtService.Generate(
 		map[string]any{
@@ -61,11 +62,23 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 	if err != nil {
 		return nil, fmt.Errorf("generate tokens: %w", err)
 	}
-	a.logger.Debug("[Response] Get Tokens")
+	a.logger.Info("[Response] Get Tokens")
 
+	a.logger.Info("[Request] Update JWT tokens in DB")
 	if err = a.authRepo.UpdateRefreshTokenByID(ctx, user.ID, tokenPair.RefreshToken); err != nil {
 		return nil, fmt.Errorf("update refresh token: %w", err)
 	}
+	a.logger.Info("[Response] Update JWT tokens in DB")
 
 	return tokenPair, nil
+}
+
+// Register(ctx context.Context, request *enity.RequestRegister) (uint64, error)
+// TokenRefresh(ctx context.Context, refreshToken string) (*enity.TokenPair, error)
+func (a *AuthUseCase) Register(ctx context.Context, request *enity.RequestRegister) (uint64, error) {
+	panic("unimplemented")
+}
+
+func (a *AuthUseCase) TokenRefresh(ctx context.Context, refreshToken string) (*enity.TokenPair, error) {
+	panic("unimplemented")
 }

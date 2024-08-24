@@ -3,6 +3,7 @@ package jwt
 import (
 	"fmt"
 	"time"
+	"yir/auth/internal/config"
 	"yir/auth/internal/enity"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -14,15 +15,11 @@ type Service struct {
 	privateKey      string
 }
 
-func NewService(
-	accessLifeTime time.Duration,
-	refreshLifeTime time.Duration,
-	privateKey string,
-) *Service {
+func NewService(cfg *config.Token) *Service {
 	return &Service{
-		accessLifeTime:  accessLifeTime,
-		refreshLifeTime: refreshLifeTime,
-		privateKey:      privateKey,
+		accessLifeTime:  cfg.AccessLifeTime,
+		refreshLifeTime: cfg.RefreshLifeTime,
+		privateKey:      cfg.PrivateKey,
 	}
 }
 

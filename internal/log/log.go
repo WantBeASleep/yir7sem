@@ -9,15 +9,21 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+type Env string
+
+const (
+	DevEnv  Env = "DEV"
+	ProdEnv Env = "PROD"
+)
+
 // panic if have error!
-// only DEV && PROD env accepted
 // if env == DEV, outPath will be ommited
-func New(env string, outPath string) *zap.Logger {
+func New(env Env, outPath string) *zap.Logger {
 	var cfg zap.Config
 	var encoderCfg zapcore.EncoderConfig
 
 	switch env {
-	case "DEV":
+	case DevEnv:
 		encoderCfg = zap.NewDevelopmentEncoderConfig()
 		encoderCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
 		encoderCfg.EncodeTime = func(t time.Time, pae zapcore.PrimitiveArrayEncoder) {
@@ -29,7 +35,7 @@ func New(env string, outPath string) *zap.Logger {
 		cfg.DisableStacktrace = true
 		cfg.EncoderConfig = encoderCfg
 
-	case "PROD":
+	case ProdEnv:
 		panic("not implemented")
 
 	default:
