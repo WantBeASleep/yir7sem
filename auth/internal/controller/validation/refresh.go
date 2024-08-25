@@ -3,7 +3,7 @@ package validation
 import (
 	"fmt"
 	pb "yir/auth/api/auth"
-	"yir/auth/internal/enity"
+	"yir/auth/internal/entity"
 )
 
 func ValidateTokenRefreshRequest(req *pb.TokenRefreshRequest) error {
@@ -12,7 +12,7 @@ func ValidateTokenRefreshRequest(req *pb.TokenRefreshRequest) error {
 	}
 
 	if validate.Var(req.RefreshToken, "required,token") != nil {
-		return enity.ErrInvalidToken
+		return entity.ErrInvalidToken
 	}
 
 	return nil

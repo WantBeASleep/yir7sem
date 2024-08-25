@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 
 	"yir/auth/internal/config"
-	"yir/auth/internal/enity"
+	"yir/auth/internal/entity"
 	"yir/auth/internal/repositories/db/mappers"
 	"yir/auth/internal/repositories/db/models"
 	"yir/auth/internal/repositories/db/utils"
@@ -35,7 +35,7 @@ func NewRepository(cfg *config.DB) (*AuthRepo, error) {
 	}, nil
 }
 
-func (r *AuthRepo) GetUserByID(ctx context.Context, ID int) (*enity.User, error) {
+func (r *AuthRepo) GetUserByID(ctx context.Context, ID int) (*entity.User, error) {
 	var resp models.AuthInfo
 
 	query := r.db.WithContext(ctx).
@@ -44,7 +44,7 @@ func (r *AuthRepo) GetUserByID(ctx context.Context, ID int) (*enity.User, error)
 
 	if err := query.Take(&resp).Error; err != nil {
 		if errors.Is(query.Error, gorm.ErrRecordNotFound) {
-			return nil, enity.ErrNotFound
+			return nil, entity.ErrNotFound
 		}
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (r *AuthRepo) GetUserByID(ctx context.Context, ID int) (*enity.User, error)
 	return user, nil
 }
 
-func (r *AuthRepo) GetUserByLogin(ctx context.Context, login string) (*enity.User, error) {
+func (r *AuthRepo) GetUserByLogin(ctx context.Context, login string) (*entity.User, error) {
 	var resp models.AuthInfo
 
 	query := r.db.WithContext(ctx).
@@ -66,7 +66,7 @@ func (r *AuthRepo) GetUserByLogin(ctx context.Context, login string) (*enity.Use
 
 	if err := query.Take(&resp).Error; err != nil {
 		if errors.Is(query.Error, gorm.ErrRecordNotFound) {
-			return nil, enity.ErrNotFound
+			return nil, entity.ErrNotFound
 		}
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (r *AuthRepo) GetUserByLogin(ctx context.Context, login string) (*enity.Use
 	return user, nil
 }
 
-func (r *AuthRepo) CreateUser(ctx context.Context, user *enity.User) (int, error) {
+func (r *AuthRepo) CreateUser(ctx context.Context, user *entity.User) (int, error) {
 	auth, err := mappers.UserToAuthInfo(user)
 	if err != nil {
 		return 0, err

@@ -1,11 +1,11 @@
 package mappers
 
 import (
-	"yir/auth/internal/enity"
+	"yir/auth/internal/entity"
 	"yir/auth/internal/repositories/db/models"
 )
 
-func UserToAuthInfo(user *enity.User) (*models.AuthInfo, error) {
+func UserToAuthInfo(user *entity.User) (*models.AuthInfo, error) {
 	return &models.AuthInfo{
 		ID:               uint64(user.ID),
 		Login:            user.Login,
@@ -15,8 +15,8 @@ func UserToAuthInfo(user *enity.User) (*models.AuthInfo, error) {
 	}, nil
 }
 
-func AuthInfoToUser(auth *models.AuthInfo) (*enity.User, error) {
-	return &enity.User{
+func AuthInfoToUser(auth *models.AuthInfo) (*entity.User, error) {
+	return &entity.User{
 		// переполнение?
 		ID:               int(auth.ID),
 		Login:            auth.Login,

@@ -6,7 +6,7 @@ import (
 	pb "yir/auth/api/auth"
 	"yir/auth/internal/controller/usecases"
 	"yir/auth/internal/controller/validation"
-	"yir/auth/internal/enity"
+	"yir/auth/internal/entity"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -31,7 +31,7 @@ func (s *Server) Login(ctx context.Context, request *pb.LoginRequest) (*pb.Login
 		return nil, status.Errorf(codes.InvalidArgument, "validation login request: %v", err.Error())
 	}
 
-	domainRequest := enity.RequestLogin{
+	domainRequest := entity.RequestLogin{
 		Email:    request.Email,
 		Password: request.Password,
 	}
@@ -39,9 +39,9 @@ func (s *Server) Login(ctx context.Context, request *pb.LoginRequest) (*pb.Login
 	tokensPair, err := s.authUseCase.Login(ctx, &domainRequest)
 	if err != nil {
 		switch {
-		case errors.Is(err, enity.ErrNotFound):
+		case errors.Is(err, entity.ErrNotFound):
 			return nil, status.Error(codes.NotFound, err.Error())
-		case errors.Is(err, enity.ErrPassHashNotEqual):
+		case errors.Is(err, entity.ErrPassHashNotEqual):
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		default:
 			return nil, status.Error(codes.Internal, err.Error())
@@ -59,7 +59,7 @@ func (s *Server) Register(ctx context.Context, request *pb.RegisterRequest) (*pb
 		return nil, status.Errorf(codes.InvalidArgument, "validation register request: %v", err.Error())
 	}
 
-	domainRegister := enity.RequestRegister{
+	domainRegister := entity.RequestRegister{
 		Email:       request.Email,
 		LastName:    request.LastName,
 		FirstName:   request.FirstName,
@@ -86,11 +86,11 @@ func (s *Server) TokenRefresh(ctx context.Context, request *pb.TokenRefreshReque
 	tokensPair, err := s.authUseCase.TokenRefresh(ctx, request.RefreshToken)
 	if err != nil {
 		switch {
-		case errors.Is(err, enity.ErrExpiredSession):
+		case errors.Is(err, entity.ErrExpiredSession):
 			return nil, status.Error(codes.Unauthenticated, err.Error())
-		case errors.Is(err, enity.ErrInvalidToken):
+		case errors.Is(err, entity.ErrInvalidToken):
 			return nil, status.Error(codes.InvalidArgument, err.Error())
-		case errors.Is(err, enity.ErrNotFound):
+		case errors.Is(err, entity.ErrNotFound):
 			return nil, status.Error(codes.NotFound, err.Error())
 		default:
 			return nil, status.Error(codes.Internal, err.Error())

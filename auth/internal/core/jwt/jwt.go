@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 	"yir/auth/internal/config"
-	"yir/auth/internal/enity"
+	"yir/auth/internal/entity"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -42,7 +42,7 @@ func NewService(cfg *config.Token) (*Service, error) {
 }
 
 // Add refresh word as "rtw" key.
-func (s *Service) GeneratePair(claims map[string]any, refreshWord string) (*enity.TokensPair, error) {
+func (s *Service) GeneratePair(claims map[string]any, refreshWord string) (*entity.TokensPair, error) {
 	var token *jwt.Token
 
 	accessClaims := jwt.MapClaims{}
@@ -70,13 +70,13 @@ func (s *Service) GeneratePair(claims map[string]any, refreshWord string) (*enit
 		return nil, fmt.Errorf("refresh token signed: %w", err)
 	}
 
-	return &enity.TokensPair{
+	return &entity.TokensPair{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
 }
 
-func (s *Service) ParseUserData(refreshToken string) (*enity.UserTokenVerify, error) {
+func (s *Service) ParseUserData(refreshToken string) (*entity.UserTokenVerify, error) {
 	claims := jwt.MapClaims{}
 	_, err := jwt.ParseWithClaims(
 		refreshToken,
@@ -86,22 +86,22 @@ func (s *Service) ParseUserData(refreshToken string) (*enity.UserTokenVerify, er
 	)
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenExpired) {
-			return nil, enity.ErrTokenExpired
+			return nil, entity.ErrTokenExpired
 		}
 		return nil, err
 	}
 
 	rtw, err := s.parseRTW(claims)
 	if err != nil {
-		return nil, enity.ErrInvalidToken
+		return nil, entity.ErrInvalidToken
 	}
 
 	ID, err := s.parseID(claims)
 	if err != nil {
-		return nil, enity.ErrInvalidToken
+		return nil, entity.ErrInvalidToken
 	}
 
-	return &enity.UserTokenVerify{
+	return &entity.UserTokenVerify{
 		UserID:           ID,
 		RefreshTokenWord: rtw,
 	}, nil
@@ -110,12 +110,12 @@ func (s *Service) ParseUserData(refreshToken string) (*enity.UserTokenVerify, er
 func (s *Service) parseRTW(claims jwt.MapClaims) (string, error) {
 	rtwInterface, ok := claims["rtw"]
 	if !ok {
-		return "", enity.ErrInvalidToken
+		return "", entity.ErrInvalidToken
 	}
 
 	tokenWord, ok := rtwInterface.(string)
 	if !ok {
-		return "", enity.ErrInvalidToken
+		return "", entity.ErrInvalidToken
 	}
 
 	return tokenWord, nil
@@ -124,12 +124,12 @@ func (s *Service) parseRTW(claims jwt.MapClaims) (string, error) {
 func (s *Service) parseID(claims jwt.MapClaims) (int, error) {
 	IDInterface, ok := claims["id"]
 	if !ok {
-		return 0, enity.ErrInvalidToken
+		return 0, entity.ErrInvalidToken
 	}
 
 	ID, ok := IDInterface.(float64)
 	if !ok {
-		return 0, enity.ErrInvalidToken
+		return 0, entity.ErrInvalidToken
 	}
 
 	return int(ID), nil

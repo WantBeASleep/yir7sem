@@ -2,11 +2,11 @@ package usecases
 
 import (
 	"context"
-	"yir/auth/internal/enity"
+	"yir/auth/internal/entity"
 )
 
 type Auth interface {
-	Login(ctx context.Context, request *enity.RequestLogin) (*enity.TokensPair, error)
-	Register(ctx context.Context, request *enity.RequestRegister) (uint64, error)
-	TokenRefresh(ctx context.Context, request string) (*enity.TokensPair, error)
+	Login(ctx context.Context, request *entity.RequestLogin) (*entity.TokensPair, error)
+	Register(ctx context.Context, request *entity.RequestRegister) (uint64, error)
+	TokenRefresh(ctx context.Context, request string) (*entity.TokensPair, error)
 }

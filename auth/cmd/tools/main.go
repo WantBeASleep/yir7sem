@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"yir/auth/internal/config"
-	"yir/auth/internal/enity"
+	"yir/auth/internal/entity"
 	"yir/auth/internal/repositories/db/repositories"
 )
 
@@ -33,9 +33,9 @@ func main() {
 
 	salt := "pensioner"
 
-	hash, _ := enity.HashByScrypt(pass, salt)
+	hash, _ := entity.HashByScrypt(pass, salt)
 
-	authRepo.CreateUser(context.TODO(), &enity.User{
+	authRepo.CreateUser(context.TODO(), &entity.User{
 		Login:            login,
 		PasswordHash:     hash + salt,
 		RefreshTokenWord: "tachanka",

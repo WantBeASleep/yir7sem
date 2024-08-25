@@ -1,13 +1,13 @@
 package usecases
 
 import (
-	"yir/auth/internal/enity"
+	"yir/auth/internal/entity"
 
 	"github.com/brianvoe/gofakeit/v7"
 	"go.uber.org/zap"
 )
 
-func (a *AuthUseCase) generateTokenPair(userID int, refreshTokenWord string) (*enity.TokensPair, error) {
+func (a *AuthUseCase) generateTokenPair(userID int, refreshTokenWord string) (*entity.TokensPair, error) {
 	a.logger.Info("[Request] Generate new JWT pair tokens")
 	tokenPair, err := a.jwtService.GeneratePair(
 		map[string]any{

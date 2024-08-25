@@ -3,7 +3,7 @@ package usecases
 import (
 	"context"
 	"fmt"
-	"yir/auth/internal/enity"
+	"yir/auth/internal/entity"
 	"yir/auth/internal/usecases/core"
 	"yir/auth/internal/usecases/repositories"
 
@@ -33,7 +33,7 @@ func NewAuthUseCase(
 	}
 }
 
-func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*enity.TokensPair, error) {
+func (a *AuthUseCase) Login(ctx context.Context, request *entity.RequestLogin) (*entity.TokensPair, error) {
 	a.logger.Debug("Login usecase started", zap.Any("Request", request))
 
 	a.logger.Info("[Request] Get user by login")
@@ -45,7 +45,7 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 	a.logger.Debug("[Response] Got user by login")
 
 	salt := user.PasswordHash[64:]
-	passHash, err := enity.HashByScrypt(request.Password, salt)
+	passHash, err := entity.HashByScrypt(request.Password, salt)
 	if err != nil {
 		a.logger.Error("Password hashing", zap.Error(err))
 		return nil, fmt.Errorf("password hashing: %w", err)
@@ -53,7 +53,7 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 	a.logger.Debug("pass params", zap.String("salt", salt), zap.String("pass hash", passHash))
 
 	if user.PasswordHash != passHash+salt {
-		return nil, enity.ErrPassHashNotEqual
+		return nil, entity.ErrPassHashNotEqual
 	}
 
 	refreshTokenWord := gofakeit.MinecraftVillagerJob()
@@ -72,7 +72,7 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 	return tokensPair, nil
 }
 
-func (a *AuthUseCase) Register(ctx context.Context, request *enity.RequestRegister) (uint64, error) {
+func (a *AuthUseCase) Register(ctx context.Context, request *entity.RequestRegister) (uint64, error) {
 	a.logger.Debug("Register usecases started", zap.Any("Request", request))
 
 	// заглушка https://popovza.kaiten.ru/space/420777/card/37360398
@@ -83,14 +83,14 @@ func (a *AuthUseCase) Register(ctx context.Context, request *enity.RequestRegist
 	medWorkerID := gofakeit.Number(0, 1<<10)
 
 	salt := gofakeit.MinecraftBiome()
-	passHash, err := enity.HashByScrypt(request.Password, salt)
+	passHash, err := entity.HashByScrypt(request.Password, salt)
 	if err != nil {
 		a.logger.Error("Password hashing", zap.Error(err))
 		return 0, fmt.Errorf("password hashing: %w", err)
 	}
 
 	a.logger.Info("[Request] Add new user")
-	user := enity.User{
+	user := entity.User{
 		Login:        request.Email,
 		PasswordHash: passHash + salt,
 		MedWorkerID:  medWorkerID,
@@ -118,7 +118,7 @@ func (a *AuthUseCase) Register(ctx context.Context, request *enity.RequestRegist
 	return uint64(userID), nil
 }
 
-func (a *AuthUseCase) TokenRefresh(ctx context.Context, request string) (*enity.TokensPair, error) {
+func (a *AuthUseCase) TokenRefresh(ctx context.Context, request string) (*entity.TokensPair, error) {
 	a.logger.Debug("Token refresh usecases started", zap.Any("Request", request))
 
 	userData, err := a.jwtService.ParseUserData(request)
@@ -137,7 +137,7 @@ func (a *AuthUseCase) TokenRefresh(ctx context.Context, request string) (*enity.
 
 	if user.RefreshTokenWord != userData.RefreshTokenWord {
 		a.logger.Warn("Tokens RTW divergents", zap.Int("userID", user.ID))
-		return nil, enity.ErrExpiredSession
+		return nil, entity.ErrExpiredSession
 	}
 
 	refreshTokenWord := gofakeit.MinecraftVillagerStation()

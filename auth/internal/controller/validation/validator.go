@@ -51,5 +51,5 @@ func tokenValidate(fl validator.FieldLevel) bool {
 		}
 	}
 
-	return dotsCounter != 2
+	return dotsCounter == 2
 }

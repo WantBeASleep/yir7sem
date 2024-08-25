@@ -1,4 +1,4 @@
-package enity
+package entity
 
 import (
 	"crypto/sha256"
