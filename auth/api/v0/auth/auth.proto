@@ -59,7 +59,6 @@ message RegisterRequest {
     string password = 6;
 }
 
-// id пользователя в системе
 message RegisterResponse {
     uint64 user_id = 1;
 }
