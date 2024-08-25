@@ -8,7 +8,6 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
-// return hash + salt
 func HashByScrypt(password string, salt string) (string, error) {
 	hexHash, err := scrypt.Key(
 		[]byte(password),
@@ -26,8 +25,10 @@ func HashByScrypt(password string, salt string) (string, error) {
 	return string(hash), nil
 }
 
-func HashBySHA256(password string) (string, error) {
-	hash := sha256.Sum256([]byte(password))
-	// [32] не слайс а именно МАССИВ: курите разницу массивов и срезов golang
+// Deprecated: В бд соль пишем после пароля, по фиксированному 64 в длинну паролю.
+// Получается пароль(64 символа) + соль
+// Этот вернет пароль 32 длинной, использовать, если понимаете что делаете
+func HashBySHA256(password string, salt string) (string, error) {
+	hash := sha256.Sum256([]byte(password + salt))
 	return string(hash[:]), nil
 }

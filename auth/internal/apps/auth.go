@@ -6,9 +6,9 @@ import (
 	"net"
 	"net/http"
 	"sync"
-	pb "yir/auth/api/v0/auth"
+	pb "yir/auth/api/auth"
 	"yir/auth/internal/config"
-	authApi "yir/auth/internal/controller/v0/auth"
+	authctrl "yir/auth/internal/controller/auth"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
@@ -17,13 +17,13 @@ import (
 )
 
 type Auth struct {
-	controller *authApi.AuthServer
+	controller *authctrl.Server
 
 	logger *zap.Logger
 }
 
 func New(
-	controller *authApi.AuthServer,
+	controller *authctrl.Server,
 	logger *zap.Logger,
 ) *Auth {
 	return &Auth{

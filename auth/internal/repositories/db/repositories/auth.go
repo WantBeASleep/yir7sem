@@ -1,5 +1,3 @@
-// покурить над фильтрами при get
-// прописать column names!
 package repositories
 
 import (
@@ -17,7 +15,6 @@ import (
 	"yir/auth/internal/repositories/db/utils"
 )
 
-// можно заприватить
 type AuthRepo struct {
 	db *gorm.DB
 }
@@ -30,7 +27,7 @@ func NewRepository(cfg *config.DB) (*AuthRepo, error) {
 		return nil, fmt.Errorf("create db gorm obj: %w", err)
 	}
 
-	//возможно это лишнее
+	// https://popovza.kaiten.ru/space/420777/card/37587888
 	db.AutoMigrate(&models.AuthInfo{})
 
 	return &AuthRepo{
@@ -82,7 +79,6 @@ func (r *AuthRepo) GetUserByLogin(ctx context.Context, login string) (*enity.Use
 	return user, nil
 }
 
-// не уверен что стоит возвращать ID, а не User. (покурить на этот счет)
 func (r *AuthRepo) CreateUser(ctx context.Context, user *enity.User) (int, error) {
 	auth, err := mappers.UserToAuthInfo(user)
 	if err != nil {

@@ -1,4 +1,3 @@
-// плохое решение создавать в ините
 package validation
 
 import (
@@ -16,7 +15,6 @@ func init() {
 }
 
 func passValidate(fl validator.FieldLevel) bool {
-	// там не может быть не строка
 	pass := fl.Field().String()
 
 	if utf8.RuneCountInString(pass) < 8 {
@@ -40,14 +38,10 @@ func passValidate(fl validator.FieldLevel) bool {
 		}
 	}
 
-	if upperCase && lowerCase && digit {
-		return true
-	}
-	return false
+	return upperCase && lowerCase && digit
 }
 
 func tokenValidate(fl validator.FieldLevel) bool {
-	// там не может быть не строка
 	pass := fl.Field().String()
 
 	dotsCounter := 0
@@ -57,8 +51,5 @@ func tokenValidate(fl validator.FieldLevel) bool {
 		}
 	}
 
-	if dotsCounter != 2 {
-		return false
-	}
-	return true
+	return dotsCounter != 2
 }

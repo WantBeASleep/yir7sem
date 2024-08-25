@@ -11,7 +11,6 @@ import (
 	"yir/auth/internal/enity"
 
 	"github.com/golang-jwt/jwt/v5"
-	"go.uber.org/zap"
 )
 
 type Service struct {
@@ -19,11 +18,9 @@ type Service struct {
 	refreshLifeTime time.Duration
 	privateKey      *rsa.PrivateKey
 	publicKey       *rsa.PublicKey
-
-	logger *zap.Logger
 }
 
-func NewService(cfg *config.Token, logger *zap.Logger) (*Service, error) {
+func NewService(cfg *config.Token) (*Service, error) {
 	privateBlock, _ := pem.Decode([]byte(cfg.PrivateKey))
 	privateKey, err := x509.ParsePKCS8PrivateKey(privateBlock.Bytes)
 	if err != nil {
@@ -41,12 +38,10 @@ func NewService(cfg *config.Token, logger *zap.Logger) (*Service, error) {
 		refreshLifeTime: cfg.RefreshLifeTime,
 		privateKey:      privateKey.(*rsa.PrivateKey),
 		publicKey:       publicKey.(*rsa.PublicKey),
-
-		logger: logger,
 	}, nil
 }
 
-// refreshWord add as rtw field
+// Add refresh word as "rtw" key.
 func (s *Service) GeneratePair(claims map[string]any, refreshWord string) (*enity.TokensPair, error) {
 	var token *jwt.Token
 
@@ -55,8 +50,6 @@ func (s *Service) GeneratePair(claims map[string]any, refreshWord string) (*enit
 		accessClaims[k] = v
 	}
 	accessClaims["exp"] = time.Now().Add(s.accessLifeTime).Unix()
-
-	s.logger.Debug("Access claims ready", zap.Any("claims", accessClaims))
 
 	token = jwt.NewWithClaims(jwt.SigningMethodRS256, accessClaims)
 	accessToken, err := token.SignedString(s.privateKey)
@@ -70,8 +63,6 @@ func (s *Service) GeneratePair(claims map[string]any, refreshWord string) (*enit
 	}
 	refreshClaims["rtw"] = refreshWord
 	refreshClaims["exp"] = time.Now().Add(s.refreshLifeTime).Unix()
-
-	s.logger.Debug("Refresh claims ready", zap.Any("claims", refreshClaims))
 
 	token = jwt.NewWithClaims(jwt.SigningMethodRS256, refreshClaims)
 	refreshToken, err := token.SignedString(s.privateKey)
@@ -100,21 +91,15 @@ func (s *Service) ParseUserData(refreshToken string) (*enity.UserTokenVerify, er
 		return nil, err
 	}
 
-	s.logger.Debug("Token parsed")
-
 	rtw, err := s.parseRTW(claims)
 	if err != nil {
 		return nil, enity.ErrInvalidToken
 	}
 
-	s.logger.Debug("RTW parsed", zap.String("RTW", rtw))
-
 	ID, err := s.parseID(claims)
 	if err != nil {
 		return nil, enity.ErrInvalidToken
 	}
-
-	s.logger.Debug("ID parsed", zap.Int("ID", ID))
 
 	return &enity.UserTokenVerify{
 		UserID:           ID,

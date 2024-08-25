@@ -14,9 +14,8 @@ type Config struct {
 }
 
 type App struct {
-	Env  string `yaml:"env" env:"ENV" env-default:"PROD"`
-	Host string `yaml:"host" env:"HOST" env-default:"localhost"`
-	// потом возможно переедет в отдельные конфиги http и GRPC
+	Env      string `yaml:"env" env:"ENV" env-default:"PROD"`
+	Host     string `yaml:"host" env:"HOST" env-default:"localhost"`
 	GRPCPort string `yaml:"grpc" env:"GRPC_PORT" env-default:"50055"`
 	HTTPPort string `yaml:"http" env:"HTTP_PORT" env-default:"8080"`
 }

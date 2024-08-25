@@ -1,4 +1,3 @@
-// курить над грейсфулом
 package main
 
 import (
@@ -6,7 +5,7 @@ import (
 	"fmt"
 	"yir/auth/internal/apps"
 	"yir/auth/internal/config"
-	authApi "yir/auth/internal/controller/v0/auth"
+	authApi "yir/auth/internal/controller/auth"
 	"yir/auth/internal/core/jwt"
 	dbRepos "yir/auth/internal/repositories/db/repositories"
 	serviceRepos "yir/auth/internal/repositories/services"
@@ -43,7 +42,7 @@ func main() {
 	}
 	logger.Info("CFG && logger load")
 
-	jwtService, err := jwt.NewService(&cfg.Token, logger)
+	jwtService, err := jwt.NewService(&cfg.Token)
 	if err != nil {
 		panic(fmt.Errorf("jwt service create: %w", err))
 	}
@@ -58,7 +57,7 @@ func main() {
 
 	usecases := authUsecases.NewAuthUseCase(authRepo, medRepo, jwtService, logger)
 
-	authGRPCController := authApi.NewAuthServer(usecases)
+	authGRPCController := authApi.NewServer(usecases)
 
 	app := apps.New(authGRPCController, logger)
 

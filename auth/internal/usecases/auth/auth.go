@@ -33,11 +33,6 @@ func NewAuthUseCase(
 	}
 }
 
-// покурить что может это сразу в уровень INFO логов
-// ДОБАВИТЬ КОНТЕКСТ
-// Дебаги здесь потом менять на инфу вырезать приватное из логов
-// чекать unexpected errors
-// В JWT написать валидатор перед тем как запуститсья
 func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*enity.TokensPair, error) {
 	a.logger.Debug("Login usecase started", zap.Any("Request", request))
 
@@ -62,11 +57,10 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 	}
 
 	refreshTokenWord := gofakeit.MinecraftVillagerJob()
-	tokensPair, err := a.generateTokenPair(ctx, user.ID, refreshTokenWord)
+	tokensPair, err := a.generateTokenPair(user.ID, refreshTokenWord)
 	if err != nil {
 		return nil, fmt.Errorf("generate tokens: %w", err)
 	}
-	// a.logger.Debug("Tokens pair", zap.Any("Pair", tokensPair))
 
 	a.logger.Info("[Request] Update JWT tokens in DB")
 	if err = a.authRepo.UpdateRefreshTokenByID(ctx, user.ID, refreshTokenWord); err != nil {
@@ -81,7 +75,7 @@ func (a *AuthUseCase) Login(ctx context.Context, request *enity.RequestLogin) (*
 func (a *AuthUseCase) Register(ctx context.Context, request *enity.RequestRegister) (uint64, error) {
 	a.logger.Debug("Register usecases started", zap.Any("Request", request))
 
-	// заглушка
+	// заглушка https://popovza.kaiten.ru/space/420777/card/37360398
 	err := a.medRepo.AddMed()
 	if err != nil {
 		a.logger.Warn("Med Repo not implemented")
@@ -109,7 +103,7 @@ func (a *AuthUseCase) Register(ctx context.Context, request *enity.RequestRegist
 	a.logger.Info("[Response] Added new user")
 
 	refreshTokenWord := gofakeit.MinecraftVillagerJob()
-	_, err = a.generateTokenPair(ctx, userID, refreshTokenWord)
+	_, err = a.generateTokenPair(userID, refreshTokenWord)
 	if err != nil {
 		return 0, fmt.Errorf("generate tokens: %w", err)
 	}
@@ -124,10 +118,10 @@ func (a *AuthUseCase) Register(ctx context.Context, request *enity.RequestRegist
 	return uint64(userID), nil
 }
 
-func (a *AuthUseCase) TokenRefresh(ctx context.Context, refreshToken string) (*enity.TokensPair, error) {
-	a.logger.Debug("Token refresh usecases started", zap.Any("Request", refreshToken))
+func (a *AuthUseCase) TokenRefresh(ctx context.Context, request string) (*enity.TokensPair, error) {
+	a.logger.Debug("Token refresh usecases started", zap.Any("Request", request))
 
-	userData, err := a.jwtService.ParseUserData(refreshToken)
+	userData, err := a.jwtService.ParseUserData(request)
 	if err != nil {
 		a.logger.Error("Parse token err", zap.Error(err))
 		return nil, fmt.Errorf("parse token: %w", err)
@@ -147,12 +141,10 @@ func (a *AuthUseCase) TokenRefresh(ctx context.Context, refreshToken string) (*e
 	}
 
 	refreshTokenWord := gofakeit.MinecraftVillagerStation()
-	tokensPair, err := a.generateTokenPair(ctx, user.ID, refreshTokenWord)
+	tokensPair, err := a.generateTokenPair(user.ID, refreshTokenWord)
 	if err != nil {
 		return nil, fmt.Errorf("generate tokens: %w", err)
 	}
-
-	// a.logger.Debug("Tokens pair", zap.Any("Pair", tokensPair))
 
 	a.logger.Info("[Request] Update user refresh token in repo")
 	if err := a.authRepo.UpdateRefreshTokenByID(ctx, user.ID, refreshTokenWord); err != nil {

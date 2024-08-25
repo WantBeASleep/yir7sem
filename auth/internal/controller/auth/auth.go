@@ -1,16 +1,9 @@
-// порядок должены быть
-// validation
-// mapping
-// use-case call
-// errors handle
-// mapping
-
 package auth
 
 import (
 	"context"
 	"errors"
-	pb "yir/auth/api/v0/auth"
+	pb "yir/auth/api/auth"
 	"yir/auth/internal/controller/usecases"
 	"yir/auth/internal/controller/validation"
 	"yir/auth/internal/enity"
@@ -19,22 +12,21 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// Тут вроде можно просто server, но я не определился
-type AuthServer struct {
+type Server struct {
 	pb.UnimplementedAuthServer
 
 	authUseCase usecases.Auth
 }
 
-func NewAuthServer(
+func NewServer(
 	authUseCase usecases.Auth,
-) *AuthServer {
-	return &AuthServer{
+) *Server {
+	return &Server{
 		authUseCase: authUseCase,
 	}
 }
 
-func (s *AuthServer) Login(ctx context.Context, request *pb.LoginRequest) (*pb.LoginResponse, error) {
+func (s *Server) Login(ctx context.Context, request *pb.LoginRequest) (*pb.LoginResponse, error) {
 	if err := validation.ValidateLoginRequest(request); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "validation login request: %v", err.Error())
 	}
@@ -62,7 +54,7 @@ func (s *AuthServer) Login(ctx context.Context, request *pb.LoginRequest) (*pb.L
 	}, nil
 }
 
-func (s *AuthServer) Register(ctx context.Context, request *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+func (s *Server) Register(ctx context.Context, request *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	if err := validation.ValidateRegisterRequest(request); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "validation register request: %v", err.Error())
 	}
@@ -86,7 +78,7 @@ func (s *AuthServer) Register(ctx context.Context, request *pb.RegisterRequest) 
 	}, nil
 }
 
-func (s *AuthServer) TokenRefresh(ctx context.Context, request *pb.TokenRefreshRequest) (*pb.TokenRefreshResponse, error) {
+func (s *Server) TokenRefresh(ctx context.Context, request *pb.TokenRefreshRequest) (*pb.TokenRefreshResponse, error) {
 	if err := validation.ValidateTokenRefreshRequest(request); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "validation token refresh request: %v", err.Error())
 	}

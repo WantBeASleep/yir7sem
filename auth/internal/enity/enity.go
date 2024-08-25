@@ -1,6 +1,5 @@
 package enity
 
-// надо подумать над разбиением на отдельны слои model, domain, api.
 // делал из расчета: при реквесте и юзкейсках содержимое меняется?
 // да (pass -> passhash), 2 структуры
 // нет (token pair ac rt), 1 структура
@@ -29,7 +28,6 @@ type RequestRegister struct {
 	Password    string
 }
 
-// разделил слои и uint будет появляться только на самом нижнем
 type User struct {
 	ID               int
 	Login            string
