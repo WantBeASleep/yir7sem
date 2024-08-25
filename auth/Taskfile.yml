@@ -1,0 +1,60 @@
+version: '3'
+
+vars:
+  proto_libs_path: '{{.proto_libs | default "../vendor.protogen"}}'
+  proto_target: '{{.proto_target | default "api/auth/auth.proto"}}'
+  proto_out: '{{.proto_out | default "api/auth"}}'
+  swagger_out: '{{.swagger_out | default "api/auth"}}'
+  
+env:
+  DB_PASS: 1234
+  TOKEN_PRIVATE_KEY:
+    sh: cat "private.key"
+  TOKEN_PUBLIC_KEY:
+    sh: cat "public.key"
+
+tasks:
+  generate:
+    vars:
+      LIBS_DIRS:
+        sh: find {{.proto_libs_path}} -mindepth 1 -maxdepth 1 -type d | xargs echo
+    cmds:
+      - > 
+        protoc
+        -I {{dir .proto_target}}
+        {{range $proto_lib := splitList " " .LIBS_DIRS}}-I {{$proto_lib}} {{end}}
+        --go_out {{.proto_out}} --go_opt paths=source_relative
+        --go-grpc_out {{.proto_out}} --go-grpc_opt paths=source_relative
+        --grpc-gateway_out {{.proto_out}} --grpc-gateway_opt logtostderr=true,paths=source_relative
+        --openapiv2_out {{.proto_out}} --openapiv2_opt logtostderr=true,allow_merge=true,merge_file_name={{trimSuffix (ext (base .proto_target)) (base .proto_target)}}
+        {{.proto_target}}
+
+    sources:
+      - '{{.proto_target}}'
+
+    generates:
+      - '{{.proto_out}}/*.pb.go'
+      - '{{.proto_out}}/*.pb.gw.go'
+      - '{{.proto_out}}/*.swagger.json'
+
+  build:
+    deps: [generate]
+    cmds:
+      - go fmt ./...
+      - goimports -w .
+      - go build -v -o bin/auth cmd/auth/main.go
+      - go build -v -o bin/tools cmd/tools/main.go
+
+  run:
+    deps: [build]
+    cmds:
+      - ./bin/auth
+
+  tools:
+    deps: [build]
+    cmds:
+      - ./bin/tools
+
+  default:
+    cmds:
+      - task: build
