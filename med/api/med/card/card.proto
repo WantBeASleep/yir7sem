@@ -4,127 +4,39 @@ package yir.service;
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/field_mask.proto";
 
 option go_package = "yir/med/api/med/card;card";
 
-message PatientCard {
-  uint64 id = 1;
-  string acceptance_datetime = 2;
-  bool has_nodules = 3;
-  string diagnosis = 4;
-  uint64 patient_id = 5;
-  uint64 med_worker_id = 6;
-}
-
-message GetCardListRequest {
-  int64 limit = 1;
-  int64 offset = 2;
-}
-
-message GetCardListResponse {
-  uint64 count = 1;
-  string next = 2;
-  string previous = 3;
-  string first = 4;
-  string last = 5;
-  repeated PatientCard results = 6;
-}
-
-message CreateCardRequest {
-  bool has_nodules = 1;
-  string diagnosis = 2;
-  uint64 patient = 3;
-  uint64 med_worker_id = 4;
-}
-
-// Не используется (пока)
-//
-message CreateCardResponse {
-  int64 id = 1;
-  string acceptance_datetime = 2;
-  bool has_nodules = 3;
-  string diagnosis = 4;
-  uint64 patient_id = 5;
-  uint64 med_worker_id = 6;
-}
-
-message ReadCardRequest {
-  uint64 id = 1;
-}
-
-message ReadCardResponse {
-  int64 id = 1;
-  string acceptance_datetime = 2;
-  bool has_nodules = 3;
-  string diagnosis = 4;
-  uint64 patient_id = 5;
-  uint64 med_worker_id = 6;
-}
-
-message UpdateCardRequest {
-  int64 id = 1;
-
-  bool has_nodules = 2;
-  string diagnosis = 3;
-  uint64 patient_id = 4;
-  uint64 med_worker_id = 5;
-}
-
-// Не используется (пока)
-//
-message UpdateCardResponse {
-  int64 id = 1;
-  string acceptance_datetime = 2;
-  bool has_nodules = 3;
-  string diagnosis = 4;
-  uint64 patient_id = 5;
-  uint64 med_worker_id = 6;
-}
-
-message UpdateCardPartialRequest {
-  int64 id = 1;
-  bool has_nodules = 3;
-  string diagnosis = 4;
-  uint64 patient_id = 5;
-  uint64 med_worker_id = 6;
-}
-
-// Не используется (пока)
-//
-message UpdateCardPartialResponse {
-  bool has_nodules = 3;
-  string diagnosis = 4;
-  uint64 patient_id = 5;
-  uint64 med_worker_id = 6;
-
-  bool success = 7;
-  string message = 8;
-}
-
-message DeleteCardRequest {
-  uint64 id = 1;
-}
-
+// Сервис для управления картами пациентов.
 service MedCard {
+  // Получает список карт пациентов с возможностью пагинации.
+  // Возвращает GetCardListResponse, содержащий список карт и информацию о пагинации.
   rpc GetCardList(GetCardListRequest) returns (GetCardListResponse) {
     option (google.api.http) = {
       get: "/cards"
     };
   }
 
-  rpc CreateCard(CreateCardRequest) returns (google.protobuf.Empty) {
+  // Создает новую карту пациента.
+  // Возвращает CreateCardResponse с идентификатором созданной карты.
+  rpc CreateCard(CreateCardRequest) returns (CreateCardResponse) {
     option (google.api.http) = {
       post: "/cards"
       body: "*"
     };
   }
 
-  rpc ReadCard(ReadCardRequest) returns (ReadCardResponse) {
+  // Получает карту пациента по идентификатору.
+  // Возвращает GetCardResponse с информацией о карте.
+  rpc GetCard(GetCardRequest) returns (PatientCard) {
     option (google.api.http) = {
       get: "/cards/{id}"
     };
   }
 
+  // Обновляет существующую карту пациента по идентификатору.
+  // Возвращает пустой ответ в случае успешного обновления.
   rpc UpdateCard(UpdateCardRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/cards/{id}"
@@ -132,16 +44,84 @@ service MedCard {
     };
   }
 
-  rpc UpdateCardPartial(UpdateCardPartialRequest) returns (google.protobuf.Empty) {
+  // Частично обновляет карту пациента по идентификатору.
+  // Возвращает обновленный объект PatientCard.
+  rpc UpdateCardPartial(PatchCardRequest) returns (PatientCard) {
     option (google.api.http) = {
       patch: "/cards/{id}"
       body: "*"
     };
   }
 
+  // Удаляет карту пациента по идентификатору.
+  // Возвращает пустой ответ в случае успешного удаления.
   rpc DeleteCard(DeleteCardRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/cards/{id}"
     };
   }
+}
+
+// Сообщение для представления карты пациента.
+message PatientCard {
+  uint64 id = 1; // Уникальный идентификатор карты
+  string acceptance_datetime = 2; // Дата и время принятия карты
+  bool has_nodules = 3; // Наличие узлов
+  string diagnosis = 4; // Диагноз пациента
+  uint64 patient_id = 5; // Идентификатор пациента
+  uint64 med_worker_id = 6; // Идентификатор медицинского работника
+}
+
+// Запрос для получения списка карт.
+message GetCardListRequest {
+  int32 limit = 1; // Максимальное количество карт для возврата
+  int32 offset = 2; // Смещение для пагинации
+}
+
+// Ответ на запрос получения списка карт.
+message GetCardListResponse {
+  uint32 count = 1; // Общее количество карт в списке cards
+  string next = 2; // URL для следующей страницы
+  string previous = 3; // URL для предыдущей страницы
+  string first = 4; // URL для первой страницы
+  string last = 5; // URL для последней страницы
+  repeated PatientCard cards = 6; // Список карт пациентов
+}
+
+// Запрос для создания карты пациента.
+message CreateCardRequest {
+  bool has_nodules = 1;
+  string diagnosis = 2;
+  uint64 patient_id = 3;
+  uint64 med_worker_id = 4;
+}
+
+// Ответ на запрос создания карты пациента.
+message CreateCardResponse {
+  uint64 id = 1;
+}
+
+// Запрос для получения карты по идентификатору.
+message GetCardRequest {
+  uint64 id = 1;
+}
+
+// Запрос для обновления карты пациента.
+message UpdateCardRequest {
+  uint64 id = 1;
+  bool has_nodules = 2;
+  string diagnosis = 3;
+  uint64 patient_id = 4;
+  uint64 med_worker_id = 5;
+}
+
+// Запрос для частичного обновления карты пациента с использованием маски полей.
+message PatchCardRequest {
+  uint64 id = 1; // Идентификатор карты
+  google.protobuf.FieldMask update_mask = 2; // Маска полей, которые нужно обновить
+}
+
+// Запрос для удаления карты пациента по идентификатору.
+message DeleteCardRequest {
+  uint64 id = 1;
 }
