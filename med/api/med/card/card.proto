@@ -1,10 +1,11 @@
 syntax = "proto3";
 
-package service;
+package yir.service;
 
 import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
 
-option go_package = "yir7sem/pkg/api/medworker/service";
+option go_package = "yir/medworker/api/medworker/card;card";
 
 message PatientCard {
   uint64 id = 1;
@@ -13,15 +14,6 @@ message PatientCard {
   string diagnosis = 4;
   uint64 patient_id = 5;
   uint64 med_worker_id = 6;
-}
-
-service MedWorker {
-  rpc GetCardList(GetCardListRequest) returns (GetCardListResponse);
-  rpc CreateCard(CreateCardRequest) returns (CreateCardResponse);
-  rpc ReadCard(ReadCardRequest) returns (ReadCardResponse);
-  rpc UpdateCard(UpdateCardRequest) returns (UpdateCardResponse);
-  rpc UpdateCardPartial(UpdateCardPartialRequest) returns (UpdateCardPartialResponse);
-  rpc DeleteCard(DeleteCardRequest) returns (google.protobuf.Empty);
 }
 
 message GetCardListRequest {
@@ -101,4 +93,48 @@ message UpdateCardPartialResponse {
 
 message DeleteCardRequest {
   uint64 id = 1;
+}
+
+service Med {
+  rpc GetCardList(GetCardListRequest) returns (GetCardListResponse) {
+    option (google.api.http) = {
+      post: "/uzi/create"
+      body: "*"
+    };
+  }
+
+  rpc CreateCard(CreateCardRequest) returns (CreateCardResponse) {
+    option (google.api.http) = {
+      post: "/uzi/create"
+      body: "*"
+    };
+  }
+
+  rpc ReadCard(ReadCardRequest) returns (ReadCardResponse) {
+    option (google.api.http) = {
+      post: "/uzi/create"
+      body: "*"
+    };
+  }
+
+  rpc UpdateCard(UpdateCardRequest) returns (UpdateCardResponse) {
+    option (google.api.http) = {
+      post: "/uzi/create"
+      body: "*"
+    };
+  }
+
+  rpc UpdateCardPartial(UpdateCardPartialRequest) returns (UpdateCardPartialResponse) {
+    option (google.api.http) = {
+      post: "/uzi/create"
+      body: "*"
+    };
+  }
+
+  rpc DeleteCard(DeleteCardRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/uzi/create"
+      body: "*"
+    };
+  }
 }
