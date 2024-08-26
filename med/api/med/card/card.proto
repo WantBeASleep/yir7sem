@@ -10,8 +10,9 @@ option go_package = "yir/med/api/med/card;card";
 
 // Сервис для управления картами пациентов.
 service MedCard {
-  // Получает список карт пациентов с возможностью пагинации.
-  // Возвращает GetCardListResponse, содержащий список карт и информацию о пагинации.
+  // Получает список карт пациентов.
+  //
+  // Получает список карт пациентов с возможностью пагинации. Возвращает GetCardListResponse, содержащий список карт и информацию о пагинации.
   rpc GetCardList(GetCardListRequest) returns (GetCardListResponse) {
     option (google.api.http) = {
       get: "/cards"
@@ -19,7 +20,8 @@ service MedCard {
   }
 
   // Создает новую карту пациента.
-  // Возвращает CreateCardResponse с идентификатором созданной карты.
+  //
+  // Создает новую карту пациента. Возвращает CreateCardResponse с идентификатором созданной карты.
   rpc CreateCard(CreateCardRequest) returns (CreateCardResponse) {
     option (google.api.http) = {
       post: "/cards"
@@ -27,16 +29,18 @@ service MedCard {
     };
   }
 
-  // Получает карту пациента по идентификатору.
-  // Возвращает GetCardResponse с информацией о карте.
+  // Получает карту пациента.
+  //
+  // Получает карту пациента по идентификатору. Возвращает GetCardResponse с информацией о карте.
   rpc GetCard(GetCardRequest) returns (PatientCard) {
     option (google.api.http) = {
       get: "/cards/{id}"
     };
   }
 
-  // Обновляет существующую карту пациента по идентификатору.
-  // Возвращает пустой ответ в случае успешного обновления.
+  // Обновляет существующую карту пациента.
+  //
+  // Обновляет существующую карту пациента по идентификатору. Возвращает пустой ответ в случае успешного обновления.
   rpc UpdateCard(UpdateCardRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/cards/{id}"
@@ -44,8 +48,9 @@ service MedCard {
     };
   }
 
-  // Частично обновляет карту пациента по идентификатору.
-  // Возвращает обновленный объект PatientCard.
+  // Частично обновляет карту пациента.
+  //
+  // Частично обновляет карту пациента по идентификатору с использованием маски полей. Возвращает обновленный объект PatientCard.
   rpc UpdateCardPartial(PatchCardRequest) returns (PatientCard) {
     option (google.api.http) = {
       patch: "/cards/{id}"
@@ -53,8 +58,9 @@ service MedCard {
     };
   }
 
-  // Удаляет карту пациента по идентификатору.
-  // Возвращает пустой ответ в случае успешного удаления.
+  // Удаляет карту пациента.
+  //
+  // Удаляет карту пациента по идентификатору. Возвращает пустой ответ в случае успешного удаления.
   rpc DeleteCard(DeleteCardRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/cards/{id}"
