@@ -27,6 +27,7 @@ func NewServer(MedWorkerUseCase usecases.MedicalWorker, logger *zap.Logger) *Ser
 }
 
 func (s *Server) GetMedWorkers(ctx context.Context, request *pb.GetMedworkerRequest) (*pb.GetMedworkerListResponse, error) {
+	s.logger.Info("[Request] New request", zap.Any("data", request))
 	limit := int(request.GetLimit())
 	offset := int(request.GetOffset())
 	medWorkerList, err := s.MedWorkerUseCase.GetMedWorkers(ctx, limit, offset)

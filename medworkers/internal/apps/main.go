@@ -1,6 +1,7 @@
 package apps
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type MedWorker struct {
@@ -31,9 +33,9 @@ func (a *MedWorker) Run(cfg *config.App) error {
 	pb.RegisterMedWorkersServer(s, a.controller)
 
 	mux := runtime.NewServeMux()
-	//	if err := pb.RegisterMedWorkersHandlerFromEndpoint(context.TODO(), mux, cfg.Host+":"+cfg.GRPCPort, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
-	//		return fmt.Errorf("register http handlers: %w", err)
-	//	}
+	if err := pb.RegisterMedWorkersHandlerFromEndpoint(context.TODO(), mux, cfg.Host+":"+cfg.GRPCPort, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
+		return fmt.Errorf("register http handlers: %w", err)
+	}
 	GRPCLis, err := net.Listen("tcp", cfg.Host+":"+cfg.GRPCPort)
 	if err != nil {
 		return fmt.Errorf("listen grpc host:port: %w", err)
