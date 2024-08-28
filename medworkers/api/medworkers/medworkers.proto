@@ -10,7 +10,7 @@ service MedWorkers {
     //Получение списка медработников
     //
     //Возвращает список со всеми медработниками
-    rpc GetMedworker(GetMedworkerRequest) returns (GetMedworkerListResponse) {
+    rpc GetMedWorkers(GetMedworkerRequest) returns (GetMedworkerListResponse) {
         option (google.api.http) = {
             get: "/medworkers/list"
         };
@@ -26,9 +26,9 @@ service MedWorkers {
     //Получение информации о медработнике по ID
     //
     //Возвращает информацию о медработнике по ID
-    rpc GetMedMedWorkerByID(GetMedMedWorkerByIDRequest) returns (GetMedWorkerByIDResponse) {
+    rpc GetMedWorkerByID(GetMedMedWorkerByIDRequest) returns (GetMedWorkerByIDResponse) {
         option (google.api.http) = {
-            get: "/medworkers/list/{id}"
+            get: "/medworkers/id/{id}"
         };
     }
     //Частичное обновление информации о медработнике
