@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package yir.medworkers;
+
+option go_package = "uir/medworkers/api/v0/medworkers"; //path for generated code for this file
+
+import "google/api/annotations.proto";
+
+service MedWorkers {
+    //Получение списка медработников
+    //
+    //Возвращает список со всеми медработниками
+    rpc GetMedworker(GetMedworkerRequest) returns (GetMedworkerListResponse) {
+        option (google.api.http) = {
+            get: "/medworkers/list"
+        };
+    }
+    //Полное обновление информации о медработнике
+    //
+    //
+    rpc UpdateMedWorker(UpdateMedWorkerRequest) returns (UpdateMedWorkerResponse) {
+        option (google.api.http) = {
+            put: "/medworkers/update/{id}"
+        };
+    }
+    //Получение информации о медработнике по ID
+    //
+    //Возвращает информацию о медработнике по ID
+    rpc GetMedMedWorkerByID(GetMedMedWorkerByIDRequest) returns (GetMedWorkerByIDResponse) {
+        option (google.api.http) = {
+            get: "/medworkers/list/{id}"
+        };
+    }
+    //Частичное обновление информации о медработнике
+    //
+    //
+    rpc PatchMedWorker(PatchMedWorkerRequest) returns (UpdateMedWorkerResponse) {
+        option (google.api.http) = {
+            patch: "/medworkers/update/{id}"
+        };
+    } 
+}
+
+message MedWorker { 
+    uint64 id = 1;
+    string last_name = 2;
+    string first_name = 3;
+    string middle_name = 4;
+    string med_organization = 5;
+    string job = 6;
+    bool is_remote_worker = 7;
+    string expert_details = 8; 
+}
+
+message GetMedworkerRequest {
+    string fullname = 1;
+    bool is_remote_worker = 2;
+    string email = 3;
+    uint64 limit = 4;
+    uint64 offset = 5;
+}
+
+message GetMedworkerListResponse {
+    uint64 count = 1;
+    string next = 2;
+    string previous = 3;
+    repeated MedWorker results = 4;
+}
+
+message UpdateMedWorkerRequest {
+    uint64 id = 1;
+    string first_name = 2;
+    string middle_name = 3;
+    string last_name = 4;
+    string med_organization = 5;
+    string job = 6;
+    bool is_remote_worker = 7;
+    string expert_details = 8;
+}
+
+message UpdateMedWorkerResponse {
+    MedWorker worker = 1;
+}
+
+message GetMedMedWorkerByIDRequest {
+    uint64 id = 1;
+}
+
+message GetMedWorkerByIDResponse {
+    MedWorker worker = 1;
+}
+
+message PatchMedWorkerRequest {
+    uint64 id = 1;
+    string first_name = 2;
+    string middle_name = 3;
+    string last_name = 4;
+    string med_organization = 5;
+    string job = 6;
+    bool is_remote_worker = 7;
+    string expert_details = 8;
+}
