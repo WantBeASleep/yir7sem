@@ -16,6 +16,7 @@
 + postgres
 + protoc-gen-go: `go install google.golang.org/protobuf/cmd/protoc-gen-go@latest`
 + protoc-gen-go-grpc: `go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest`
++ protoc-gen-grpc-gateway `go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest`
 + googleapis proto: `git clone https://github.com/googleapis/googleapis.git`
 + grpc-gateway: `https://github.com/grpc-ecosystem/grpc-gateway.git`
 + taskfile: `go install github.com/go-task/task/v3/cmd/task@latest`
