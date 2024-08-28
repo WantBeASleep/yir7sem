@@ -19,7 +19,7 @@ service Auth {
 
     // Регистрация пользователя!
     //
-    // Регистрирует пользователя в системе. Возвращает ID пользователя.
+    // Регистрирует пользователя в системе. Возвращает UUID пользователя.
     rpc Register (RegisterRequest) returns (RegisterResponse) {
         option (google.api.http) = {
             post: "/v0/auth/register"
@@ -60,7 +60,7 @@ message RegisterRequest {
 }
 
 message RegisterResponse {
-    uint64 user_id = 1;
+    string uuid = 1;
 }
 
 message TokenRefreshRequest {

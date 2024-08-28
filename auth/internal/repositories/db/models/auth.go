@@ -1,9 +1,16 @@
 package models
 
-type AuthInfo struct {
+const UserCreditalsName = "user_credentials"
+
+type UserCreditals struct {
 	ID               uint64 `gorm:"primaryKey"`
+	UUID             string `gorm:"unique"`
 	Login            string `gorm:"unique"`
 	PasswordHash     string
 	RefreshTokenWord string
-	MedWorkerID      uint64 `gorm:"unique"`
+	MedWorkerUUID    string `gorm:"unique"`
+}
+
+func (UserCreditals) TableName() string {
+	return UserCreditalsName
 }

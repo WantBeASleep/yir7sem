@@ -1,5 +1,9 @@
 package entity
 
+import (
+	"github.com/google/uuid"
+)
+
 // делал из расчета: при реквесте и юзкейсках содержимое меняется?
 // да (pass -> passhash), 2 структуры
 // нет (token pair ac rt), 1 структура
@@ -28,15 +32,20 @@ type RequestRegister struct {
 	Password    string
 }
 
-type User struct {
+type ResponseRegister struct {
+	UUID uuid.UUID
+}
+
+type UserCreditals struct {
 	ID               int
+	UUID             uuid.UUID
 	Login            string
 	PasswordHash     string
 	RefreshTokenWord string
-	MedWorkerID      int
+	MedWorkerUUID    uuid.UUID
 }
 
 type UserTokenVerify struct {
-	UserID           int
+	UserUUID         uuid.UUID
 	RefreshTokenWord string
 }

@@ -7,6 +7,8 @@ import (
 	"yir/auth/internal/usecases/core"
 	"yir/auth/internal/usecases/repositories"
 
+	"github.com/google/uuid"
+
 	"github.com/brianvoe/gofakeit/v7"
 	"go.uber.org/zap"
 )
@@ -57,7 +59,7 @@ func (a *AuthUseCase) Login(ctx context.Context, request *entity.RequestLogin) (
 	}
 
 	refreshTokenWord := gofakeit.MinecraftVillagerJob()
-	tokensPair, err := a.generateTokenPair(user.ID, refreshTokenWord)
+	tokensPair, err := a.generateUserTokenPair(user.UUID, refreshTokenWord)
 	if err != nil {
 		return nil, fmt.Errorf("generate tokens: %w", err)
 	}
@@ -72,7 +74,7 @@ func (a *AuthUseCase) Login(ctx context.Context, request *entity.RequestLogin) (
 	return tokensPair, nil
 }
 
-func (a *AuthUseCase) Register(ctx context.Context, request *entity.RequestRegister) (uint64, error) {
+func (a *AuthUseCase) Register(ctx context.Context, request *entity.RequestRegister) (*entity.ResponseRegister, error) {
 	a.logger.Debug("Register usecases started", zap.Any("Request", request))
 
 	// заглушка https://popovza.kaiten.ru/space/420777/card/37360398
@@ -80,42 +82,44 @@ func (a *AuthUseCase) Register(ctx context.Context, request *entity.RequestRegis
 	if err != nil {
 		a.logger.Warn("Med Repo not implemented")
 	}
-	medWorkerID := gofakeit.Number(0, 1<<10)
+	MedWorkerUUID, _ := uuid.NewRandom()
+
+	UUID, err := uuid.NewRandom()
+	if err != nil {
+		a.logger.Error("Generate new UUID", zap.Error(err))
+		return nil, fmt.Errorf("generate new userUUID: %w", err)
+	}
 
 	salt := gofakeit.MinecraftBiome()
 	passHash, err := entity.HashByScrypt(request.Password, salt)
 	if err != nil {
 		a.logger.Error("Password hashing", zap.Error(err))
-		return 0, fmt.Errorf("password hashing: %w", err)
+		return nil, fmt.Errorf("password hashing: %w", err)
+	}
+
+	refreshTokenWord := gofakeit.MinecraftVillagerJob()
+	_, err = a.generateUserTokenPair(UUID, refreshTokenWord)
+	if err != nil {
+		return nil, fmt.Errorf("generate tokens: %w", err)
 	}
 
 	a.logger.Info("[Request] Add new user")
-	user := entity.User{
-		Login:        request.Email,
-		PasswordHash: passHash + salt,
-		MedWorkerID:  medWorkerID,
+	user := entity.UserCreditals{
+		UUID:             UUID,
+		Login:            request.Email,
+		PasswordHash:     passHash + salt,
+		RefreshTokenWord: refreshTokenWord,
+		MedWorkerUUID:    MedWorkerUUID,
 	}
-	userID, err := a.authRepo.CreateUser(ctx, &user)
-	if err != nil {
-		a.logger.Error("Create new user")
-		return 0, fmt.Errorf("create new user: %w", err)
+	if _, err := a.authRepo.CreateUser(ctx, &user); err != nil {
+		a.logger.Error("Create new user", zap.Error(err))
+		return nil, fmt.Errorf("create new user: %w", err)
 	}
 	a.logger.Info("[Response] Added new user")
 
-	refreshTokenWord := gofakeit.MinecraftVillagerJob()
-	_, err = a.generateTokenPair(userID, refreshTokenWord)
-	if err != nil {
-		return 0, fmt.Errorf("generate tokens: %w", err)
-	}
-
-	a.logger.Info("[Request] Update refresh token")
-	if err := a.authRepo.UpdateRefreshTokenByID(ctx, userID, refreshTokenWord); err != nil {
-		a.logger.Error("Update refresh token in DB")
-		return 0, fmt.Errorf("update refresh token: %w", err)
-	}
-	a.logger.Error("[Response] Updated refresh token")
-
-	return uint64(userID), nil
+	return &entity.ResponseRegister{
+		UUID: UUID,
+	}, nil
 }
 
 func (a *AuthUseCase) TokenRefresh(ctx context.Context, request string) (*entity.TokensPair, error) {
@@ -127,13 +131,13 @@ func (a *AuthUseCase) TokenRefresh(ctx context.Context, request string) (*entity
 		return nil, fmt.Errorf("parse token: %w", err)
 	}
 
-	a.logger.Info("[Request] Get user by ID")
-	user, err := a.authRepo.GetUserByID(ctx, userData.UserID)
+	a.logger.Info("[Request] Get user by UUID")
+	user, err := a.authRepo.GetUserByUUID(ctx, userData.UserUUID)
 	if err != nil {
-		a.logger.Error("Get user by id err", zap.Error(err))
-		return nil, fmt.Errorf("get user by id: %w", err)
+		a.logger.Error("Get user by uuid err", zap.Error(err))
+		return nil, fmt.Errorf("get user by uuid: %w", err)
 	}
-	a.logger.Debug("[Response] Got user by ID")
+	a.logger.Debug("[Response] Got user by UUID")
 
 	if user.RefreshTokenWord != userData.RefreshTokenWord {
 		a.logger.Warn("Tokens RTW divergents", zap.Int("userID", user.ID))
@@ -141,7 +145,7 @@ func (a *AuthUseCase) TokenRefresh(ctx context.Context, request string) (*entity
 	}
 
 	refreshTokenWord := gofakeit.MinecraftVillagerStation()
-	tokensPair, err := a.generateTokenPair(user.ID, refreshTokenWord)
+	tokensPair, err := a.generateUserTokenPair(user.UUID, refreshTokenWord)
 	if err != nil {
 		return nil, fmt.Errorf("generate tokens: %w", err)
 	}

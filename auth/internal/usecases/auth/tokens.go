@@ -4,14 +4,15 @@ import (
 	"yir/auth/internal/entity"
 
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
-func (a *AuthUseCase) generateTokenPair(userID int, refreshTokenWord string) (*entity.TokensPair, error) {
+func (a *AuthUseCase) generateUserTokenPair(UUID uuid.UUID, refreshTokenWord string) (*entity.TokensPair, error) {
 	a.logger.Info("[Request] Generate new JWT pair tokens")
 	tokenPair, err := a.jwtService.GeneratePair(
 		map[string]any{
-			"id":        userID,
+			"uuid":      UUID,
 			"likesFood": gofakeit.MinecraftFood(),
 		},
 		refreshTokenWord,

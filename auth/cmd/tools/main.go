@@ -6,6 +6,8 @@ import (
 	"yir/auth/internal/config"
 	"yir/auth/internal/entity"
 	"yir/auth/internal/repositories/db/repositories"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -35,7 +37,10 @@ func main() {
 
 	hash, _ := entity.HashByScrypt(pass, salt)
 
-	authRepo.CreateUser(context.TODO(), &entity.User{
+	UUID, _ := uuid.NewRandom()
+
+	authRepo.CreateUser(context.TODO(), &entity.UserCreditals{
+		UUID:             UUID,
 		Login:            login,
 		PasswordHash:     hash + salt,
 		RefreshTokenWord: "tachanka",

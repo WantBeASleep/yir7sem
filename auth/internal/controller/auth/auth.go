@@ -36,7 +36,7 @@ func (s *Server) Login(ctx context.Context, request *pb.LoginRequest) (*pb.Login
 		Password: request.Password,
 	}
 
-	tokensPair, err := s.authUseCase.Login(ctx, &domainRequest)
+	resp, err := s.authUseCase.Login(ctx, &domainRequest)
 	if err != nil {
 		switch {
 		case errors.Is(err, entity.ErrNotFound):
@@ -49,8 +49,8 @@ func (s *Server) Login(ctx context.Context, request *pb.LoginRequest) (*pb.Login
 	}
 
 	return &pb.LoginResponse{
-		AccessToken:  tokensPair.AccessToken,
-		RefreshToken: tokensPair.RefreshToken,
+		AccessToken:  resp.AccessToken,
+		RefreshToken: resp.RefreshToken,
 	}, nil
 }
 
@@ -68,13 +68,13 @@ func (s *Server) Register(ctx context.Context, request *pb.RegisterRequest) (*pb
 		Password:    request.Password,
 	}
 
-	userID, err := s.authUseCase.Register(ctx, &domainRegister)
+	resp, err := s.authUseCase.Register(ctx, &domainRegister)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &pb.RegisterResponse{
-		UserId: userID,
+		Uuid: resp.UUID.String(),
 	}, nil
 }
 
@@ -83,7 +83,7 @@ func (s *Server) TokenRefresh(ctx context.Context, request *pb.TokenRefreshReque
 		return nil, status.Errorf(codes.InvalidArgument, "validation token refresh request: %v", err.Error())
 	}
 
-	tokensPair, err := s.authUseCase.TokenRefresh(ctx, request.RefreshToken)
+	resp, err := s.authUseCase.TokenRefresh(ctx, request.RefreshToken)
 	if err != nil {
 		switch {
 		case errors.Is(err, entity.ErrExpiredSession):
@@ -98,7 +98,7 @@ func (s *Server) TokenRefresh(ctx context.Context, request *pb.TokenRefreshReque
 	}
 
 	return &pb.TokenRefreshResponse{
-		AccessToken:  tokensPair.AccessToken,
-		RefreshToken: tokensPair.RefreshToken,
+		AccessToken:  resp.AccessToken,
+		RefreshToken: resp.RefreshToken,
 	}, nil
 }
