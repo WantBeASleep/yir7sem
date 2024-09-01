@@ -6,7 +6,7 @@ import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/field_mask.proto";
 
-option go_package = "yir/med/api/med/card;card";
+option go_package = "yir/med/api/card;card";
 
 // Сервис для управления картами пациентов.
 service MedCard {
@@ -51,7 +51,7 @@ service MedCard {
   // Частично обновляет карту пациента.
   //
   // Частично обновляет карту пациента по идентификатору с использованием маски полей. Возвращает обновленный объект PatientCard.
-  rpc UpdateCardPartial(PatchCardRequest) returns (PatientCard) {
+  rpc PatchCard(PatchCardRequest) returns (PatientCard) {
     option (google.api.http) = {
       patch: "/cards/{id}"
       body: "*"
@@ -70,7 +70,7 @@ service MedCard {
 
 // Сообщение для представления карты пациента.
 message PatientCard {
-  uint64 id = 1; // Уникальный идентификатор карты
+  uint64 id = 1; // Идентификатор карты
   string acceptance_datetime = 2; // Дата и время принятия карты
   bool has_nodules = 3; // Наличие узлов
   string diagnosis = 4; // Диагноз пациента
@@ -96,29 +96,29 @@ message GetCardListResponse {
 
 // Запрос для создания карты пациента.
 message CreateCardRequest {
-  bool has_nodules = 1;
-  string diagnosis = 2;
-  uint64 patient_id = 3;
-  uint64 med_worker_id = 4;
+  bool has_nodules = 1; // Наличие узлов
+  string diagnosis = 2; // Диагноз пациента
+  uint64 patient_id = 3; // Идентификатор пациента
+  uint64 med_worker_id = 4; // Идентификатор медицинского работника
 }
 
 // Ответ на запрос создания карты пациента.
 message CreateCardResponse {
-  uint64 id = 1;
+  uint64 id = 1; // Идентификатор карты
 }
 
 // Запрос для получения карты по идентификатору.
 message GetCardRequest {
-  uint64 id = 1;
+  uint64 id = 1; // Идентификатор карты
 }
 
 // Запрос для обновления карты пациента.
 message UpdateCardRequest {
-  uint64 id = 1;
-  bool has_nodules = 2;
-  string diagnosis = 3;
-  uint64 patient_id = 4;
-  uint64 med_worker_id = 5;
+  uint64 id = 1; // Идентификатор карты
+  bool has_nodules = 2; // Наличие узлов
+  string diagnosis = 3; // Диагноз пациента
+  uint64 patient_id = 4; // Идентификатор пациента
+  uint64 med_worker_id = 5; // Идентификатор медицинского работника
 }
 
 // Запрос для частичного обновления карты пациента с использованием маски полей.
@@ -129,5 +129,5 @@ message PatchCardRequest {
 
 // Запрос для удаления карты пациента по идентификатору.
 message DeleteCardRequest {
-  uint64 id = 1;
+  uint64 id = 1; // Идентификатор карты
 }
