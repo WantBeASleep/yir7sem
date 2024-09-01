@@ -97,19 +97,12 @@ func (a *AuthUseCase) Register(ctx context.Context, request *entity.RequestRegis
 		return nil, fmt.Errorf("password hashing: %w", err)
 	}
 
-	refreshTokenWord := gofakeit.MinecraftVillagerJob()
-	_, err = a.generateUserTokenPair(UUID, refreshTokenWord)
-	if err != nil {
-		return nil, fmt.Errorf("generate tokens: %w", err)
-	}
-
 	a.logger.Info("[Request] Add new user")
 	user := entity.UserCreditals{
-		UUID:             UUID,
-		Login:            request.Email,
-		PasswordHash:     passHash + salt,
-		RefreshTokenWord: refreshTokenWord,
-		MedWorkerUUID:    MedWorkerUUID,
+		UUID:          UUID,
+		Login:         request.Email,
+		PasswordHash:  passHash + salt,
+		MedWorkerUUID: MedWorkerUUID,
 	}
 	if _, err := a.authRepo.CreateUser(ctx, &user); err != nil {
 		a.logger.Error("Create new user", zap.Error(err))

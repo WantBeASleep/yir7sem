@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"yir/auth/internal/config"
 	"yir/auth/internal/entity"
 	"yir/auth/internal/repositories/db/repositories"
 
+	"github.com/brianvoe/gofakeit/v7"
 	"github.com/google/uuid"
 )
 
@@ -30,19 +32,21 @@ func main() {
 
 	authRepo, _ := repositories.NewRepository(&cfg.DB)
 
-	login := "smt@smt.ri"
-	pass := "Wr0ngpass"
+	for range 100 {
+		UUID := uuid.New()
+		login := gofakeit.Email()
+		pass := gofakeit.Password(true, true, true, false, false, 15)
+		salt := gofakeit.Word()
+		refresh := gofakeit.Word()
+		hash, _ := entity.HashByScrypt(pass, salt)
 
-	salt := "pensioner"
-
-	hash, _ := entity.HashByScrypt(pass, salt)
-
-	UUID, _ := uuid.NewRandom()
-
-	authRepo.CreateUser(context.TODO(), &entity.UserCreditals{
-		UUID:             UUID,
-		Login:            login,
-		PasswordHash:     hash + salt,
-		RefreshTokenWord: "tachanka",
-	})
+		fmt.Println(login, pass)
+		authRepo.CreateUser(context.Background(), &entity.UserCreditals{
+			UUID:             UUID,
+			Login:            login,
+			PasswordHash:     hash + salt,
+			RefreshTokenWord: refresh,
+			MedWorkerUUID:    uuid.New(),
+		})
+	}
 }

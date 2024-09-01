@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package yir.auth;
 
-option go_package = "yir/auth/api/v0/auth;auth";
+option go_package = "yir/auth/api/auth;auth";
 
 import "google/api/annotations.proto";
 
@@ -12,7 +12,7 @@ service Auth {
     // Получает почту и пароль. При вверных данных вернет пару access + refresh JWT токенов
     rpc Login (LoginRequest) returns (LoginResponse) {
         option (google.api.http) = {
-            post: "/v0/auth/login"
+            post: "/auth/login"
             body: "*"
         };
     }
@@ -22,7 +22,7 @@ service Auth {
     // Регистрирует пользователя в системе. Возвращает UUID пользователя.
     rpc Register (RegisterRequest) returns (RegisterResponse) {
         option (google.api.http) = {
-            post: "/v0/auth/register"
+            post: "/auth/register"
             body: "*"
         };
     }
@@ -34,7 +34,7 @@ service Auth {
     // При расхождении с базой данных, вернет ошибку "expired session"
     rpc TokenRefresh (TokenRefreshRequest) returns (TokenRefreshResponse) {
         option (google.api.http) = {
-            post: "/v0/auth/token/refresh"
+            post: "/auth/token/refresh"
             body: "*"
         };
     }
