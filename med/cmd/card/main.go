@@ -26,9 +26,6 @@ func init() {
 }
 
 func main() {
-
-	// INIT ZAP LOGGER
-
 	flag.Parse()
 	cfg, err := config.NewConfig(configPath)
 	if err != nil {
