@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package yir.service;
+package card.service;
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";

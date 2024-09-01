@@ -1,9 +1,9 @@
 package main
 
 import (
+	"card/med/internal/config"
 	"flag"
 	"log"
-	"yir/med/internal/config"
 )
 
 const (

@@ -1,12 +1,13 @@
 # directories
 
 .idea/
-vendor.protogen/
 med/pkg/api/
+vendor.protogen
 
 # files
 
-# proto generation command
-protogeneration.txt
 go.mod
 go.sum
+
+# proto generation command
+protogeneration.txt
