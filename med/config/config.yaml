@@ -1,0 +1,14 @@
+app:
+  env: "LOCAL"
+  server:
+    host: "localhost"
+    grpc-port: 50005
+    http-port: 8000
+    timeout: 5s
+
+database:
+  host: "localhost"
+  port: 5555
+  name: "carddb"
+  user: "postgres"
+  storage-path: "internal/repository/postgres"

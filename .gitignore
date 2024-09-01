@@ -1,0 +1,12 @@
+# directories
+
+.idea/
+vendor.protogen/
+med/pkg/api/
+
+# files
+
+# proto generation command
+protogeneration.txt
+go.mod
+go.sum
