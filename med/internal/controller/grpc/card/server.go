@@ -1,10 +1,10 @@
 package card
 
 import (
+	"card/med/pkg/api/card"
 	"context"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
-	"yir/med/pkg/api/card"
 )
 
 type serverAPI struct {

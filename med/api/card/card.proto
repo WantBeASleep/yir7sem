@@ -6,7 +6,7 @@ import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/field_mask.proto";
 
-option go_package = "yir/med/api/card;card";
+option go_package = "card/med/api/card;card";
 
 // Сервис для управления картами пациентов.
 service MedCard {
