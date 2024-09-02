@@ -58,6 +58,16 @@ service Auth {
 
 Для документации `swagger`'а пишим комметарии в `.proto`. Верхний комментарий будет принят как **summary***(краткое описание)*, нижний как **description***(полное)*.
 
+Указывайте имена полей json тегами `[json_name = "device_id"]`; в ином случае поля из протой пойдут как `camelCase`, вместо `snake_case`
+```
+message CreateGroupMetaDataRequest {
+    int64 device_id = 1 [json_name = "device_id"];
+    string projection = 2;
+    string card_uuid = 3 [json_name = "card_id"];
+}
+```
+При явном указании, документация swagger будет правильная.
+
 ```
 ...
     // Получение JWT AS + RT. <--- это summary
