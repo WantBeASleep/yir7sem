@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package yir.med;
+
+option go_package = "yir/uzi/api/uzi;uzi";
+
+import "google/api/annotations.proto";
+
+service Uzi {
+    // Получить список узи приборов
+    //
+    // Возвращает количество, пагинацию, и массив пар <id, имя девайса>
+    rpc GetDevices(GetDevicesRequest) returns (GetDevicesResponse) {
+        option (google.api.http) = {
+            get: "/uzi/devices"
+        };
+    }
+
+    // Создать метаданные о группе
+    //
+    // Создает метаданные о группе. Возвращает UUID созданной группы.
+    // Ручка не принимает сегменты.
+    rpc CreateGroupMetaData(CreateGroupMetaDataRequest) returns (CreateGroupMetaDataResponse) {
+        option (google.api.http) = {
+            post: "/uzi/create/metadata"
+            body: "*"
+        };
+    }
+
+    
+}
+
+message Pagination {
+    string first = 1;
+    string last = 2;
+    string prev = 3;
+    string next = 4;
+}
+
+message GetDevicesRequest {
+    int64 limit = 1;
+    int64 offset = 2;
+}
+
+message UziDevice {
+    int64 id = 1;
+    string name = 2;
+}
+
+message GetDevicesResponse {
+    int64 count = 1;
+    repeated UziDevice devices = 2;
+    Pagination pagination = 3;
+}
+
+message CreateGroupMetaDataRequest {
+    int64 device_id = 1 [json_name = "device_id"];
+    string projection = 2;
+    string card_uuid = 3;
+}
+
+message CreateGroupMetaDataResponse {
+    string group_uuid = 1;
+}
