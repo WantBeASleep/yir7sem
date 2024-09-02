@@ -4,6 +4,7 @@ package yir.med;
 
 option go_package = "yir/uzi/api/uzi;uzi";
 
+import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
 service Uzi {
@@ -27,7 +28,17 @@ service Uzi {
         };
     }
 
-    
+    // Обновить url S3 группы
+    rpc UpdateGroupUrl(UpdateGroupUrlRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            patch: "/uzi/create/metadata/url"
+            body: "*"
+        };
+    }
+
+    rpc CreateGroupSegmentation(CreateGroupSegmentationRequest) returns (CreateGroupSegmentationResponse) {
+
+    }
 }
 
 message Pagination {
@@ -56,9 +67,24 @@ message GetDevicesResponse {
 message CreateGroupMetaDataRequest {
     int64 device_id = 1 [json_name = "device_id"];
     string projection = 2;
-    string card_uuid = 3;
+    string card_uuid = 3 [json_name = "card_uuid"];
+    optional string group_url = 4 [json_name = "group_url"];
 }
 
 message CreateGroupMetaDataResponse {
-    string group_uuid = 1;
+    string group_uuid = 1 [json_name = "group_uuid"];
+}
+
+message UpdateGroupUrlRequest {
+    string group_url = 1 [json_name = "group_url"];
+}
+
+message CreateGroupSegmentationRequest {
+    string group_uuid = 1 [json_name = "group_uuid"];
+    
+}
+
+message CreateGroupSegmentationResponse {
+    string group_uuid = 1 [json_name = "group_uuid"];
+
 }
