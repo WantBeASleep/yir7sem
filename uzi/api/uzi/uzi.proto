@@ -36,8 +36,12 @@ service Uzi {
         };
     }
 
+    // Добавить сегментацию группе
     rpc CreateGroupSegmentation(CreateGroupSegmentationRequest) returns (CreateGroupSegmentationResponse) {
-
+        option (google.api.http) = {
+            post: "/uzi/group/{uuid}/add/segmentation"
+            body: "*"
+        };
     }
 }
 
