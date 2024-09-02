@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package yir.med;
+package yir.uzi;
 
 option go_package = "yir/uzi/api/uzi;uzi";
 
@@ -17,33 +17,15 @@ service Uzi {
         };
     }
 
-    // Создать метаданные о группе
-    //
-    // Создает метаданные о группе. Возвращает UUID созданной группы.
-    // Ручка не принимает сегменты.
-    rpc CreateGroupMetaData(CreateGroupMetaDataRequest) returns (CreateGroupMetaDataResponse) {
+    // Создать группу с сегментацией и классификацией
+    rpc CreateAIGroup(CreateGroupRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/uzi/create/metadata"
-            body: "*"
-        };
-    }
-
-    // Обновить url S3 группы
-    rpc UpdateGroupUrl(UpdateGroupUrlRequest) returns (google.protobuf.Empty) {
-        option (google.api.http) = {
-            patch: "/uzi/create/metadata/url"
-            body: "*"
-        };
-    }
-
-    // Добавить сегментацию группе
-    rpc CreateGroupSegmentation(CreateGroupSegmentationRequest) returns (CreateGroupSegmentationResponse) {
-        option (google.api.http) = {
-            post: "/uzi/group/{uuid}/add/segmentation"
+            post: "/uzi/create"
             body: "*"
         };
     }
 }
+
 
 message Pagination {
     string first = 1;
@@ -68,27 +50,37 @@ message GetDevicesResponse {
     Pagination pagination = 3;
 }
 
-message CreateGroupMetaDataRequest {
-    int64 device_id = 1 [json_name = "device_id"];
-    string projection = 2;
-    string card_uuid = 3 [json_name = "card_uuid"];
-    optional string group_url = 4 [json_name = "group_url"];
+message Tirads {
+    double tirads_1 = 1;
+    double tirads_2 = 2;
+    double tirads_3 = 3;
+    double tirads_4 = 4;
+    double tirads_5 = 5;
 }
 
-message CreateGroupMetaDataResponse {
-    string group_uuid = 1 [json_name = "group_uuid"];
+message Nodule {
+    string roi_uuid = 100 [json_name = "roi_uuid"];
+    string contor_url = 200 [json_name = "contor_url"];
+    Tirads tirads = 300;
 }
 
-message UpdateGroupUrlRequest {
-    string group_url = 1 [json_name = "group_url"];
+message Image {
+    string image_uuid = 100 [json_name = "image_uuid"];
+    repeated Nodule nodules = 200;
+    int64 page = 300;
 }
 
-message CreateGroupSegmentationRequest {
-    string group_uuid = 1 [json_name = "group_uuid"];
-    
+message AvgRoi {
+    string roi_uuid = 100 [json_name = "roi_uuid"];
+    Tirads tirads = 200;
 }
 
-message CreateGroupSegmentationResponse {
-    string group_uuid = 1 [json_name = "group_uuid"];
-
+message CreateGroupRequest {
+    string group_uuid = 100 [json_name = "group_uuid"];
+    string group_url = 200 [json_name = "group_url"];
+    repeated Image images = 300;
+    repeated AvgRoi avg_rois = 400 [json_name = "avg_rois"];
+    string projection = 500;
+    string patient_uuid = 600 [json_name = "patient_uuid"];
+    int64 device_id = 700 [json_name = "device_id"];
 }
