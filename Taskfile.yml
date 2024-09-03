@@ -1,0 +1,33 @@
+version: '3'
+
+includes:
+  auth_tasks:
+    taskfile: ./auth/Taskfile.yml
+    dir: ./auth
+    vars:
+      proto_libs_path: '../vendor.protogen'
+      proto_target: 'api/auth/auth.proto'
+      proto_out: 'api/auth'
+      swagger_out: 'api/auth'
+
+  uzi_tasks:
+    taskfile: ./uzi/Taskfile.yml
+    dir: ./uzi
+    vars:
+      proto_libs_path: '../vendor.protogen'
+      proto_target: 'api/uzi/uzi.proto'
+      proto_out: 'api/uzi'
+      swagger_out:  'api/uzi'
+
+tasks:
+  auth:
+    cmds:
+      - task: auth_tasks:generate
+
+  uzi:
+    cmds:
+      - task: uzi_tasks:generate
+
+  default:
+    deps: [auth, uzi]
+      
