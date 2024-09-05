@@ -151,7 +151,7 @@ message NoduleData {
 message CreateNoduleRequest {
     string group_uuid = 100 [json_name = "group_uuid"];
     repeated NoduleData nodule_data = 200 [json_name = "nodule_data"]; 
-    optional Tirads avg_tirads = 300 [json_name = "avg_tirads"];
+    Tirads avg_tirads = 300 [json_name = "avg_tirads"];
 }
 
 message CreateNoduleResponse {
