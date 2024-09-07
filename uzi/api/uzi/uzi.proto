@@ -13,7 +13,7 @@ service Uzi {
     // Возвращает количество, пагинацию, и массив пар <ID, имя девайса>
     rpc GetDevices(GetDevicesRequest) returns (GetDevicesResponse) {
         option (google.api.http) = {
-            get: "/uzi/devices"
+            get: "/uzi/device/list"
         };
     }
 
@@ -22,7 +22,7 @@ service Uzi {
     // Возврашает ID прибора
     rpc CreateDevice(CreateDevicesRequest) returns (CreateDevicesResponse) {
         option (google.api.http) = {
-            post: "/uzi/create/device"
+            post: "/uzi/device/create"
             body: "*"
         };
     }
@@ -30,7 +30,7 @@ service Uzi {
     // Удаляет узи прибор
     rpc DeleteDevice(DeleteDevicesRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/uzi/delete/device/{device_id}"
+            delete: "/uzi/device/delete/{device_id}"
         };
     }
 
@@ -39,7 +39,7 @@ service Uzi {
     // Все uuid заранее сгенерены, url - ссылки на S3
     rpc InsertUzi(InsertUziRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/uzi/insert/uzi"
+            post: "/uzi/uzi/insert"
             body: "*"
         };
     }
@@ -49,7 +49,17 @@ service Uzi {
     // Все uuid заранее сгенерены, url - ссылки на S3
     rpc InsertFormations(InsertFormationsRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/uzi/insert/formations/{uzi_uuid}"
+            post: "/uzi/formations/insert/{uzi_uuid}"
+            body: "*"
+        };
+    }
+
+    // Добавить 1 узел
+    //
+    // Все uuid заранее сгенерены, url - ссылки на S3
+    rpc InsertFormation(InsertFormationRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/uzi/formation/insert/{uzi_uuid}"
             body: "*"
         };
     }
@@ -57,7 +67,7 @@ service Uzi {
     // Обновить информацию об узле
     rpc UpdateFormation(UpdateFormationRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            patch: "/uzi/update/formation/{formation_uuid}"
+            patch: "/uzi/formation/update/{formation_uuid}"
             body: "*"
         };
     }
@@ -67,7 +77,7 @@ service Uzi {
     // Удалит полностью 1 узел на всех изображениях на которых он присутствует
     rpc DeleteFormation(DeleteFormationRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/uzi/delete/formation/{formation_uuid}"
+            delete: "/uzi/formation/delete/{formation_uuid}"
         };
     }
 
@@ -76,7 +86,7 @@ service Uzi {
     // Удалит узел на 1 изображения, остальные контуру узла на других изображениях не изменятся
     rpc DeleteFormationContor(DeleteFormationContorRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/uzi/delete/formation/{image_uuid}/{formation_uuid}"
+            delete: "/uzi/formation/full-delete/{image_uuid}/{formation_uuid}"
         };
     }
 }
@@ -156,6 +166,12 @@ message InsertUziRequest {
 message InsertFormationsRequest {
     string uzi_uuid = 100 [json_name = "uzi_uuid"];
     repeated Formation formations = 200;
+    bool ai = 300;
+}
+
+message InsertFormationRequest {
+    string uzi_uuid = 100 [json_name = "uzi_uuid"];
+    Formation formation = 200;
     bool ai = 300;
 }
 
