@@ -13,7 +13,7 @@ service Uzi {
     // Возвращает количество, пагинацию, и массив пар <ID, имя девайса>
     rpc GetDevices(GetDevicesRequest) returns (GetDevicesResponse) {
         option (google.api.http) = {
-            get: "/uzi/device/list"
+            get: "/device/list"
         };
     }
 
@@ -22,7 +22,7 @@ service Uzi {
     // Возврашает ID прибора
     rpc CreateDevice(CreateDevicesRequest) returns (CreateDevicesResponse) {
         option (google.api.http) = {
-            post: "/uzi/device/create"
+            post: "/device"
             body: "*"
         };
     }
@@ -30,7 +30,7 @@ service Uzi {
     // Удаляет узи прибор
     rpc DeleteDevice(DeleteDevicesRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/uzi/device/delete/{device_id}"
+            delete: "/device/{device_id}"
         };
     }
 
@@ -39,8 +39,35 @@ service Uzi {
     // Все uuid заранее сгенерены, url - ссылки на S3
     rpc InsertUzi(InsertUziRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/uzi/uzi/insert"
+            post: "/uzi"
             body: "*"
+        };
+    }
+
+    // Получить мета информацию об узи
+    //
+    // Возвращает информацию о самом узи и изображениях. Не возвращает узлы
+    rpc GetUziMetaInfo(GetUziMetaRequest) returns (GetUziMetaResponse) {
+        option (google.api.http) = {
+            get: "/uzi/meta/{uzi_uuid}"
+        };
+    }
+
+    // Получить информацию об узи и узлах
+    //
+    // Возвращает полную информацию об узи и всех узлах
+    rpc GetUziInfo(GetUziRequest) returns (GetUziResponse) {
+        option (google.api.http) = {
+            get: "/uzi/{uzi_uuid}"
+        };
+    }
+
+    // Получить информацию о изображении узи и узлах
+    //
+    // Возвращает полную инфу об 1 изображении узи и узлах на нем
+    rpc GetImageInfo(GetImageInfoRequest) returns (GetImageInfoResponse) {
+        option (google.api.http) = {
+            get: "/image/{image_uuid}"
         };
     }
 
@@ -49,7 +76,7 @@ service Uzi {
     // Все uuid заранее сгенерены, url - ссылки на S3
     rpc InsertFormations(InsertFormationsRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/uzi/formations/insert/{uzi_uuid}"
+            post: "/formations/{uzi_uuid}"
             body: "*"
         };
     }
@@ -59,15 +86,27 @@ service Uzi {
     // Все uuid заранее сгенерены, url - ссылки на S3
     rpc InsertFormation(InsertFormationRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/uzi/formation/insert/{uzi_uuid}"
+            post: "/formation/{uzi_uuid}"
+            body: "*"
+        };
+    }
+
+    // Обновить мета информацию об узле
+    //
+    // Обновить инфу о tirads и etc. Не обновлять контура
+    rpc UpdateFormationMeta(UpdateFormationMetaRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            patch: "/formation/meta/{formation_uuid}"
             body: "*"
         };
     }
 
     // Обновить информацию об узле
+    //
+    // Обновить инфу о tirads и etc. Не обновлять контура
     rpc UpdateFormation(UpdateFormationRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            patch: "/uzi/formation/update/{formation_uuid}"
+            patch: "/formation/{formation_uuid}"
             body: "*"
         };
     }
@@ -77,16 +116,16 @@ service Uzi {
     // Удалит полностью 1 узел на всех изображениях на которых он присутствует
     rpc DeleteFormation(DeleteFormationRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/uzi/formation/delete/{formation_uuid}"
+            delete: "/formation/{formation_uuid}"
         };
     }
 
     // Удалить узел на изображении
     //
     // Удалит узел на 1 изображения, остальные контуру узла на других изображениях не изменятся
-    rpc DeleteFormationContor(DeleteFormationContorRequest) returns (google.protobuf.Empty) {
+    rpc DeleteFormationImage(DeleteFormationImageRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/uzi/formation/full-delete/{image_uuid}/{formation_uuid}"
+            delete: "/formation/image/{image_uuid}/{formation_uuid}"
         };
     }
 }
@@ -134,16 +173,17 @@ message Tirads {
     double tirads_5 = 5;
 }
 
-message FormationOnImage {
-    string image_uuid = 100 [json_name = "image_uuid"];
+message Segment {
     string contor_url = 200 [json_name = "contor_url"];
     Tirads tirads = 300;
 }
 
 message Formation {
     string formation_uuid = 100 [json_name = "formation_uuid"];
-    repeated FormationOnImage segments = 200;
+    // map<image_uuid, Segment>
+    map<string, Segment> segments = 200;
     Tirads avg_tirads = 300 [json_name = "avg_tirads"];
+    bool ai = 400;
 }
 
 message Image {
@@ -152,45 +192,86 @@ message Image {
     int64 page = 300;
 }
 
-message InsertUziRequest {
+message UziData {
     string uzi_uuid = 100 [json_name = "uzi_uuid"];
     string uzi_url = 200 [json_name = "uzi_url"];
-    repeated Image images = 300;
-    repeated Formation formations = 400;
-    string projection = 500;
-    bool ai = 600;
-    string patient_uuid = 700 [json_name = "patient_uuid"];
-    int64 device_id = 800 [json_name = "device_id"];
+
+    string projection = 300;
+    string patient_uuid = 400 [json_name = "patient_uuid"];
+    int64 device_id = 500 [json_name = "device_id"];
+}
+
+message InsertUziRequest {
+    UziData uzi = 100;
+    repeated Image images = 200;
+    repeated Formation formations = 300;
+}
+
+message GetUziMetaRequest {
+    string uzi_uuid = 100 [json_name = "uzi_uuid"];
+}
+
+message GetUziMetaResponse {
+    UziData uzi = 100;
+    repeated Image images = 200;
+}
+
+message GetUziRequest {
+    string uzi_uuid = 100 [json_name = "uzi_uuid"];
+}
+
+message GetUziResponse {
+    UziData uzi = 100;
+    repeated Image images = 200;
+    repeated Formation formations = 300;
+}
+
+message GetImageInfoRequest {
+    string image_uuid = 100 [json_name = "image_uuid"];
+}
+
+message FormationOnImage {
+    string formation_uuid = 100 [json_name = "formation_uuid"];
+    Segment segment = 200;
+    Tirads avg_tirads = 300 [json_name = "avg_tirads"];
+    bool ai = 400;
+}
+
+message GetImageInfoResponse {
+    Image image = 100;
+    repeated FormationOnImage formations = 200;
 }
 
 message InsertFormationsRequest {
     string uzi_uuid = 100 [json_name = "uzi_uuid"];
     repeated Formation formations = 200;
-    bool ai = 300;
 }
 
 message InsertFormationRequest {
     string uzi_uuid = 100 [json_name = "uzi_uuid"];
     Formation formation = 200;
-    bool ai = 300;
 }
 
 message DeleteFormationRequest {
     string formation_uuid = 100 [json_name = "formation_uuid"];
 }
 
-message DeleteFormationContorRequest {
+message DeleteFormationImageRequest {
     string image_uuid = 100 [json_name = "image_uuid"];
     string formation_uuid = 200 [json_name = "formation_uuid"];
 }
 
-message UpdateFormationOnImage {
-    string image_uuid = 100 [json_name = "image_uuid"];
-    Tirads tirads = 300;
+
+message UpdateFormationMetaRequest {
+    string formation_uuid = 100 [json_name = "formation_uuid"];
+    // map<image_uuid, Tirads>
+    map<string, Tirads> segments = 200;
+    Tirads avg_tirads = 300 [json_name = "avg_tirads"];
 }
 
 message UpdateFormationRequest {
     string formation_uuid = 100 [json_name = "formation_uuid"];
-    repeated UpdateFormationOnImage segments = 200;
+    // map<image_uuid, Segment>
+    map<string, Segment> segments = 200;
     Tirads avg_tirads = 300 [json_name = "avg_tirads"];
 }
