@@ -6,63 +6,80 @@ option go_package = "yir/uzi/api/uzi;uzi";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
-import "protoc-gen-openapiv2/options/annotations.proto";
 
 service Uzi {
     // Получить список узи приборов
     //
-    // Возвращает количество, пагинацию, и массив пар <id, имя девайса>
+    // Возвращает количество, пагинацию, и массив пар <ID, имя девайса>
     rpc GetDevices(GetDevicesRequest) returns (GetDevicesResponse) {
         option (google.api.http) = {
             get: "/uzi/devices"
         };
     }
 
-    // Создать группу с сегментацией и классификацией
+    // Создать новый узи прибор
     //
-    // Изображения и контуры узлов приходят как ссылки на S3
-    rpc CreateAIGroup(CreateAIGroupRequest) returns (google.protobuf.Empty) {
+    // Возврашает ID прибора
+    rpc CreateDevice(CreateDevicesRequest) returns (CreateDevicesResponse) {
         option (google.api.http) = {
-            post: "/uzi/create/aigroup"
+            post: "/uzi/create/device"
             body: "*"
         };
     }
 
-    // Возвращает группу с сегментацией и классификацией
-    //
-    // Изображения и контуры узлов возвращаются как ссылки на S3
-    rpc GetGroup(GetGroupRequest) returns (GetGroupResponse) {
+    // Удаляет узи прибор
+    rpc DeleteDevice(DeleteDevicesRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            get: "/uzi/group/{group_uuid}"
+            delete: "/uzi/delete/device/{device_id}"
         };
     }
 
-    // Создает 1 новый узел
+    // Добавить UZI с сегментацией и классификацией
     //
-    // На указанных изображениях будет создан 1 уникальный узел. 
-    rpc CreateNodule(CreateNoduleRequest) returns (CreateNoduleResponse) {
+    // Все uuid заранее сгенерены, url - ссылки на S3
+    rpc InsertUzi(InsertUziRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/uzi/create/nodule"
+            post: "/uzi/insert/uzi"
             body: "*"
         };
     }
 
-    // Удаляет узел по UUID
-    rpc DeleteNodule(DeleteNoduleRequset) returns (google.protobuf.Empty) {
+    // Добавить узлы
+    //
+    // Все uuid заранее сгенерены, url - ссылки на S3
+    rpc InsertFormations(InsertFormationsRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/uzi/delete/nodule/{nodule_uuid}"
+            post: "/uzi/insert/formations/{uzi_uuid}"
+            body: "*"
         };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            responses: {
-              key: "403"
-              value: {
-                description: "Попытка удалить AI узел"
-              }
-            }
+    }
+
+    // Обновить информацию об узле
+    rpc UpdateFormation(UpdateFormationRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            patch: "/uzi/update/formation/{formation_uuid}"
+            body: "*"
+        };
+    }
+
+    // Удалить узел по uuid
+    //
+    // Удалит полностью 1 узел на всех изображениях на которых он присутствует
+    rpc DeleteFormation(DeleteFormationRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/uzi/delete/formation/{formation_uuid}"
+        };
+    }
+
+    // Удалить узел на изображении
+    //
+    // Удалит узел на 1 изображения, остальные контуру узла на других изображениях не изменятся
+    rpc DeleteFormationContor(DeleteFormationContorRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/uzi/delete/formation/{image_uuid}/{formation_uuid}"
         };
     }
 }
-
 
 message Pagination {
     string first = 1;
@@ -72,19 +89,31 @@ message Pagination {
 }
 
 message GetDevicesRequest {
-    int64 limit = 1;
-    int64 offset = 2;
+    int64 limit = 100;
+    int64 offset = 200;
 }
 
 message UziDevice {
-    int64 id = 1;
-    string name = 2;
+    int64 id = 100;
+    string name = 200;
 }
 
 message GetDevicesResponse {
-    int64 count = 1;
-    repeated UziDevice devices = 2;
-    Pagination pagination = 3;
+    int64 count = 100;
+    repeated UziDevice devices = 200;
+    Pagination pagination = 300;
+}
+
+message CreateDevicesRequest {
+    string name = 100;
+}
+
+message CreateDevicesResponse {
+    int64 id = 100;
+}
+
+message DeleteDevicesRequest {
+    int64 device_id = 100 [json_name = "device_id"];
 }
 
 message Tirads {
@@ -95,69 +124,57 @@ message Tirads {
     double tirads_5 = 5;
 }
 
-message Nodule {
-    string nodule_uuid = 100 [json_name = "nodule_uuid"];
+message FormationOnImage {
+    string image_uuid = 100 [json_name = "image_uuid"];
     string contor_url = 200 [json_name = "contor_url"];
     Tirads tirads = 300;
-    bool ai = 400;
+}
+
+message Formation {
+    string formation_uuid = 100 [json_name = "formation_uuid"];
+    repeated FormationOnImage segments = 200;
+    Tirads avg_tirads = 300 [json_name = "avg_tirads"];
 }
 
 message Image {
     string image_uuid = 100 [json_name = "image_uuid"];
-    repeated Nodule nodules = 200;
+    string image_url = 200 [json_name = "image_url"];
     int64 page = 300;
 }
 
-message AvgNodule {
-    string nodule_uuid = 100 [json_name = "nodule_uuid"];
-    Tirads tirads = 200;
-}
-
-message CreateAIGroupRequest {
-    string group_uuid = 100 [json_name = "group_uuid"];
-    string group_url = 200 [json_name = "group_url"];
+message InsertUziRequest {
+    string uzi_uuid = 100 [json_name = "uzi_uuid"];
+    string uzi_url = 200 [json_name = "uzi_url"];
     repeated Image images = 300;
-    repeated AvgNodule avg_nodules = 400 [json_name = "avg_nodules"];
+    repeated Formation formations = 400;
     string projection = 500;
-    string patient_uuid = 600 [json_name = "patient_uuid"];
-    int64 device_id = 700 [json_name = "device_id"];
+    bool ai = 600;
+    string patient_uuid = 700 [json_name = "patient_uuid"];
+    int64 device_id = 800 [json_name = "device_id"];
 }
 
-message GetGroupRequest {
-    string group_uuid = 100 [json_name = "group_uuid"];
+message InsertFormationsRequest {
+    string uzi_uuid = 100 [json_name = "uzi_uuid"];
+    repeated Formation formations = 200;
+    bool ai = 300;
 }
 
-message GetGroupResponse {
-    string group_uuid = 100 [json_name = "group_uuid"];
-    string group_url = 200 [json_name = "group_url"];
-    repeated Image images = 300;
-    repeated AvgNodule avg_nodules = 400 [json_name = "avg_nodules"];
-    string projection = 500;
-    string patient_uuid = 600 [json_name = "patient_uuid"];
-    int64 device_id = 700 [json_name = "device_id"];
+message DeleteFormationRequest {
+    string formation_uuid = 100 [json_name = "formation_uuid"];
 }
 
-message Point {
-    int64 x = 1;
-    int64 y = 2;
-}
-
-message NoduleData {
+message DeleteFormationContorRequest {
     string image_uuid = 100 [json_name = "image_uuid"];
-    repeated Point contor = 200;
+    string formation_uuid = 200 [json_name = "formation_uuid"];
+}
+
+message UpdateFormationOnImage {
+    string image_uuid = 100 [json_name = "image_uuid"];
     Tirads tirads = 300;
 }
 
-message CreateNoduleRequest {
-    string group_uuid = 100 [json_name = "group_uuid"];
-    repeated NoduleData nodule_data = 200 [json_name = "nodule_data"]; 
+message UpdateFormationRequest {
+    string formation_uuid = 100 [json_name = "formation_uuid"];
+    repeated UpdateFormationOnImage segments = 200;
     Tirads avg_tirads = 300 [json_name = "avg_tirads"];
-}
-
-message CreateNoduleResponse {
-    string nodule_uuid = 100 [json_name = "nodule_uuid"];
-}
-
-message DeleteNoduleRequset {
-    string nodule_uuid = 100 [json_name = "nodule_uuid"];
 }
