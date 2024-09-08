@@ -8,7 +8,7 @@ type Uzi struct {
 	Projection  string
 	PatientUUID string
 
-	DeviceID uint64  `gorm:"not null"`
+	DeviceID uint64 `gorm:"not null"`
 	Devices  Device `gorm:"foreignKey:DeviceID;references:Id"`
 }
 

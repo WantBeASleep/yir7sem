@@ -20,19 +20,19 @@ service Uzi {
     // Создать новый узи прибор
     //
     // Возврашает ID прибора
-    rpc CreateDevice(CreateDevicesRequest) returns (CreateDevicesResponse) {
-        option (google.api.http) = {
-            post: "/device"
-            body: "*"
-        };
-    }
+    // rpc CreateDevice(CreateDevicesRequest) returns (CreateDevicesResponse) {
+    //     option (google.api.http) = {
+    //         post: "/device"
+    //         body: "*"
+    //     };
+    // }
 
     // Удаляет узи прибор
-    rpc DeleteDevice(DeleteDevicesRequest) returns (google.protobuf.Empty) {
-        option (google.api.http) = {
-            delete: "/device/{device_id}"
-        };
-    }
+    // rpc DeleteDevice(DeleteDevicesRequest) returns (google.protobuf.Empty) {
+    //     option (google.api.http) = {
+    //         delete: "/device/{device_id}"
+    //     };
+    // }
 
     // Добавить UZI с сегментацией и классификацией
     //
@@ -40,6 +40,16 @@ service Uzi {
     rpc InsertUzi(InsertUziRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             post: "/uzi"
+            body: "*"
+        };
+    }
+
+    // Обновить мета информацию об узи
+    //
+    // Не обновляет ссылки на S3
+    rpc UpdateUzi(UpdateUziRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            patch: "/uzi/meta/{uzi_uuid}"
             body: "*"
         };
     }
@@ -130,12 +140,14 @@ service Uzi {
     }
 }
 
-message Pagination {
-    string first = 1;
-    string last = 2;
-    string prev = 3;
-    string next = 4;
-}
+// Все будет, и не раз, но потом
+// MVP moment
+// message Pagination {
+//     string first = 1;
+//     string last = 2;
+//     string prev = 3;
+//     string next = 4;
+// }
 
 message GetDevicesRequest {
     int64 limit = 100;
@@ -150,20 +162,20 @@ message UziDevice {
 message GetDevicesResponse {
     int64 count = 100;
     repeated UziDevice devices = 200;
-    Pagination pagination = 300;
+    // Pagination pagination = 300;
 }
 
-message CreateDevicesRequest {
-    string name = 100;
-}
+// message CreateDevicesRequest {
+//     string name = 100;
+// }
 
-message CreateDevicesResponse {
-    int64 id = 100;
-}
+// message CreateDevicesResponse {
+//     int64 id = 100;
+// }
 
-message DeleteDevicesRequest {
-    int64 device_id = 100 [json_name = "device_id"];
-}
+// message DeleteDevicesRequest {
+//     int64 device_id = 100 [json_name = "device_id"];
+// }
 
 message Tirads {
     double tirads_1 = 1;
@@ -192,7 +204,7 @@ message Image {
     int64 page = 300;
 }
 
-message UziData {
+message UziDataRef { // Ref - ссылка на device_id
     string uzi_uuid = 100 [json_name = "uzi_uuid"];
     string uzi_url = 200 [json_name = "uzi_url"];
 
@@ -201,10 +213,27 @@ message UziData {
     int64 device_id = 500 [json_name = "device_id"];
 }
 
+message UziData {
+    string uzi_uuid = 100 [json_name = "uzi_uuid"];
+    string uzi_url = 200 [json_name = "uzi_url"];
+
+    string projection = 300;
+    string patient_uuid = 400 [json_name = "patient_uuid"];
+    UziDevice device = 500;
+}
+
 message InsertUziRequest {
-    UziData uzi = 100;
+    UziDataRef uzi = 100;
     repeated Image images = 200;
     repeated Formation formations = 300;
+}
+
+message UpdateUziRequest {
+    string uzi_uuid = 100 [json_name = "uzi_uuid"];
+
+    string projection = 200;
+    string patient_uuid = 300 [json_name = "patient_uuid"];
+    int64 device_id = 400 [json_name = "device_id"];
 }
 
 message GetUziMetaRequest {

@@ -10,6 +10,8 @@ import (
 	"yir/uzi/internal/repositories/db/utils"
 
 	"errors"
+
+	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -44,16 +46,16 @@ func NewRepository(cfg *config.DB) (*UziRepo, error) {
 var entityMapper = mappers.EntityToModel{}
 var modelMapper = mappers.ModelToEntity{}
 
-func (r *UziRepo) CreateDevice(ctx context.Context, device *entity.Device) error {
-	deviceDB := entityMapper.Device(device)
+// func (r *UziRepo) CreateDevice(ctx context.Context, device *entity.Device) error {
+// 	deviceDB := entityMapper.Device(device)
 
-	err := r.db.WithContext(ctx).
-		Model(&models.Device{}).
-		Create(deviceDB).
-		Error; 
-	
-	return err
-}
+// 	err := r.db.WithContext(ctx).
+// 		Model(&models.Device{}).
+// 		Create(deviceDB).
+// 		Error
+
+// 	return err
+// }
 
 func (r *UziRepo) GetDevice(ctx context.Context, id int) (*entity.Device, error) {
 	var resp models.Device
@@ -73,22 +75,41 @@ func (r *UziRepo) GetDevice(ctx context.Context, id int) (*entity.Device, error)
 	return device, nil
 }
 
-func (r *UziRepo) DeleteDevice(ctx context.Context, id int) error {
-	err := r.db.WithContext(ctx).
-		Delete(&models.Device{}, id).
-		Error;
+func (r *UziRepo) GetDevicesList(ctx context.Context) ([]*entity.Device, error) {
+	var resp []*models.Device
 
-	return err
+	err := r.db.WithContext(ctx).
+		Model(&models.Device{}).
+		Find(&resp).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	devices := make([]*entity.Device, len(resp))
+	for i, device := range resp {
+		devices[i] = modelMapper.Device(device)
+	}
+
+	return devices, nil
 }
 
-func (r *UziRepo) InsertTirads(ctx context.Context, tirads *entity.Tirads) (int, error) {
+// func (r *UziRepo) DeleteDevice(ctx context.Context, id int) error {
+// 	err := r.db.WithContext(ctx).
+// 		Delete(&models.Device{}, id).
+// 		Error
+
+// 	return err
+// }
+
+func (r *UziRepo) CreateTirads(ctx context.Context, tirads *entity.Tirads) (int, error) {
 	tiradsDB := entityMapper.Tirads(tirads)
 
 	if err := r.db.WithContext(ctx).
 		Model(&models.Tirads{}).
 		Create(tiradsDB).
-		Error; 
-	err != nil {
+		Error; err != nil {
 		return 0, err
 	}
 
@@ -103,8 +124,80 @@ func (r *UziRepo) UpdateTirads(ctx context.Context, id int, tirads *entity.Tirad
 		Where("id = ?", id).
 		Updates(tiradsDB).
 		Error
-	
+
 	return err
 }
 
-// func (r *UziRepo) InsertUzi(ctx context.Context, )
+func (r *UziRepo) InsertUzi(ctx context.Context, uzi *entity.Uzi) error {
+	uziDB := entityMapper.Uzi(uzi)
+
+	err := r.db.WithContext(ctx).
+		Model(&models.Uzi{}).
+		Create(uziDB).
+		Error
+
+	return err
+}
+
+func (r *UziRepo) UpdateUzi(ctx context.Context, uzi *entity.Uzi) error {
+	uziDB := entityMapper.Uzi(uzi)
+
+	err := r.db.WithContext(ctx).
+		Model(&models.Uzi{}).
+		Where("uuid = ?", uziDB.Uuid).
+		Updates(uziDB).
+		Error
+
+	return err
+}
+
+func (r *UziRepo) GetUzi(ctx context.Context, uuid uuid.UUID) (*entity.Uzi, error) {
+	var resp models.Uzi
+
+	query := r.db.WithContext(ctx).
+		Model(&models.Uzi{}).
+		Where("uuid = ?", uuid.String())
+
+	if err := query.Take(&resp).Error; err != nil {
+		if errors.Is(query.Error, gorm.ErrRecordNotFound) {
+			return nil, entity.ErrNotFound
+		}
+		return nil, err
+	}
+
+	uzi := modelMapper.Uzi(&resp)
+	return uzi, nil
+}
+
+// ГРУППА СНИМКОВ
+func (r *UziRepo) InsertImages(ctx context.Context, images []*entity.Image) error {
+	imagesDB := make([]*models.Image, len(images))
+	for i, image := range images {
+		imagesDB[i] = entityMapper.Image(image)
+	}
+
+	err := r.db.WithContext(ctx).
+		Model(&models.Image{}).
+		Create(imagesDB).
+		Error
+
+	return err
+}
+
+func (r *UziRepo) GetImage(ctx context.Context, uuid uuid.UUID) (*entity.Image, error) {
+	var resp models.Image
+
+	query := r.db.WithContext(ctx).
+		Model(&models.Image{}).
+		Where("uuid = ?", uuid.String())
+
+	if err := query.Take(&resp).Error; err != nil {
+		if errors.Is(query.Error, gorm.ErrRecordNotFound) {
+			return nil, entity.ErrNotFound
+		}
+		return nil, err
+	}
+
+	image := modelMapper.Image(&resp)
+	return image, nil
+}
