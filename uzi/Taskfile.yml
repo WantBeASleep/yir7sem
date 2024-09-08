@@ -35,18 +35,15 @@ tasks:
     cmds:
       - go fmt ./...
       - goimports -w .
-      - go build -v -o bin/auth cmd/uzi/main.go
+      - go build -v -o bin/uzi cmd/uzi/uzi.go
 
   run:
     deps: [build]
+    env:
+      DB_PASS: 1234
     cmds:
-      - ./bin/auth
-
-  tools:
-    deps: [build]
-    cmds:
-      - ./bin/tools
+      - ./bin/uzi
 
   default:
     cmds:
-      - task: generate
+      - task: build
