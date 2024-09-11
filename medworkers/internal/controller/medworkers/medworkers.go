@@ -125,3 +125,39 @@ func (s *Server) UpdateMedWorker(ctx context.Context, request *pb.UpdateMedWorke
 
 	return response, nil
 }
+
+func (s *Server) AddMedWorker(ctx context.Context, request *pb.AddMedWorkerRequest) (*pb.AddMedWorkerResponse, error) {
+	s.logger.Info("Received AddMedWorker request", zap.Any("request", request))
+
+	medworkerReq := &entity.AddMedicalWorkerRequest{
+		FirstName:       request.GetFirstName(),
+		MiddleName:      request.GetMiddleName(),
+		LastName:        request.GetLastName(),
+		MedOrganization: request.GetMedOrganization(),
+		Job:             request.GetJob(),
+		IsRemoteWorker:  request.GetIsRemoteWorker(),
+		ExpertDetails:   request.GetExpertDetails(),
+	}
+
+	medworker, err := s.MedWorkerUseCase.AddMedWorker(ctx, medworkerReq)
+	if err != nil {
+		s.logger.Error("Failed to add medworker", zap.Error(err))
+		return nil, status.Errorf(codes.Internal, "failed to add medworker: %v", err)
+	}
+
+	response := &pb.AddMedWorkerResponse{
+		Worker: &pb.MedWorker{
+			Id:              uint64(medworker.ID),
+			FirstName:       medworker.FirstName,
+			MiddleName:      medworker.MiddleName,
+			LastName:        medworker.LastName,
+			MedOrganization: medworker.MedOrganization,
+			Job:             medworker.Job,
+			IsRemoteWorker:  medworker.IsRemoteWorker,
+			ExpertDetails:   medworker.ExpertDetails,
+		},
+	}
+
+	s.logger.Info("Medworker successfully added", zap.Any("worker", response.Worker))
+	return response, nil
+}

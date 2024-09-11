@@ -89,3 +89,31 @@ func (m *MedWorkerUseCase) UpdateMedWorker(ctx context.Context, ID int, updateDa
 
 	return worker, nil
 }
+func (m *MedWorkerUseCase) AddMedWorker(ctx context.Context, createData *entity.AddMedicalWorkerRequest) (*entity.MedicalWorker, error) {
+	m.logger.Info("Adding new medical worker", zap.String("FirstName", createData.FirstName))
+
+	// Создаем объект MedicalWorker на основе данных из запроса
+	medworker := &entity.MedicalWorker{
+		FirstName:       createData.FirstName,
+		MiddleName:      createData.MiddleName,
+		LastName:        createData.LastName,
+		MedOrganization: createData.MedOrganization,
+		Job:             createData.Job,
+		IsRemoteWorker:  createData.IsRemoteWorker,
+		ExpertDetails:   createData.ExpertDetails,
+	}
+
+	// Добавляем медработника через репозиторий и получаем ID
+	id, err := m.MedWorkerRepo.AddMedicalWorker(ctx, medworker)
+	if err != nil {
+		m.logger.Error("Failed to add new medical worker", zap.Error(err))
+		return nil, fmt.Errorf("failed to add medical worker: %w", err)
+	}
+
+	// Присваиваем ID новому медработнику
+	medworker.ID = id
+	m.logger.Info("Successfully added new medical worker", zap.Int("ID", id))
+
+	// Возвращаем объект MedicalWorker и ошибку
+	return medworker, nil
+}

@@ -54,22 +54,21 @@ func (r *MedicalWorkerRepo) GetMedicalWorkerByID(ctx context.Context, ID int) (*
 	return medworker, nil
 }
 
-/*
-	func (r *MedicalWorkerRepo) CreateMedicalWorker(ctx context.Context, medworker *entity.MedicalWorker) (int, error) {
-		worker, err := mappers.ToMedWorkerModel(medworker)
-		if err != nil {
-			return 0, err
-		}
-
-		if err := r.db.WithContext(ctx).
-			Model(&models.MedWorkerInfo{}).
-			Create(&worker).
-			Error; err != nil {
-			return 0, err
-		}
-		return int(medworker.ID), nil
+func (r *MedicalWorkerRepo) AddMedicalWorker(ctx context.Context, medworker *entity.MedicalWorker) (int, error) {
+	worker, err := mappers.ToMedWorkerModel(medworker)
+	if err != nil {
+		return 0, err
 	}
-*/
+
+	if err := r.db.WithContext(ctx).
+		Model(&models.MedWorkerInfo{}).
+		Create(&worker).
+		Error; err != nil {
+		return 0, err
+	}
+	return int(medworker.ID), nil
+}
+
 func (r *MedicalWorkerRepo) UpdateMedicalWorker(ctx context.Context, medworker *entity.MedicalWorker) error {
 	worker, err := mappers.ToMedWorkerModel(medworker)
 	if err != nil {

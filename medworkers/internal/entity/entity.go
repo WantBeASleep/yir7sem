@@ -36,3 +36,13 @@ type MedicalWorkerPartialUpdateRequest struct {
 	IsRemoteWorker  *bool
 	ExpertDetails   *string
 }
+
+type AddMedicalWorkerRequest struct {
+	FirstName       string
+	MiddleName      string
+	LastName        string
+	MedOrganization string
+	Job             string
+	IsRemoteWorker  bool
+	ExpertDetails   string
+}

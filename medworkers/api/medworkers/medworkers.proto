@@ -38,7 +38,15 @@ service MedWorkers {
         option (google.api.http) = {
             patch: "/medworkers/update/{id}"
         };
-    } 
+    }
+    //Добавление медработника
+    //
+    //
+    rpc AddMedWorker(AddMedWorkerRequest) returns (AddMedWorkerResponse) {
+        option (google.api.http) = {
+            post: "/medworkers/add"
+        };
+    }
 }
 
 message MedWorker { 
@@ -53,11 +61,14 @@ message MedWorker {
 }
 
 message GetMedworkerRequest {
-    string fullname = 1;
-    bool is_remote_worker = 2;
-    string email = 3;
-    uint64 limit = 4;
-    uint64 offset = 5;
+    uint64 id = 1;
+    string first_name = 2;
+    string middle_name =3;
+    string last_name = 4;
+    bool is_remote_worker = 5;
+    string email = 6;
+    uint64 limit = 7;
+    uint64 offset = 8;
 }
 
 message GetMedworkerListResponse {
@@ -99,4 +110,18 @@ message PatchMedWorkerRequest {
     string job = 6;
     bool is_remote_worker = 7;
     string expert_details = 8;
+}
+
+message AddMedWorkerRequest {
+    string first_name = 1;
+    string middle_name = 2;
+    string last_name = 3;
+    string med_organization = 4;
+    string job = 5;
+    bool is_remote_worker = 6;
+    string expert_details = 7;
+}
+
+message AddMedWorkerResponse {
+    MedWorker worker = 1; 
 }
