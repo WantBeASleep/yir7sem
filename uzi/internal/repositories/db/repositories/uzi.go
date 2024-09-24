@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"yir/uzi/internal/config"
 	"yir/uzi/internal/entity"
-	"yir/uzi/internal/repositories/db/mappers"
 	"yir/uzi/internal/repositories/db/models"
 	"yir/uzi/internal/repositories/db/utils"
+	mapper "yir/uzi/internal/utils"
 
 	"errors"
 
@@ -43,20 +43,6 @@ func NewRepository(cfg *config.DB) (*UziRepo, error) {
 	}, nil
 }
 
-var entityMapper = mappers.EntityToModel{}
-var modelMapper = mappers.ModelToEntity{}
-
-// func (r *UziRepo) CreateDevice(ctx context.Context, device *entity.Device) error {
-// 	deviceDB := entityMapper.Device(device)
-
-// 	err := r.db.WithContext(ctx).
-// 		Model(&models.Device{}).
-// 		Create(deviceDB).
-// 		Error
-
-// 	return err
-// }
-
 func (r *UziRepo) GetDevice(ctx context.Context, id int) (*entity.Device, error) {
 	var resp models.Device
 
@@ -71,12 +57,11 @@ func (r *UziRepo) GetDevice(ctx context.Context, id int) (*entity.Device, error)
 		return nil, err
 	}
 
-	device := modelMapper.Device(&resp)
-	return device, nil
+	return mapper.MustTransformObj[models.Device, entity.Device](&resp), nil
 }
 
-func (r *UziRepo) GetDevicesList(ctx context.Context) ([]*entity.Device, error) {
-	var resp []*models.Device
+func (r *UziRepo) GetDevicesList(ctx context.Context) ([]entity.Device, error) {
+	var resp []models.Device
 
 	err := r.db.WithContext(ctx).
 		Model(&models.Device{}).
@@ -87,24 +72,11 @@ func (r *UziRepo) GetDevicesList(ctx context.Context) ([]*entity.Device, error) 
 		return nil, err
 	}
 
-	devices := make([]*entity.Device, len(resp))
-	for i, device := range resp {
-		devices[i] = modelMapper.Device(device)
-	}
-
-	return devices, nil
+	return mapper.MustTransformSlice[models.Device, entity.Device](resp), nil
 }
 
-// func (r *UziRepo) DeleteDevice(ctx context.Context, id int) error {
-// 	err := r.db.WithContext(ctx).
-// 		Delete(&models.Device{}, id).
-// 		Error
-
-// 	return err
-// }
-
 func (r *UziRepo) CreateTirads(ctx context.Context, tirads *entity.Tirads) (int, error) {
-	tiradsDB := entityMapper.Tirads(tirads)
+	tiradsDB := mapper.MustTransformObj[entity.Tirads, models.Tirads](tirads)
 
 	if err := r.db.WithContext(ctx).
 		Model(&models.Tirads{}).
@@ -113,11 +85,11 @@ func (r *UziRepo) CreateTirads(ctx context.Context, tirads *entity.Tirads) (int,
 		return 0, err
 	}
 
-	return int(tiradsDB.Id), nil
+	return tiradsDB.Id, nil
 }
 
 func (r *UziRepo) UpdateTirads(ctx context.Context, id int, tirads *entity.Tirads) error {
-	tiradsDB := entityMapper.Tirads(tirads)
+	tiradsDB := mapper.MustTransformObj[entity.Tirads, models.Tirads](tirads)
 
 	err := r.db.WithContext(ctx).
 		Model(&models.Tirads{}).
@@ -129,7 +101,7 @@ func (r *UziRepo) UpdateTirads(ctx context.Context, id int, tirads *entity.Tirad
 }
 
 func (r *UziRepo) InsertUzi(ctx context.Context, uzi *entity.Uzi) error {
-	uziDB := entityMapper.Uzi(uzi)
+	uziDB := mapper.MustTransformObj[entity.Uzi, models.Uzi](uzi)
 
 	err := r.db.WithContext(ctx).
 		Model(&models.Uzi{}).
@@ -140,23 +112,23 @@ func (r *UziRepo) InsertUzi(ctx context.Context, uzi *entity.Uzi) error {
 }
 
 func (r *UziRepo) UpdateUzi(ctx context.Context, uzi *entity.Uzi) error {
-	uziDB := entityMapper.Uzi(uzi)
+	uziDB := mapper.MustTransformObj[entity.Uzi, models.Uzi](uzi)
 
 	err := r.db.WithContext(ctx).
 		Model(&models.Uzi{}).
-		Where("uuid = ?", uziDB.Uuid).
+		Where("id = ?", uziDB.Id).
 		Updates(uziDB).
 		Error
 
 	return err
 }
 
-func (r *UziRepo) GetUzi(ctx context.Context, uuid uuid.UUID) (*entity.Uzi, error) {
+func (r *UziRepo) GetUzi(ctx context.Context, id uuid.UUID) (*entity.Uzi, error) {
 	var resp models.Uzi
 
 	query := r.db.WithContext(ctx).
 		Model(&models.Uzi{}).
-		Where("uuid = ?", uuid.String())
+		Where("id = ?", id)
 
 	if err := query.Take(&resp).Error; err != nil {
 		if errors.Is(query.Error, gorm.ErrRecordNotFound) {
@@ -165,16 +137,11 @@ func (r *UziRepo) GetUzi(ctx context.Context, uuid uuid.UUID) (*entity.Uzi, erro
 		return nil, err
 	}
 
-	uzi := modelMapper.Uzi(&resp)
-	return uzi, nil
+	return mapper.MustTransformObj[models.Uzi, entity.Uzi](&resp), nil
 }
 
-// ГРУППА СНИМКОВ
-func (r *UziRepo) InsertImages(ctx context.Context, images []*entity.Image) error {
-	imagesDB := make([]*models.Image, len(images))
-	for i, image := range images {
-		imagesDB[i] = entityMapper.Image(image)
-	}
+func (r *UziRepo) InsertImages(ctx context.Context, images []entity.Image) error {
+	imagesDB := mapper.MustTransformSlice[entity.Image, models.Image](images)
 
 	err := r.db.WithContext(ctx).
 		Model(&models.Image{}).
@@ -184,12 +151,12 @@ func (r *UziRepo) InsertImages(ctx context.Context, images []*entity.Image) erro
 	return err
 }
 
-func (r *UziRepo) GetImage(ctx context.Context, uuid uuid.UUID) (*entity.Image, error) {
+func (r *UziRepo) GetImage(ctx context.Context, id uuid.UUID) (*entity.Image, error) {
 	var resp models.Image
 
 	query := r.db.WithContext(ctx).
 		Model(&models.Image{}).
-		Where("uuid = ?", uuid.String())
+		Where("id = ?", id)
 
 	if err := query.Take(&resp).Error; err != nil {
 		if errors.Is(query.Error, gorm.ErrRecordNotFound) {
@@ -198,6 +165,5 @@ func (r *UziRepo) GetImage(ctx context.Context, uuid uuid.UUID) (*entity.Image, 
 		return nil, err
 	}
 
-	image := modelMapper.Image(&resp)
-	return image, nil
+	return mapper.MustTransformObj[models.Image, entity.Image](&resp), nil
 }

@@ -1,19 +1,21 @@
 package models
 
+import "github.com/google/uuid"
+
 const ImagesFormationName = "images_formations"
 
 type ImageFormation struct {
-	Id        int64 `gorm:"primaryKey"`
+	Id        int `gorm:"primaryKey"`
 	ContorURL string
 
-	FormationUUID string
-	Formations    Formation `gorm:"foreignKey:FormationUUID;references:Uuid;"`
+	FormationID uuid.UUID
+	Formation   Formation `gorm:"foreignKey:FormationID;references:Id;" copier:"-"`
 
-	ImageUUID string
-	Images    Image `gorm:"foreignKey:ImageUUID;references:Uuid;"`
+	ImageID uuid.UUID
+	Image   Image `gorm:"foreignKey:ImageID;references:Id;" copier:"-"`
 
-	TiradsId string
-	Tirads   Tirads `gorm:"foreignKey:TiradsId;references:Id;"`
+	TiradsId int
+	Tirads   Tirads `gorm:"foreignKey:TiradsId;references:Id;" copier:"-"`
 }
 
 func (ImageFormation) TableName() string {

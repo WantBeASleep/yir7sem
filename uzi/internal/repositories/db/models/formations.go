@@ -1,13 +1,15 @@
 package models
 
+import "github.com/google/uuid"
+
 const FormationName = "formations"
 
 type Formation struct {
-	Uuid string `gorm:"primaryKey;autoIncrement:false"`
-	Ai   bool
+	Id uuid.UUID `gorm:"primaryKey"`
+	Ai bool
 
-	TiradsId string
-	Tirads   Tirads `gorm:"foreignKey:TiradsId;references:Id;"`
+	TiradsId int
+	Tirads   Tirads `gorm:"foreignKey:TiradsId;references:Id;" copier:"-"`
 }
 
 func (Formation) TableName() string {

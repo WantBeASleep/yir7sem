@@ -1,15 +1,17 @@
 package models
 
+import "github.com/google/uuid"
+
 const UziName = "uzis"
 
 type Uzi struct {
-	Uuid        string `gorm:"primaryKey"`
-	Url         string
-	Projection  string
-	PatientUUID string
+	Id         uuid.UUID `gorm:"primaryKey"`
+	Url        string
+	Projection string
+	PatientID  uuid.UUID
 
-	DeviceID uint64 `gorm:"not null"`
-	Devices  Device `gorm:"foreignKey:DeviceID;references:Id"`
+	DeviceID int    `gorm:"not null"`
+	Devices  Device `gorm:"foreignKey:DeviceID;references:Id" copier:"-"`
 }
 
 func (Uzi) TableName() string {
