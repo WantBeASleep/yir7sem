@@ -3,7 +3,7 @@ package models
 const TiradsName = "tirads"
 
 type Tirads struct {
-	Id      uint64 `gorm:"primaryKey"`
+	Id      int `gorm:"primaryKey"`
 	Tirads1 float64
 	Tirads2 float64
 	Tirads3 float64

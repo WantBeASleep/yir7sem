@@ -1,14 +1,16 @@
 package models
 
+import "github.com/google/uuid"
+
 const ImageName = "images"
 
 type Image struct {
-	Uuid string `gorm:"primaryKey"`
+	Id   uuid.UUID `gorm:"primaryKey"`
 	Url  string
 	Page int64
 
-	UziUUID string
-	Uzis    Uzi `gorm:"foreignKey:UziUUID;references:Uuid;"`
+	UziID uuid.UUID
+	Uzi   Uzi `gorm:"foreignKey:UziID;references:Id;" copier:"-"`
 }
 
 func (Image) TableName() string {

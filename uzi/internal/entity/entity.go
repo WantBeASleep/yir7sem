@@ -18,18 +18,33 @@ type Tirads struct {
 }
 
 type Uzi struct {
-	Uuid        uuid.UUID
-	Url         string
-	Projection  string
-	PatientUUID uuid.UUID
+	Id         uuid.UUID
+	Url        string
+	Projection string
+	PatientID  uuid.UUID
 
 	DeviceID int
 }
 
 type Image struct {
-	Uuid uuid.UUID
+	Id   uuid.UUID
 	Url  string
 	Page int
 
-	UziUUID uuid.UUID
+	UziID uuid.UUID
+}
+
+type Formation struct {
+	Id uuid.UUID
+	Ai bool
+
+	TiradsId int
+}
+
+type ImageFormation struct {
+	Id          int
+	ContorURL   string
+	FormationID uuid.UUID
+	ImageID     uuid.UUID
+	TiradsId    int
 }

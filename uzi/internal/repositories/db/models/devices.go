@@ -3,7 +3,7 @@ package models
 const DeviceName = "devices"
 
 type Device struct {
-	Id   uint64 `gorm:"primaryKey"`
+	Id   int `gorm:"primaryKey"`
 	Name string
 }
 
