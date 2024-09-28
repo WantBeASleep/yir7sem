@@ -8,10 +8,10 @@ vars:
   
 env:
   DB_PASS: 1234
-  TOKEN_PRIVATE_KEY:
-    sh: cat "private.key"
-  TOKEN_PUBLIC_KEY:
-    sh: cat "public.key"
+  TOKEN_PRIVATE_KEY: 1
+    # sh: cat "private.key"
+  TOKEN_PUBLIC_KEY: 1
+    # sh: cat "public.key"
 
 tasks:
   generate:
