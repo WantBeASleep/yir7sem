@@ -14,8 +14,8 @@ type ImageFormation struct {
 	ImageID uuid.UUID
 	Image   Image `gorm:"foreignKey:ImageID;references:Id;" copier:"-"`
 
-	TiradsId int
-	Tirads   Tirads `gorm:"foreignKey:TiradsId;references:Id;" copier:"-"`
+	TiradsID int
+	Tirads   Tirads `gorm:"foreignKey:TiradsID;references:Id;" copier:"-"`
 }
 
 func (ImageFormation) TableName() string {

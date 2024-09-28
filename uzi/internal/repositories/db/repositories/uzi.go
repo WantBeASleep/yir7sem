@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"fmt"
+	"sort"
 	"yir/uzi/internal/config"
 	"yir/uzi/internal/entity"
 	"yir/uzi/internal/repositories/db/models"
@@ -166,4 +167,109 @@ func (r *UziRepo) GetImage(ctx context.Context, id uuid.UUID) (*entity.Image, er
 	}
 
 	return mapper.MustTransformObj[models.Image, entity.Image](&resp), nil
+}
+
+func (r *UziRepo) GetUziImages(ctx context.Context, uziID uuid.UUID) ([]entity.Image, error) {
+	var resp []models.Image
+
+	query := r.db.WithContext(ctx).
+		Model(&models.Image{}).
+		Where("uzi_id = ?", uziID)
+
+	if err := query.Find(&resp).Error; err != nil {
+		return nil, fmt.Errorf("get uzi images: %w", err)
+	}
+
+	sort.Slice(resp, func(i, j int) bool {return resp[i].Page < resp[j].Page})
+
+	return mapper.MustTransformSlice[models.Image, entity.Image](resp), nil
+}
+
+func (r *UziRepo) CheckImagesIDsExist(ctx context.Context, ids uuid.UUIDs) error {
+	var imagesIDs uuid.UUIDs
+	if err := r.db.WithContext(ctx).Model(&models.Image{}).Pluck("id", &imagesIDs).Error; err != nil {
+		return fmt.Errorf("get images ids: %w", err)
+	}
+
+	var notFoundIds uuid.UUIDs
+	imagesIDsMap := mapper.SliceToMap(imagesIDs)
+	for _, id := range ids {
+		if _, ok := imagesIDsMap[id]; !ok {
+			notFoundIds = append(notFoundIds, id)
+		}
+	}
+
+	if notFoundIds != nil {
+		return &entity.ImagesNotFoundError{Ids: notFoundIds}
+	}
+
+	return nil
+}
+
+func (r *UziRepo) InsertFormation(ctx context.Context, formation *entity.Formation) error {
+	DBFormation := mapper.MustTransformObj[entity.Formation, models.Formation](formation)
+
+	err := r.db.WithContext(ctx).
+		Model(&models.Formation{}).
+		Create(DBFormation).
+		Error
+
+	return err
+}
+
+func (r *UziRepo) CreateImageFormation(ctx context.Context, imageFormation *entity.ImageFormation) error {
+	DBImageFormation := mapper.MustTransformObj[entity.ImageFormation, models.ImageFormation](imageFormation)
+
+	err := r.db.WithContext(ctx).
+		Model(&models.ImageFormation{}).
+		Create(DBImageFormation).
+		Error
+
+	return err
+}
+
+func (r *UziRepo) InsertFormationsWithImageFormations(ctx context.Context, formations []entity.DBFormation) error {
+	imagesIds := map[uuid.UUID]struct{}{}
+	for _, v := range formations {
+		for id := range v.Segments {
+			imagesIds[id] = struct{}{}
+		}
+	}
+
+	if err := r.CheckImagesIDsExist(ctx, mapper.MapToSlice(imagesIds)); err != nil {
+		return fmt.Errorf("check images id exist: %w", err)
+	}
+
+	for _, formation := range formations {
+		avgTiradsID, err := r.CreateTirads(ctx, &formation.AvgTirads)
+		if err != nil {
+			return fmt.Errorf("create tirads: %w", err)
+		}
+
+		if err := r.InsertFormation(ctx, &entity.Formation{
+			Id:       formation.Id,
+			TiradsID: avgTiradsID,
+			Ai:       formation.Ai,
+		}); err != nil {
+			return fmt.Errorf("insert formation: %w", err)
+		}
+
+		for imageID, segment := range formation.Segments {
+			segmentTiradsID, err := r.CreateTirads(ctx, &segment.Tirads)
+			if err != nil {
+				return fmt.Errorf("create segment tirads: %w", err)
+			}
+
+			if err := r.CreateImageFormation(ctx, &entity.ImageFormation{
+				ContorURL:   segment.ContorUrl,
+				FormationID: formation.Id,
+				ImageID:     imageID,
+				TiradsID:    segmentTiradsID,
+			}); err != nil {
+				return fmt.Errorf("create image formation: %w", err)
+			}
+		}
+	}
+
+	return nil
 }

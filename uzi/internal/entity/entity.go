@@ -38,7 +38,7 @@ type Formation struct {
 	Id uuid.UUID
 	Ai bool
 
-	TiradsId int
+	TiradsID int
 }
 
 type ImageFormation struct {
@@ -46,5 +46,5 @@ type ImageFormation struct {
 	ContorURL   string
 	FormationID uuid.UUID
 	ImageID     uuid.UUID
-	TiradsId    int
+	TiradsID    int
 }
