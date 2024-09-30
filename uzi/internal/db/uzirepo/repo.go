@@ -33,4 +33,3 @@ func (r *ctrl) init(cfg *config.DB) (*gorm.DB, error) {
 
 	return db, nil
 }
-

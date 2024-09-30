@@ -8,8 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Прикрутить сюда пагинацию позже
-func (u *UziUseCase) DeviceList(ctx context.Context) ([]*entity.Device, error) {
+func (u *UziUseCase) DeviceList(ctx context.Context) ([]entity.Device, error) {
 	u.logger.Info("[Request] Get device list")
 	devices, err := u.uziRepo.GetDevicesList(ctx)
 	if err != nil {

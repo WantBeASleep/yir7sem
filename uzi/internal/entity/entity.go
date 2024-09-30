@@ -33,7 +33,7 @@ type Formation struct {
 }
 
 type Segment struct {
-	Id          int
+	Id          uuid.UUID
 	ImageID     uuid.UUID
 	FormationID uuid.UUID
 

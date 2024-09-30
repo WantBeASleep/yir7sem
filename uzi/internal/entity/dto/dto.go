@@ -1,42 +1,34 @@
 package dto
 
 import (
+	"yir/uzi/internal/entity"
+
 	"github.com/google/uuid"
 )
 
-type HttpImage struct {
-	Id   uuid.UUID
-	Url  string
-	Page int
+// здесь нейминг структур будет совпадать с swagger
+
+type Formation struct {
+	Id uuid.UUID
+
+	// meta
+	Ai     bool
+	Tirads entity.Tirads
 }
 
-type HttpSegment struct {
-	ContorUrl string
-	Tirads    Tirads
+type Segment struct {
+	Id          uuid.UUID
+	ImageID     uuid.UUID
+	FormationID uuid.UUID
+
+	// meta
+	ContorURL string
+	Tirads    entity.Tirads
 }
 
-type HttpFormation struct {
-	Id        uuid.UUID
-	Segments  map[uuid.UUID]HttpSegment // сегменты узла
-	AvgTirads Tirads
-	Ai        bool
-}
-
-type InsertUziRequest struct {
-	Uzi        Uzi
-	Images     []HttpImage
-	Formations []HttpFormation
-}
-
-type HttpUziWithDevice struct {
-	Id         uuid.UUID
-	Url        string
-	Projection string
-	PatientID  uuid.UUID
-	Device     Device
-}
-
-type GetMetaUziResponse struct {
-	Uzi    HttpUziWithDevice
-	Images []HttpImage
+type Uzi struct {
+	UziInfo    *entity.Uzi
+	Images     []entity.Image
+	Formations []Formation
+	Segments   []Segment
 }

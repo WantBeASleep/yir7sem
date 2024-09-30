@@ -138,11 +138,12 @@ message Device {
 }
 
 message Segment {
-  string formation_id = 100 [ json_name = "formation_id" ];
-  string image_id = 200 [ json_name = "image_id" ];
+  string id = 100;
+  string formation_id = 200 [ json_name = "formation_id" ];
+  string image_id = 300 [ json_name = "image_id" ];
 
-  string contor_url = 300 [ json_name = "contor_url" ];
-  Tirads tirads = 400;
+  string contor_url = 400 [ json_name = "contor_url" ];
+  Tirads tirads = 500;
 }
 
 message Formation {
@@ -181,7 +182,6 @@ message ImageIdRequest {
 message FormationIdRequest { 
   string formation_id = 100 [ json_name = "formation_id" ]; 
 }
-
 
 
 message Uzi {
