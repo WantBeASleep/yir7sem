@@ -26,6 +26,17 @@ type DB struct {
 	Password string `env:"DB_PASS" env-required:"true"`
 }
 
+func (d *DB) GetDSN() string {
+	return fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s",
+		d.Host,
+		d.User,
+		d.Password,
+		d.Name,
+		d.Port,
+	)
+}
+
 func MustLoad(cfgPath string) *Config {
 	var cfg Config
 	err := cleanenv.ReadConfig(cfgPath, &cfg)

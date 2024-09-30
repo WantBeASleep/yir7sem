@@ -1,4 +1,4 @@
-package entity
+package dto
 
 import (
 	"github.com/google/uuid"
@@ -33,10 +33,10 @@ type HttpUziWithDevice struct {
 	Url        string
 	Projection string
 	PatientID  uuid.UUID
-	Device Device
+	Device     Device
 }
 
 type GetMetaUziResponse struct {
-	Uzi HttpUziWithDevice
+	Uzi    HttpUziWithDevice
 	Images []HttpImage
 }

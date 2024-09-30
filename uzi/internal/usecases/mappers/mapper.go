@@ -20,7 +20,7 @@ func UziDeviceImagesToUziMeta(uzi *entity.Uzi, device *entity.Device, images []e
 	resp := entity.GetMetaUziResponse{}
 	resp.Uzi = *utils.MustTransformObj[entity.Uzi, entity.HttpUziWithDevice](uzi)
 	resp.Uzi.Device = *device
-	
+
 	httpImages := utils.MustTransformSlice[entity.Image, entity.HttpImage](images)
 	resp.Images = httpImages
 	return &resp

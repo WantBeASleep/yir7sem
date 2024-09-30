@@ -4,6 +4,44 @@ import (
 	"github.com/google/uuid"
 )
 
+// Не увидел смысла декомпозировать в отдельные таблички meta инфы
+
+type Uzi struct {
+	Id  uuid.UUID
+	Url string
+
+	// meta
+	Projection string
+	PatientID  uuid.UUID
+	DeviceID   int
+}
+
+type Image struct {
+	Id    uuid.UUID
+	Url   string
+	UziID uuid.UUID
+
+	Page int
+}
+
+type Formation struct {
+	Id uuid.UUID
+
+	// meta
+	Ai       bool
+	TiradsID int
+}
+
+type Segment struct {
+	Id          int
+	ImageID     uuid.UUID
+	FormationID uuid.UUID
+
+	// meta
+	ContorURL string
+	TiradsID  int
+}
+
 type Device struct {
 	Id   int
 	Name string
@@ -15,36 +53,4 @@ type Tirads struct {
 	Tirads3 float64
 	Tirads4 float64
 	Tirads5 float64
-}
-
-type Uzi struct {
-	Id         uuid.UUID
-	Url        string
-	Projection string
-	PatientID  uuid.UUID
-
-	DeviceID int
-}
-
-type Image struct {
-	Id   uuid.UUID
-	Url  string
-	Page int
-
-	UziID uuid.UUID
-}
-
-type Formation struct {
-	Id uuid.UUID
-	Ai bool
-
-	TiradsID int
-}
-
-type ImageFormation struct {
-	Id          int
-	ContorURL   string
-	FormationID uuid.UUID
-	ImageID     uuid.UUID
-	TiradsID    int
 }

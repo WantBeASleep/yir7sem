@@ -1,0 +1,228 @@
+syntax = "proto3";
+
+package yir.uzi;
+
+option go_package = "yir/uzi/api;api";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info : {
+    title : "UZI API"
+    description : "Сервис нужен для хранения отношений **UZI**, **IMAGES**, "
+                  "**FORMATION**, **SEGMENT**.\n"
+                  "\n"
+                  "**SEGMENT** - контур конкретного узла на конкретном "
+                  "изображении.\n"
+                  "*при добавлении узлов врачем, tirads можно опустить*\n"
+                  "**FORMATION** - конкретный узел, можно ассоциировать с "
+                  "физическим узлом, его сегменты могут быть на многих "
+                  "изображениях.\n"
+                  "**IMAGE** - одно изображение UZI, может содержать на себе "
+                  "несколько сегментов.\n"
+                  "**UZI**/**UZIINFO** - общая информация об узи. Все остальные сущности так или иначе относятся к конкретному узи\n"
+                  "\n"
+                  "**ВАЖНО**: в API используются 2 понятия для узи: **UZI** и **UZIINFO**. *UZIINFO* - обозначает инфу об узи, id, projection, аппарат и тд. *UZI* - это *UZIINFO && IMAGES && FORMATION && SEGMENTS*.\n"
+                  "**ВАЖНО**: Сервис **НЕ ГЕНЕРИРУЕТ ID UZI, IMAGE, "
+                  "FORMATION**. Все ID "
+                  "генерируются на стороне **ML/S3 Upload**."
+    version : "v0"
+  }
+};
+
+
+
+service UziAPI {
+  // /uzi/ блок
+
+  // Добавить uzi
+  rpc InsertUzi(Uzi) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post : "/uzi"
+      body : "*"
+    };
+  }
+
+  // Получить uzi
+  rpc GetUzi(UziIdRequest) returns (Uzi) {
+    option (google.api.http) = {
+      get : "/uzi/{uzi_id}"
+    };
+  }
+
+  // Получить uziinfo
+  rpc GetUziInfo(UziIdRequest) returns (UziInfo) {
+    option (google.api.http) = {
+      get : "/uzi/info/{uzi_id}"
+    };
+  }
+
+  // Обновить uziinfo
+  //
+  // **ID при обновлении будет игнорироваться**
+  rpc UpdateUziInfo(UpdateUziRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      patch : "/uzi/info/{uzi_id}"
+      body : "uzi_info"
+    };
+  }
+
+
+  // /image/ блок
+
+
+  // Получить image && segments на image && formation segment'ов
+  rpc GetImageWithSegments(ImageIdRequest) returns (ImageWithSegments) {
+    option (google.api.http) = {
+      get : "/image/segments/{image_id}"
+    };
+  }
+
+
+  // /formation/ блок
+
+
+  // Добавить formation + segments
+  rpc InsertFormationWithSegments(InsertFormationWithSegmentsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post : "/formation/segments/{uzi_id}"
+      body : "formation_with_segments"
+    };
+  }
+
+  // Получить formation + segments
+  rpc GetFormationWithSegments(FormationIdRequest) returns (FormationWithSegments) {
+    option (google.api.http) = {
+      get : "/formation/segments/{formation_id}"
+    };
+  }
+
+  // Обновить formation
+  //
+  // **ID при обновлении будет игнорироваться**
+  rpc UpdateFormation(UpdateFormationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      patch : "/formation/{formation_id}"
+      body : "formation"
+    };
+  }
+
+  
+  // /device/
+
+  // Получить список девайсов
+  rpc GetDeviceList(google.protobuf.Empty) returns (GetDeviceListResponse) {
+    option (google.api.http) = {
+      get : "/device/list"
+    };
+  }
+}
+
+
+// Базовые структуры
+
+
+message Tirads {
+  double tirads_1 = 1;
+  double tirads_2 = 2;
+  double tirads_3 = 3;
+  double tirads_4 = 4;
+  double tirads_5 = 5;
+}
+
+message Device {
+  int64 id = 100;
+  string name = 200;
+}
+
+message Segment {
+  string formation_id = 100 [ json_name = "formation_id" ];
+  string image_id = 200 [ json_name = "image_id" ];
+
+  string contor_url = 300 [ json_name = "contor_url" ];
+  Tirads tirads = 400;
+}
+
+message Formation {
+  string id = 100;
+
+  Tirads tirads = 200;
+  bool ai = 300;
+}
+
+message Image {
+  string id = 100;
+  string url = 200;
+
+  int64 page = 300;
+}
+
+message UziInfo {
+  string id = 100;
+  string url = 200;
+
+  string projection = 300;
+  string patient_id = 400 [ json_name = "patient_id" ];
+  int64 device_id = 500 [ json_name = "device_id" ];
+}
+
+// Структуры RPC
+
+message UziIdRequest { 
+  string uzi_id = 100 [ json_name = "uzi_id" ]; 
+}
+
+message ImageIdRequest { 
+  string image_id = 100 [ json_name = "image_id" ]; 
+}
+
+message FormationIdRequest { 
+  string formation_id = 100 [ json_name = "formation_id" ]; 
+}
+
+
+
+message Uzi {
+  UziInfo uziInfo = 100 [ json_name = "uzi_info" ];
+  repeated Image images = 200;
+  repeated Formation formations = 300;
+  repeated Segment segments = 400;
+}
+
+message UpdateUziRequest {
+  string uzi_id = 100 [ json_name = "uzi_id" ]; 
+  UziInfo uzi_info = 200 [ json_name = "uzi_info" ];
+}
+
+
+
+message ImageWithSegments {
+  Image image = 100;
+  repeated Segment segments = 200;
+  repeated Formation formations = 300;
+}
+
+
+
+message FormationWithSegments {
+  Formation formation = 100;
+  repeated Segment segments = 200;
+}
+
+message InsertFormationWithSegmentsRequest {
+  string uzi_id = 100 [ json_name = "uzi_id" ];
+  FormationWithSegments formation_with_segments = 200;
+}
+
+message UpdateFormationRequest {
+  string formation_id = 100 [ json_name = "formation_id" ]; 
+  Formation formation = 200;
+}
+
+
+
+message GetDeviceListResponse {
+  repeated Device devices = 100;
+}

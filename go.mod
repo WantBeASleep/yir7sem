@@ -10,6 +10,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
+	github.com/jinzhu/copier v0.4.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.26.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240820151423-278611b39280

@@ -1,4 +1,4 @@
-package repositories
+package uzirepo
 
 import (
 	"context"
@@ -6,14 +6,12 @@ import (
 	"sort"
 	"yir/uzi/internal/config"
 	"yir/uzi/internal/entity"
-	"yir/uzi/internal/repositories/db/models"
-	"yir/uzi/internal/repositories/db/utils"
+	"yir/uzi/internal/db/models"
 	mapper "yir/uzi/internal/utils"
 
 	"errors"
 
 	"github.com/google/uuid"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -22,23 +20,11 @@ type UziRepo struct {
 }
 
 func NewRepository(cfg *config.DB) (*UziRepo, error) {
-	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN: utils.GetDSN(cfg),
-	}), &gorm.Config{})
+	db, err := uziRepoCtrl.init(cfg) 
 	if err != nil {
-		return nil, fmt.Errorf("create db gorm obj: %w", err)
+		return nil, fmt.Errorf("init repo layer: %w", err)
 	}
-
-	// https://popovza.kaiten.ru/space/420777/card/37587888
-	db.AutoMigrate(
-		&models.Device{},
-		&models.Uzi{},
-		&models.Image{},
-		&models.Tirads{},
-		&models.Formation{},
-		&models.ImageFormation{},
-	)
-
+	
 	return &UziRepo{
 		db: db,
 	}, nil
@@ -180,7 +166,7 @@ func (r *UziRepo) GetUziImages(ctx context.Context, uziID uuid.UUID) ([]entity.I
 		return nil, fmt.Errorf("get uzi images: %w", err)
 	}
 
-	sort.Slice(resp, func(i, j int) bool {return resp[i].Page < resp[j].Page})
+	sort.Slice(resp, func(i, j int) bool { return resp[i].Page < resp[j].Page })
 
 	return mapper.MustTransformSlice[models.Image, entity.Image](resp), nil
 }

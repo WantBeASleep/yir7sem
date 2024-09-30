@@ -2,9 +2,9 @@ version: '3'
 
 vars:
   proto_libs_path: '{{.proto_libs | default "../vendor.protogen"}}'
-  proto_target: '{{.proto_target | default "api/uzi/uzi.proto"}}'
-  proto_out: '{{.proto_out | default "api/uzi"}}'
-  swagger_out: '{{.swagger_out | default "api/uzi"}}'
+  proto_target: '{{.proto_target | default "api/uzi.proto"}}'
+  proto_out: '{{.proto_out | default "api"}}'
+  swagger_out: '{{.swagger_out | default "api"}}'
 
 tasks:
   generate:

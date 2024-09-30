@@ -2,8 +2,9 @@ package repositories
 
 import (
 	"context"
-	"github.com/google/uuid"
 	"yir/uzi/internal/entity"
+
+	"github.com/google/uuid"
 )
 
 type UziRepo interface {

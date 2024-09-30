@@ -12,8 +12,6 @@ var (
 	ErrNotFound = errors.New("not found")
 )
 
-// DB
-
 type ImagesNotFoundError struct {
 	Ids uuid.UUIDs
 }
