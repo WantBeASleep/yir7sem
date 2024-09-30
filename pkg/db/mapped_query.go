@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"gorm.io/gorm"
-	"yir/internal/mappers"
+	"yir/pkg/mappers"
 )
 
 func GetSingleMappedRecord[Entity, Model any](ctx context.Context, db *gorm.DB, opts ...QueryOption) (*Entity, error) {
