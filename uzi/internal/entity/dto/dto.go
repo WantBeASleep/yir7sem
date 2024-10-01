@@ -13,7 +13,7 @@ type Formation struct {
 
 	// meta
 	Ai     bool
-	Tirads entity.Tirads
+	Tirads *entity.Tirads
 }
 
 type Segment struct {
@@ -23,7 +23,12 @@ type Segment struct {
 
 	// meta
 	ContorURL string
-	Tirads    entity.Tirads
+	Tirads    *entity.Tirads
+}
+
+type FormationWithSegments struct {
+	Formation *Formation
+	Segments []Segment
 }
 
 type Uzi struct {

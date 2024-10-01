@@ -3,7 +3,6 @@ package uzi
 import (
 	"context"
 	"fmt"
-	"yir/pkg/mappers"
 	"yir/uzi/internal/entity"
 	"yir/uzi/internal/entity/dto"
 
@@ -26,58 +25,20 @@ func (u *UziUseCase) InsertUzi(ctx context.Context, req *dto.Uzi) error {
 	}
 	u.logger.Debug("[Response] Inserted images")
 
-	u.logger.Debug("[Request] Create formations tirads")
-	formations, err := mappers.TransformSlice[dto.Formation, entity.Formation](req.Formations, func(src *dto.Formation, dst *entity.Formation) error {
-		tiradsID, err := u.uziRepo.CreateTirads(ctx, &src.Tirads)
-		if err != nil {
-			return fmt.Errorf("create tirads: %w", err)
-		}
-
-		dst.TiradsID = tiradsID
-		return nil
-	})
-	if err != nil {
-		u.logger.Error("Create formations tirads", zap.Error(err))
-		return fmt.Errorf("create formations tirads: %w", err)
+	if err := u.InsertDTOFormations(ctx, req.Formations); err != nil {
+		return fmt.Errorf("insert dto formations: %w", err)
 	}
-	u.logger.Debug("[Response] Created formations tirads")
 
-	u.logger.Debug("[Request] Insert formations")
-	if err := u.uziRepo.InsertFormations(ctx, formations); err != nil {
-		u.logger.Error("Insert formations", zap.Error(err))
-		return fmt.Errorf("insert formations: %w", err)
+	if err := u.InsertDTOSegments(ctx, req.Segments); err != nil {
+		return fmt.Errorf("insert dto segments: %w", err)
 	}
-	u.logger.Debug("[Response] Inserted formations")
-
-	u.logger.Debug("[Request] Create segments tirads")
-	segments, err := mappers.TransformSlice[dto.Segment, entity.Segment](req.Segments, func(src *dto.Segment, dst *entity.Segment) error {
-		tiradsID, err := u.uziRepo.CreateTirads(ctx, &src.Tirads)
-		if err != nil {
-			return fmt.Errorf("create tirads: %w", err)
-		}
-
-		dst.TiradsID = tiradsID
-		return nil
-	})
-	if err != nil {
-		u.logger.Error("Create segments tirads", zap.Error(err))
-		return fmt.Errorf("create segments tirads: %w", err)
-	}
-	u.logger.Debug("[Response] Created segments tirads")
-
-	u.logger.Debug("[Request] Insert segments")
-	if err := u.uziRepo.InsertSegments(ctx, segments); err != nil {
-		u.logger.Error("Insert segments", zap.Error(err))
-		return fmt.Errorf("insert segments: %w", err)
-	}
-	u.logger.Debug("[Response] Inserted segments")
 
 	return nil
 }
 
 func (u *UziUseCase) GetUzi(ctx context.Context, id uuid.UUID) (*dto.Uzi, error) {
 	u.logger.Debug("[Request] Get Uzi", zap.Any("uzi id", id))
-	uzi, err := u.uziRepo.GetUzi(ctx, id)
+	uzi, err := u.uziRepo.GetUziByID(ctx, id)
 	if err != nil {
 		u.logger.Error("Get uzi", zap.Error(err))
 		return nil, fmt.Errorf("get uzi: %w", err)
@@ -108,22 +69,43 @@ func (u *UziUseCase) GetUzi(ctx context.Context, id uuid.UUID) (*dto.Uzi, error)
 	}
 	u.logger.Debug("[Response] Get uzi segments", zap.Any("Segments", segments))
 
-	u.logger.Debug("[Request] Get formations tirads")
-	dtoFormations, err := mappers.TransformSlice[entity.Formation, dto.Formation](formations, func(src *entity.Formation, dst *dto.Formation) error {
-		tirads, err := u.uziRepo.GetTirads(ctx, src.TiradsID)
-		if err != nil {
-			return fmt.Errorf("get tirads [id %q]: %w", src.TiradsID, err)
-		}
-
-		dst.Tirads = *tirads
-		return nil
-	})
+	dtoFormations, err := u.GetDTOFormation(ctx, formations)
 	if err != nil {
-		return nil, fmt.Errorf("get ")
+		return nil, fmt.Errorf("get dto formations: %w", err)
+	}
+
+	dtoSegments, err := u.GetDTOSegments(ctx, segments)
+	if err != nil {
+		return nil, fmt.Errorf("get dto segments: %w", err)
 	}
 
 	return &dto.Uzi{
 		UziInfo: uzi,
-		Images:  images,
+		Images: images,
+		Formations: dtoFormations,
+		Segments: dtoSegments,
 	}, nil
+}
+
+func (u *UziUseCase) GetUziInfo(ctx context.Context, id uuid.UUID) (*entity.Uzi, error) {
+	u.logger.Debug("[Request] Get Uzi", zap.Any("uzi id", id))
+	uzi, err := u.uziRepo.GetUziByID(ctx, id)
+	if err != nil {
+		u.logger.Error("Get uzi", zap.Error(err))
+		return nil, fmt.Errorf("get uzi: %w", err)
+	}
+	u.logger.Debug("[Response] Get uzi", zap.Any("Uzi", uzi))
+
+	return uzi, nil
+}
+
+func (u *UziUseCase) UpdateUziInfo(ctx context.Context, id uuid.UUID, req *entity.Uzi) error {
+	u.logger.Debug("[Request] Update UziInfo", zap.Any("Requset", req))
+	if err := u.uziRepo.UpdateUzi(ctx, id, req); err != nil {
+		u.logger.Error("Update UziInfo", zap.Error(err))
+		return fmt.Errorf("update uzi info: %w", err)
+	}
+	u.logger.Debug("[Response] Updated Uzi")
+
+	return nil
 }

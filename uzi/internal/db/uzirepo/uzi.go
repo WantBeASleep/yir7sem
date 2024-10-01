@@ -48,7 +48,7 @@ func (r *UziRepo) CreateTirads(ctx context.Context, tirads *entity.Tirads) (int,
 	return tiradsDB.Id, nil
 }
 
-func (r *UziRepo) GetTirads(ctx context.Context, id int) (*entity.Tirads, error) {
+func (r *UziRepo) GetTiradsByID(ctx context.Context, id int) (*entity.Tirads, error) {
 	resp, err := db.GetSingleMappedRecord[entity.Tirads, models.Tirads](ctx, r.db, db.WithWhere("id = ?", id))
 	if err != nil {
 		return nil, err
@@ -57,17 +57,41 @@ func (r *UziRepo) GetTirads(ctx context.Context, id int) (*entity.Tirads, error)
 	return resp, nil
 }
 
+func (r *UziRepo) UpdateTirads(ctx context.Context, id int, tirads *entity.Tirads) error {
+	tiradsDB := mappers.MustTransformObj[entity.Tirads, models.Tirads](tirads)
+
+	err := r.db.WithContext(ctx).
+		Model(&models.Tirads{}).
+		Where("id = ?", id).
+		Updates(tiradsDB).
+		Error
+
+	return err
+}
+
 func (r *UziRepo) InsertUzi(ctx context.Context, uzi *entity.Uzi) error {
 	return db.CreateRecord[models.Uzi](ctx, r.db, uzi)
 }
 
-func (r *UziRepo) GetUzi(ctx context.Context, id uuid.UUID) (*entity.Uzi, error) {
+func (r *UziRepo) GetUziByID(ctx context.Context, id uuid.UUID) (*entity.Uzi, error) {
 	resp, err := db.GetSingleMappedRecord[entity.Uzi, models.Uzi](ctx, r.db, db.WithWhere("id = ?", id))
 	if err != nil {
 		return nil, err
 	}
 
 	return resp, nil
+}
+
+func (r *UziRepo) UpdateUzi(ctx context.Context, id uuid.UUID, uzi *entity.Uzi) error {
+	uziDB := mappers.MustTransformObj[entity.Uzi, models.Uzi](uzi)
+
+	err := r.db.WithContext(ctx).
+		Model(&models.Uzi{}).
+		Where("id = ?", id).
+		Updates(uziDB).
+		Error
+
+	return err
 }
 
 func (r *UziRepo) InsertImages(ctx context.Context, images []entity.Image) error {
@@ -104,6 +128,15 @@ func (r *UziRepo) GetUziFormations(ctx context.Context, uziID uuid.UUID) ([]enti
 	return mappers.MustTransformSlice[models.Formation, entity.Formation](resp), nil
 }
 
+func (r *UziRepo) GetFormationByID(ctx context.Context, id uuid.UUID) (*entity.Formation, error) {
+	resp, err := db.GetSingleMappedRecord[entity.Formation, models.Formation](ctx, r.db, db.WithWhere("id = ?", id))
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 func (r *UziRepo) InsertSegments(ctx context.Context, segments []entity.Segment) error {
 	return db.CreateRecord[models.Segment](ctx, r.db, segments)
 }
@@ -124,28 +157,19 @@ func (r *UziRepo) GetUziSegments(ctx context.Context, uziID uuid.UUID) ([]entity
 	return mappers.MustTransformSlice[models.Segment, entity.Segment](resp), nil
 }
 
-func (r *UziRepo) UpdateTirads(ctx context.Context, id int, tirads *entity.Tirads) error {
-	tiradsDB := mapper.MustTransformObj[entity.Tirads, models.Tirads](tirads)
+func (r *UziRepo) GetFormationSegments(ctx context.Context, formationID uuid.UUID) ([]entity.Segment, error) {
+	query := r.db.WithContext(ctx).
+		Model(&models.Segment{}).
+		Distinct("segments.id").
+		Joins("inner join formations on segments.formation_id = formations.id").
+		Where("formations.id = ?", formationID)
 
-	err := r.db.WithContext(ctx).
-		Model(&models.Tirads{}).
-		Where("id = ?", id).
-		Updates(tiradsDB).
-		Error
+	resp := []models.Segment{}
+	if err := query.Find(&resp).Error; err != nil {
+		return nil, fmt.Errorf("get uzi segments: %w", err)
+	}
 
-	return err
-}
-
-func (r *UziRepo) UpdateUzi(ctx context.Context, uzi *entity.Uzi) error {
-	uziDB := mapper.MustTransformObj[entity.Uzi, models.Uzi](uzi)
-
-	err := r.db.WithContext(ctx).
-		Model(&models.Uzi{}).
-		Where("id = ?", uziDB.Id).
-		Updates(uziDB).
-		Error
-
-	return err
+	return mappers.MustTransformSlice[models.Segment, entity.Segment](resp), nil
 }
 
 func (r *UziRepo) GetImage(ctx context.Context, id uuid.UUID) (*entity.Image, error) {
