@@ -20,12 +20,16 @@ type UziRepo interface {
 
 	InsertImages(ctx context.Context, images []entity.Image) error
 	GetUziImages(ctx context.Context, uziID uuid.UUID) ([]entity.Image, error)
+	GetImageFormations(ctx context.Context, imageID uuid.UUID) ([]entity.Formation, error)
+	GetImageByID(ctx context.Context, id uuid.UUID) (*entity.Image, error)
 
 	InsertFormations(ctx context.Context, formations []entity.Formation) error
 	GetUziFormations(ctx context.Context, uziID uuid.UUID) ([]entity.Formation, error)
 	GetFormationByID(ctx context.Context, id uuid.UUID) (*entity.Formation, error)
+	UpdateFormation(ctx context.Context, id uuid.UUID, formation *entity.Formation) error
 
 	InsertSegments(ctx context.Context, segments []entity.Segment) error
 	GetUziSegments(ctx context.Context, uziID uuid.UUID) ([]entity.Segment, error)
+	GetImageSegments(ctx context.Context, imageID uuid.UUID) ([]entity.Segment, error)
 	GetFormationSegments(ctx context.Context, formationID uuid.UUID) ([]entity.Segment, error)
 }

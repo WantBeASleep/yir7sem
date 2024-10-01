@@ -28,7 +28,13 @@ type Segment struct {
 
 type FormationWithSegments struct {
 	Formation *Formation
-	Segments []Segment
+	Segments  []Segment
+}
+
+type ImageWithSegmentsFormations struct {
+	Image      *entity.Image
+	Formations []Formation
+	Segments   []Segment
 }
 
 type Uzi struct {

@@ -52,29 +52,35 @@ func (u *UziUseCase) GetFormationWithSegments(ctx context.Context, id uuid.UUID)
 
 	return &dto.FormationWithSegments{
 		Formation: &dtoFormation[0],
-		Segments: dtoSegments,
+		Segments:  dtoSegments,
 	}, nil
 }
 
 func (u *UziUseCase) UpdateFormation(ctx context.Context, id uuid.UUID, req *dto.Formation) error {
 	formation, err := mappers.TransformObj[dto.Formation, entity.Formation](req, func(src *dto.Formation, dst *entity.Formation) error {
 		if src.Tirads != nil {
+			u.logger.Debug("[Request] Create tirads")
 			tiradsID, err := u.uziRepo.CreateTirads(ctx, src.Tirads)
 			if err != nil {
+				u.logger.Error("Create tirads", zap.Error(err))
 				return fmt.Errorf("create tirads: %w", err)
 			}
+			u.logger.Debug("[Response] Created tirads", zap.Int("id", tiradsID))
 
 			dst.TiradsID = tiradsID
 		}
-		
+
 		return nil
 	})
 	if err != nil {
 		return fmt.Errorf("get entity formation: %w", err)
 	}
-	
+
 	u.logger.Debug("[Request] Update Formation", zap.Any("id", id), zap.Any("data", req))
-	
+	if err := u.uziRepo.UpdateFormation(ctx, id, formation); err != nil {
+		u.logger.Error("Update Formation", zap.Error(err))
+		return fmt.Errorf("update formation: %w", err)
+	}
 	u.logger.Debug("[Response] Updated Formation")
 
 	return nil

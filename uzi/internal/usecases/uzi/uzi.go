@@ -80,10 +80,10 @@ func (u *UziUseCase) GetUzi(ctx context.Context, id uuid.UUID) (*dto.Uzi, error)
 	}
 
 	return &dto.Uzi{
-		UziInfo: uzi,
-		Images: images,
+		UziInfo:    uzi,
+		Images:     images,
 		Formations: dtoFormations,
-		Segments: dtoSegments,
+		Segments:   dtoSegments,
 	}, nil
 }
 

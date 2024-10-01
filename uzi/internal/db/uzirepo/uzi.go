@@ -2,7 +2,6 @@ package uzirepo
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"yir/pkg/db"
 	"yir/pkg/mappers"
@@ -107,6 +106,15 @@ func (r *UziRepo) GetUziImages(ctx context.Context, uziID uuid.UUID) ([]entity.I
 	return resp, nil
 }
 
+func (r *UziRepo) GetImageByID(ctx context.Context, id uuid.UUID) (*entity.Image, error) {
+	resp, err := db.GetSingleMappedRecord[entity.Image, models.Image](ctx, r.db, db.WithWhere("id = ?", id))
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 func (r *UziRepo) InsertFormations(ctx context.Context, formations []entity.Formation) error {
 	return db.CreateRecord[models.Formation](ctx, r.db, formations)
 }
@@ -128,6 +136,22 @@ func (r *UziRepo) GetUziFormations(ctx context.Context, uziID uuid.UUID) ([]enti
 	return mappers.MustTransformSlice[models.Formation, entity.Formation](resp), nil
 }
 
+func (r *UziRepo) GetImageFormations(ctx context.Context, imageID uuid.UUID) ([]entity.Formation, error) {
+	query := r.db.WithContext(ctx).
+		Model(&models.Image{}).
+		Distinct("formations.id").
+		Joins("inner join segments on images.id = segments.image_id").
+		Joins("inner join formations on segments.formation_id = formations.id").
+		Where("images.id = ?", imageID)
+
+	resp := []models.Formation{}
+	if err := query.Find(&resp).Error; err != nil {
+		return nil, fmt.Errorf("get image formations: %w", err)
+	}
+
+	return mappers.MustTransformSlice[models.Formation, entity.Formation](resp), nil
+}
+
 func (r *UziRepo) GetFormationByID(ctx context.Context, id uuid.UUID) (*entity.Formation, error) {
 	resp, err := db.GetSingleMappedRecord[entity.Formation, models.Formation](ctx, r.db, db.WithWhere("id = ?", id))
 	if err != nil {
@@ -135,6 +159,18 @@ func (r *UziRepo) GetFormationByID(ctx context.Context, id uuid.UUID) (*entity.F
 	}
 
 	return resp, nil
+}
+
+func (r *UziRepo) UpdateFormation(ctx context.Context, id uuid.UUID, formation *entity.Formation) error {
+	formationDB := mappers.MustTransformObj[entity.Formation, models.Formation](formation)
+
+	err := r.db.WithContext(ctx).
+		Model(&models.Formation{}).
+		Where("id = ?", id).
+		Updates(formationDB).
+		Error
+
+	return err
 }
 
 func (r *UziRepo) InsertSegments(ctx context.Context, segments []entity.Segment) error {
@@ -157,55 +193,20 @@ func (r *UziRepo) GetUziSegments(ctx context.Context, uziID uuid.UUID) ([]entity
 	return mappers.MustTransformSlice[models.Segment, entity.Segment](resp), nil
 }
 
-func (r *UziRepo) GetFormationSegments(ctx context.Context, formationID uuid.UUID) ([]entity.Segment, error) {
-	query := r.db.WithContext(ctx).
-		Model(&models.Segment{}).
-		Distinct("segments.id").
-		Joins("inner join formations on segments.formation_id = formations.id").
-		Where("formations.id = ?", formationID)
-
-	resp := []models.Segment{}
-	if err := query.Find(&resp).Error; err != nil {
-		return nil, fmt.Errorf("get uzi segments: %w", err)
-	}
-
-	return mappers.MustTransformSlice[models.Segment, entity.Segment](resp), nil
-}
-
-func (r *UziRepo) GetImage(ctx context.Context, id uuid.UUID) (*entity.Image, error) {
-	var resp models.Image
-
-	query := r.db.WithContext(ctx).
-		Model(&models.Image{}).
-		Where("id = ?", id)
-
-	if err := query.Take(&resp).Error; err != nil {
-		if errors.Is(query.Error, gorm.ErrRecordNotFound) {
-			return nil, entity.ErrNotFound
-		}
+func (r *UziRepo) GetImageSegments(ctx context.Context, imageID uuid.UUID) ([]entity.Segment, error) {
+	resp, err := db.GetMultiMappedRecord[entity.Segment, models.Segment](ctx, r.db, db.WithWhere("image_id = ?", imageID))
+	if err != nil {
 		return nil, err
 	}
 
-	return mapper.MustTransformObj[models.Image, entity.Image](&resp), nil
+	return resp, nil
 }
 
-func (r *UziRepo) CheckImagesIDsExist(ctx context.Context, ids uuid.UUIDs) error {
-	var imagesIDs uuid.UUIDs
-	if err := r.db.WithContext(ctx).Model(&models.Image{}).Pluck("id", &imagesIDs).Error; err != nil {
-		return fmt.Errorf("get images ids: %w", err)
+func (r *UziRepo) GetFormationSegments(ctx context.Context, formationID uuid.UUID) ([]entity.Segment, error) {
+	resp, err := db.GetMultiMappedRecord[entity.Segment, models.Segment](ctx, r.db, db.WithWhere("formation_id = ?", formationID))
+	if err != nil {
+		return nil, err
 	}
 
-	var notFoundIds uuid.UUIDs
-	imagesIDsMap := mapper.SliceToMap(imagesIDs)
-	for _, id := range ids {
-		if _, ok := imagesIDsMap[id]; !ok {
-			notFoundIds = append(notFoundIds, id)
-		}
-	}
-
-	if notFoundIds != nil {
-		return &entity.ImagesNotFoundError{Ids: notFoundIds}
-	}
-
-	return nil
+	return resp, nil
 }
