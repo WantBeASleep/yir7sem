@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	pb "service/api/medworkers"
+	"service/internal/config"
+	MedWorkerApi "service/internal/controller/medworkers"
 	"sync"
-	pb "yir/medworkers/api/medworkers"
-	"yir/medworkers/internal/config"
-	MedWorkerApi "yir/medworkers/internal/controller/medworkers"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"

@@ -3,22 +3,22 @@ package usecases
 import (
 	"context"
 	"fmt"
+	"service/internal/entity"
+	"service/internal/usecases/repositories"
 
 	"go.uber.org/zap"
-
-	"yir/medworkers/internal/entity"
-	"yir/medworkers/internal/usecases/repositories"
 )
 
 type MedWorkerUseCase struct {
-	MedWorkerRepo repositories.MedWorker
-
-	logger *zap.Logger
+	MedWorkerRepo  repositories.MedWorker
+	PatientService repositories.PatientService
+	logger         *zap.Logger
 }
 
-func NewMedWorkerUseCase(MedWorkerRepo repositories.MedWorker, logger *zap.Logger) *MedWorkerUseCase {
+func NewMedWorkerUseCase(MedWorkerRepo repositories.MedWorker, patientService repositories.PatientService, logger *zap.Logger) *MedWorkerUseCase {
 	return &MedWorkerUseCase{MedWorkerRepo: MedWorkerRepo,
-		logger: logger,
+		PatientService: patientService,
+		logger:         logger,
 	}
 }
 
@@ -116,4 +116,32 @@ func (m *MedWorkerUseCase) AddMedWorker(ctx context.Context, createData *entity.
 
 	// Возвращаем объект MedicalWorker и ошибку
 	return medworker, nil
+}
+
+func (m *MedWorkerUseCase) GetPatientsByMedWorker(ctx context.Context, medWorkerId uint64) (*entity.MedicalWorkerWithPatients, error) {
+	m.logger.Info("Fetching patients for medical worker", zap.Any("med_worker_id", medWorkerId))
+
+	// Получение информации о медработнике из базы данных
+	medWorker, err := m.MedWorkerRepo.GetMedicalWorkerByID(ctx, int(medWorkerId))
+	if err != nil {
+		return nil, err
+	}
+
+	// Вызов gRPC метода из PatientService для получения списка пациентов
+	patientPtrs, err := m.PatientService.GetPatientsByMedWorker(ctx, medWorkerId)
+	if err != nil {
+		return nil, err
+	}
+
+	// Преобразуем срез указателей в срез значений
+	patients := make([]entity.PatientCardDTO, len(patientPtrs))
+	for i, patientPtr := range patientPtrs {
+		patients[i] = *patientPtr
+	}
+
+	// Возвращаем данные с врачом и его пациентами
+	return &entity.MedicalWorkerWithPatients{
+		MedWorker: *medWorker,
+		Patients:  patients,
+	}, nil
 }

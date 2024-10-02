@@ -2,8 +2,8 @@
 package mappers
 
 import (
-	"yir/medworkers/internal/entity"
-	"yir/medworkers/internal/repositories/models"
+	"service/internal/entity"
+	"service/internal/repositories/models"
 )
 
 // Сущность медворкера в модель базы данных

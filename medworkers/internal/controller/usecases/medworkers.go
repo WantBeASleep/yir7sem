@@ -2,7 +2,7 @@ package usecases
 
 import (
 	"context"
-	"yir/medworkers/internal/entity"
+	"service/internal/entity"
 )
 
 type MedicalWorker interface {
@@ -10,4 +10,5 @@ type MedicalWorker interface {
 	GetMedWorkerByID(ctx context.Context, ID int) (*entity.MedicalWorker, error)
 	UpdateMedWorker(ctx context.Context, ID int, updateData *entity.MedicalWorkerUpdateRequest) (*entity.MedicalWorker, error)
 	AddMedWorker(ctx context.Context, createData *entity.AddMedicalWorkerRequest) (*entity.MedicalWorker, error)
+	GetPatientsByMedWorker(ctx context.Context, medWorkerID uint64) (*entity.MedicalWorkerWithPatients, error)
 }

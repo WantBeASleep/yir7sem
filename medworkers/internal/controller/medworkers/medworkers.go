@@ -3,9 +3,9 @@ package medworkers
 import (
 	"context"
 	"errors"
-	pb "yir/medworkers/api/medworkers"
-	"yir/medworkers/internal/controller/usecases"
-	"yir/medworkers/internal/entity"
+	pb "service/api/medworkers"
+	"service/internal/controller/usecases"
+	"service/internal/entity"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -159,5 +159,103 @@ func (s *Server) AddMedWorker(ctx context.Context, request *pb.AddMedWorkerReque
 	}
 
 	s.logger.Info("Medworker successfully added", zap.Any("worker", response.Worker))
+	return response, nil
+}
+
+// func (s *Server) GetPatientsByMedWorker(ctx context.Context, req *pb.GetPatientsByMedWorkerRequest) (*pb.GetPatientsByMedWorkerResponse, error) {
+// 	s.logger.Info("Received request for patients", zap.Any("medWorkerId", req.GetMedWorkerId()))
+
+// 	// Получаем медработника
+// 	medWorker, err := s.MedWorkerUseCase.GetMedWorkerByID(ctx, int(req.GetMedWorkerId()))
+// 	if err != nil {
+// 		s.logger.Error("Failed to get medworker", zap.Error(err))
+// 		return nil, status.Errorf(codes.Internal, "failed to get medworker: %v", err)
+// 	}
+
+// 	// Вызов сервиса пациентов через gRPC/HTTP для получения пациентов
+// 	patients, err := s.PatientClient.GetPatientsByMedWorkerID(ctx, req.GetMedWorkerId())
+// 	if err != nil {
+// 		s.logger.Error("Failed to get patients from patient service", zap.Error(err))
+// 		return nil, status.Errorf(codes.Internal, "failed to get patients: %v", err)
+// 	}
+
+// 	// Формируем ответ
+// 	response := &pb.GetPatientsByMedWorkerResponse{
+// 		MedWorker: &pb.MedWorker{
+// 			Id:              uint64(medWorker.ID),
+// 			LastName:        medWorker.LastName,
+// 			FirstName:       medWorker.FirstName,
+// 			MiddleName:      medWorker.MiddleName,
+// 			MedOrganization: medWorker.MedOrganization,
+// 			Job:             medWorker.Job,
+// 			IsRemoteWorker:  medWorker.IsRemoteWorker,
+// 			ExpertDetails:   medWorker.ExpertDetails,
+// 		},
+// 		Cards: []*pb.PatientCard{},
+// 	}
+
+// 	for _, patientCard := range patients {
+// 		response.Cards = append(response.Cards, &pb.PatientCard{
+// 			Id:              uint64(patientCard.ID),
+// 			AppointmentTime: patientCard.AppointmentTime.String(),
+// 			HasNodules:      patientCard.HasNodules,
+// 			Diagnosis:       patientCard.Diagnosis,
+// 			Patient: &pb.Patient{
+// 				Id:            uint64(patientCard.Patient.ID),
+// 				FirstName:     patientCard.Patient.FirstName,
+// 				LastName:      patientCard.Patient.LastName,
+// 				FatherName:    patientCard.Patient.FatherName,
+// 				MedicalPolicy: patientCard.Patient.MedicalPolicy,
+// 				Email:         patientCard.Patient.Email,
+// 				IsActive:      patientCard.Patient.IsActive,
+// 			},
+// 		})
+// 	}
+
+// 	return response, nil
+// }
+
+func (s *Server) GetPatientsByMedWorker(ctx context.Context, req *pb.GetPatientsByMedWorkerRequest) (*pb.GetPatientsByMedWorkerResponse, error) {
+	s.logger.Info("Received request for patients", zap.Uint64("med_worker_id", req.MedWorkerId))
+
+	// Вызов usecase для получения пациентов по id врача
+	result, err := s.MedWorkerUseCase.GetPatientsByMedWorker(ctx, req.MedWorkerId)
+	if err != nil {
+		s.logger.Error("Failed to get patients", zap.Error(err))
+		return nil, status.Error(codes.Internal, "failed to get patients")
+	}
+
+	// Формирование ответа
+	response := &pb.GetPatientsByMedWorkerResponse{
+		MedWorker: &pb.MedWorker{
+			Id:              uint64(result.MedWorker.ID),
+			FirstName:       result.MedWorker.FirstName,
+			MiddleName:      result.MedWorker.MiddleName,
+			LastName:        result.MedWorker.LastName,
+			MedOrganization: result.MedWorker.MedOrganization,
+			Job:             result.MedWorker.Job,
+			IsRemoteWorker:  result.MedWorker.IsRemoteWorker,
+			ExpertDetails:   result.MedWorker.ExpertDetails,
+		},
+	}
+
+	for _, patientCard := range result.Patients {
+		response.Cards = append(response.Cards, &pb.PatientCard{
+			Id:              patientCard.ID,
+			AppointmentTime: patientCard.AppointmentTime,
+			HasNodules:      patientCard.HasNodules,
+			Diagnosis:       patientCard.Diagnosis,
+			Patient: &pb.Patient{
+				Id:            patientCard.Patient.ID,
+				FirstName:     patientCard.Patient.FirstName,
+				LastName:      patientCard.Patient.LastName,
+				FatherName:    patientCard.Patient.FatherName,
+				MedicalPolicy: patientCard.Patient.MedicalPolicy,
+				Email:         patientCard.Patient.Email,
+				IsActive:      patientCard.Patient.IsActive,
+			},
+		})
+	}
+
 	return response, nil
 }

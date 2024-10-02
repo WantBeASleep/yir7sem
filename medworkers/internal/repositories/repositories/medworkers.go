@@ -8,11 +8,11 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"yir/medworkers/internal/config"
-	"yir/medworkers/internal/entity"
-	"yir/medworkers/internal/repositories/mappers"
-	"yir/medworkers/internal/repositories/models"
-	"yir/medworkers/internal/repositories/utils"
+	"service/internal/config"
+	"service/internal/entity"
+	"service/internal/repositories/mappers"
+	"service/internal/repositories/models"
+	"service/internal/repositories/utils"
 )
 
 type MedicalWorkerRepo struct {

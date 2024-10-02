@@ -1,16 +1,21 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
-	"yir/internal/log"
-	"yir/medworkers/internal/apps"
-	"yir/medworkers/internal/config"
-	MedWorkerApi "yir/medworkers/internal/controller/medworkers"
-	dbRepos "yir/medworkers/internal/repositories/repositories"
-	MedWorkerUsecases "yir/medworkers/internal/usecases/medworkers"
+	"service/internal/apps"
+	"service/internal/config"
+	MedWorkerApi "service/internal/controller/medworkers"
+	dbRepos "service/internal/repositories/repositories"
+	"service/internal/services"
+	MedWorkerUsecases "service/internal/usecases/medworkers"
+	"service/pkg_log/log"
+	"time"
 
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -39,13 +44,26 @@ func main() {
 	}
 	logger.Info("Cfg && logger load")
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	// Создаем соединение с gRPC сервисом
+	conn, err := grpc.DialContext(ctx, cfg.PatientService.Host+":"+cfg.PatientService.GRPCPort, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		logger.Fatal("failed to connect to patient service", zap.Error(err))
+	}
+	defer conn.Close()
+
+	// Инициализируем gRPC клиент для сервиса пациентов
+	patientService := services.NewGRPCPatientService(conn)
+
 	MedWorkerRepo, err := dbRepos.NewRepository(&cfg.DB)
 	if err != nil {
 		panic(fmt.Errorf("medworker repo create: %w", err))
 	}
 	logger.Info("DB load")
 
-	usecases := MedWorkerUsecases.NewMedWorkerUseCase(MedWorkerRepo, logger)
+	usecases := MedWorkerUsecases.NewMedWorkerUseCase(MedWorkerRepo, patientService, logger)
 
 	MedWorkerGRPCController := MedWorkerApi.NewServer(usecases, logger)
 

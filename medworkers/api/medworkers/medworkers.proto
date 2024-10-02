@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package yir.medworkers;
+package service.medworkers;
 
 option go_package = "uir/medworkers/api/v0/medworkers"; //path for generated code for this file
 
@@ -47,6 +47,14 @@ service MedWorkers {
             post: "/medworkers/add"
         };
     }
+    //Получение пациентов, прикрепленных к врачу
+    //
+    //Вернет пациентов, их карточки и главого врача
+    rpc GetPatientsByMedWorker(GetPatientsByMedWorkerRequest) returns (GetPatientsByMedWorkerResponse) {
+        option (google.api.http) = {
+            get: "/medworkers/patients/{medWorkerId}"
+        };
+    } 
 }
 
 message MedWorker { 
@@ -125,3 +133,32 @@ message AddMedWorkerRequest {
 message AddMedWorkerResponse {
     MedWorker worker = 1; 
 }
+
+message GetPatientsByMedWorkerRequest {
+    uint64 medWorkerId = 1;
+}
+
+message GetPatientsByMedWorkerResponse {
+    repeated PatientCard cards = 1;
+    MedWorker med_worker = 2;
+}
+
+message Patient{
+    uint64 id = 1 [json_name = "id"];
+    string first_name = 2 [json_name = "first_name"];
+    string last_name = 3 [json_name = "last_name"];
+    string father_name = 4 [json_name = "father_name"];
+    string medical_policy = 5[json_name = "medical_policy"]; 
+    string email = 6 [json_name = "email"]; 
+    bool is_active = 7 [json_name = "is_active"];
+  }
+  
+  message PatientCard{
+    uint64 id = 1;
+    string appointment_time = 2 [json_name = "appointment_time"];
+    bool has_nodules = 3 [json_name = "has_nodules"]; 
+    string diagnosis = 4 [json_name = "diagnosis"];
+    uint64 med_worker_id = 5 [json_name = "med_worker_id"];
+    //uint64 patient_id = 6 [json_name = "patient_id"];
+    Patient patient = 6;
+  }

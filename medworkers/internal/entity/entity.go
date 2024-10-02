@@ -46,3 +46,8 @@ type AddMedicalWorkerRequest struct {
 	IsRemoteWorker  bool
 	ExpertDetails   string
 }
+
+type MedicalWorkerWithPatients struct {
+	MedWorker MedicalWorker
+	Patients  []PatientCardDTO // DTO, получаемые из сервиса пациентов
+}

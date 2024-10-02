@@ -9,3 +9,7 @@ db:
   port: 5432
   name: medworkersdb
   user: postgres
+
+patient_service:
+  host: localhost
+  grpc: 50054

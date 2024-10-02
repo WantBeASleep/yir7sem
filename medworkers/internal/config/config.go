@@ -7,8 +7,9 @@ import (
 )
 
 type Config struct {
-	DB  DB  `yaml:"db"`
-	App App `yaml:"app"`
+	DB             DB             `yaml:"db"`
+	App            App            `yaml:"app"`
+	PatientService PatientService `yaml:"patient_service"`
 }
 
 type DB struct {
@@ -24,6 +25,11 @@ type App struct {
 	Host     string `yaml:"host" env:"HOST" env-default:"localhost"`
 	GRPCPort string `yaml:"grpc" env:"GRPC_PORT" env-default:"50055"`
 	HTTPPort string `yaml:"http" env:"HTTP_PORT" env-default:"8080"`
+}
+
+type PatientService struct {
+	Host     string `yaml:"host" env:"PATIENT_SERVICE_HOST" env-default:"localhost"`
+	GRPCPort string `yaml:"grpc_port" env:"PATIENT_SERVICE_GRPC_PORT" env-default:"50054"`
 }
 
 func MustLoad(cfgPath string) *Config {

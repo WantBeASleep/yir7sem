@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"yir/medworkers/internal/config"
+	"service/internal/config"
 )
 
 func GetDSN(db *config.DB) string {
