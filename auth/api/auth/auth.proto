@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package yir.auth;
+
+option go_package = "yir/auth/api/v0/auth;auth";
+
+import "google/api/annotations.proto";
+
+service Auth {
+    // Получение JWT AS + RT.
+    //
+    // Получает почту и пароль. При вверных данных вернет пару access + refresh JWT токенов
+    rpc Login (LoginRequest) returns (LoginResponse) {
+        option (google.api.http) = {
+            post: "/v0/auth/login"
+            body: "*"
+        };
+    }
+
+    // Регистрация пользователя!
+    //
+    // Регистрирует пользователя в системе. Возвращает ID пользователя.
+    rpc Register (RegisterRequest) returns (RegisterResponse) {
+        option (google.api.http) = {
+            post: "/v0/auth/register"
+            body: "*"
+        };
+    }
+
+    // Обновляет AC по RT
+    //
+    // При устаревании access JWT токена, вызывается эта ручка с refresh токеном
+    // При правильном refresh токене вернет новую пару access и refresh токенов
+    // При расхождении с базой данных, вернет ошибку "expired session"
+    rpc TokenRefresh (TokenRefreshRequest) returns (TokenRefreshResponse) {
+        option (google.api.http) = {
+            post: "/v0/auth/token/refresh"
+            body: "*"
+        };
+    }
+}
+
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+}
+
+message RegisterRequest {
+    string email = 1;
+    string last_name = 2;
+    string first_name = 3;
+    string fathers_name = 4;
+    string med_organization = 5;
+    string password = 6;
+}
+
+message RegisterResponse {
+    uint64 user_id = 1;
+}
+
+message TokenRefreshRequest {
+    string refresh_token = 1;
+}
+
+message TokenRefreshResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+}

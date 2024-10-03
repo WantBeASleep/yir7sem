@@ -1,0 +1,15 @@
+app:
+  env: DEV
+  host: localhost
+  grpc: 50055
+  http: 8080
+
+db:
+  host: localhost
+  port: 5432
+  name: authdb
+  user: postgres
+
+token:
+  access_time: 1m
+  refresh_time: 5m
