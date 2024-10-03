@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package yir.med;
+
+option go_package = "/med/internal/pb/patient;patient";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+// Ручки управления информацией о пациентах и их картах
+service MedPatient{
+  // Добавить пациента
+  //
+  // Принимает данные пациента и его карты.
+  rpc AddPatient (CreatePatientRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/med/patient/create"
+      body: "*"
+    };
+  }
+  // Получить список пациентов
+  //
+  // Принимает пагинацию (Пока без нее). Возвращает список пациентов
+  rpc GetPatientList (google.protobuf.Empty) returns (PatientListResponse) {
+    option (google.api.http) = {
+      get: "/med/patient/list"
+    };
+  }
+  // Получить пациента и его карту
+  // 
+  // Получает id пациента. Возвращает пациента и его карту
+  rpc GetPatientInfoByID (PatientInfoRequest) returns (PatientInfoResponse) {
+    option (google.api.http) = {
+      get: "/med/patient/info"
+    };
+  }
+  // UNIMPLEMENTED!!!
+  // 
+  // Получает id пациента. Возвращает пациента, карту, снимки
+  // rpc PatientShots (google.protobuf.Empty) returns (google.protobuf.Empty) {
+  //   option (google.api.http) = {
+  //     get: "/med/patient/shots"
+  //   };
+  // }
+  // Обновить данные пациента
+  // 
+  // Получает пациента, карту. Возвращает id
+  rpc UpdatePatient (PatientUpdateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/med/patient/update"
+      body: "*"
+    };
+  }
+}
+
+message Patient{
+  uint64 id = 1 [json_name = "id"];
+  string first_name = 2 [json_name = "first_name"];
+  string last_name = 3 [json_name = "last_name"];
+  string father_name = 4 [json_name = "father_name"];
+  string medical_policy = 5[json_name = "medical_policy"]; 
+  string email = 6 [json_name = "email"]; 
+  bool is_active = 7 [json_name = "is_active"];
+}
+
+message PatientCard{
+  uint64 id = 1;
+  string appointment_time = 2 [json_name = "appointment_time"];
+  bool has_nodules = 3 [json_name = "has_nodules"]; 
+  string diagnosis = 4 [json_name = "diagnosis"];
+  uint64 med_worker_id = 5 [json_name = "med_worker_id"];
+  uint64 patient_id = 6 [json_name = "patient_id"];
+}
+
+message CreatePatientRequest{
+  Patient patient = 1;
+  PatientCard patient_card = 2 [json_name = "patient_card"];
+}
+
+message PatientListResponse{
+  repeated Patient patients = 1;
+}
+
+message PatientInfoRequest{
+  uint64 id = 1;
+}
+
+message PatientInfoResponse{
+  Patient patient = 1;
+  PatientCard patient_card = 2 [json_name = "patient_card"];
+}
+
+message PatientUpdateRequest{
+  Patient patient = 1;
+  PatientCard patient_card = 2 [json_name = "patient_card"];
+}
+
+/* TODO: Сделать работу со снимками после того как разберемся с ними в узи
+  
+*/
+
