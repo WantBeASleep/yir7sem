@@ -7,6 +7,7 @@ option go_package = "yir/uzi/api;api";
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+import "buf/validate/validate.proto";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info : {
@@ -22,17 +23,20 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
                   "изображениях.\n"
                   "**IMAGE** - одно изображение UZI, может содержать на себе "
                   "несколько сегментов.\n"
-                  "**UZI**/**UZIINFO** - общая информация об узи. Все остальные сущности так или иначе относятся к конкретному узи\n"
+                  "**UZI**/**UZIINFO** - общая информация об узи. Все "
+                  "остальные сущности так или иначе относятся к конкретному "
+                  "узи\n"
                   "\n"
-                  "**ВАЖНО**: в API используются 2 понятия для узи: **UZI** и **UZIINFO**. *UZIINFO* - обозначает инфу об узи, id, projection, аппарат и тд. *UZI* - это *UZIINFO && IMAGES && FORMATION && SEGMENTS*.\n"
+                  "**ВАЖНО**: в API используются 2 понятия для узи: **UZI** и "
+                  "**UZIINFO**. *UZIINFO* - обозначает инфу об узи, id, "
+                  "projection, аппарат и тд. *UZI* - это *UZIINFO && IMAGES && "
+                  "FORMATION && SEGMENTS*.\n"
                   "**ВАЖНО**: Сервис **НЕ ГЕНЕРИРУЕТ ID UZI, IMAGE, "
                   "FORMATION**. Все ID "
                   "генерируются на стороне **ML/S3 Upload**."
     version : "v0"
   }
 };
-
-
 
 service UziAPI {
   // /uzi/ блок
@@ -69,9 +73,7 @@ service UziAPI {
     };
   }
 
-
   // /image/ блок
-
 
   // Получить image && segments на image && formation segment'ов
   rpc GetImageWithSegments(ImageIdRequest) returns (ImageWithSegments) {
@@ -80,12 +82,11 @@ service UziAPI {
     };
   }
 
-
   // /formation/ блок
 
-
   // Добавить formation + segments
-  rpc InsertFormationWithSegments(InsertFormationWithSegmentsRequest) returns (google.protobuf.Empty) {
+  rpc InsertFormationWithSegments(InsertFormationWithSegmentsRequest)
+      returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post : "/formation/segments/{uzi_id}"
       body : "formation_with_segments"
@@ -93,7 +94,8 @@ service UziAPI {
   }
 
   // Получить formation + segments
-  rpc GetFormationWithSegments(FormationIdRequest) returns (FormationWithSegments) {
+  rpc GetFormationWithSegments(FormationIdRequest)
+      returns (FormationWithSegments) {
     option (google.api.http) = {
       get : "/formation/segments/{formation_id}"
     };
@@ -109,7 +111,6 @@ service UziAPI {
     };
   }
 
-  
   // /device/
 
   // Получить список девайсов
@@ -120,16 +121,14 @@ service UziAPI {
   }
 }
 
-
 // Базовые структуры
 
-
 message Tirads {
-  double tirads_1 = 1;
-  double tirads_2 = 2;
-  double tirads_3 = 3;
-  double tirads_4 = 4;
-  double tirads_5 = 5;
+  double tirads_1 = 1[(buf.validate.field).double.gte = 0.0, (buf.validate.field).double.lte = 100.0];
+  double tirads_2 = 2[(buf.validate.field).double.gte = 0.0, (buf.validate.field).double.lte = 100.0];
+  double tirads_3 = 3[(buf.validate.field).double.gte = 0.0, (buf.validate.field).double.lte = 100.0];
+  double tirads_4 = 4[(buf.validate.field).double.gte = 0.0, (buf.validate.field).double.lte = 100.0];
+  double tirads_5 = 5[(buf.validate.field).double.gte = 0.0, (buf.validate.field).double.lte = 100.0];
 }
 
 message Device {
@@ -138,51 +137,56 @@ message Device {
 }
 
 message Segment {
-  string id = 100;
-  string formation_id = 200 [ json_name = "formation_id" ];
-  string image_id = 300 [ json_name = "image_id" ];
+  string id = 100 [ (buf.validate.field).string.uuid = true ];
+  string formation_id = 200
+      [ json_name = "formation_id", (buf.validate.field).string.uuid = true ];
+  string image_id = 300
+      [ json_name = "image_id", (buf.validate.field).string.uuid = true ];
 
   string contor_url = 400 [ json_name = "contor_url" ];
   Tirads tirads = 500;
 }
 
 message Formation {
-  string id = 100;
+  string id = 100 [ (buf.validate.field).string.uuid = true ];
 
   Tirads tirads = 200;
   bool ai = 300;
 }
 
 message Image {
-  string id = 100;
+  string id = 100 [ (buf.validate.field).string.uuid = true ];
   string url = 200;
 
   int64 page = 300;
 }
 
 message UziInfo {
-  string id = 100;
+  string id = 100 [ (buf.validate.field).string.uuid = true ];
   string url = 200;
 
   string projection = 300;
-  string patient_id = 400 [ json_name = "patient_id" ];
+  string patient_id = 400
+      [ json_name = "patient_id", (buf.validate.field).string.uuid = true ];
   int64 device_id = 500 [ json_name = "device_id" ];
 }
 
 // Структуры RPC
 
-message UziIdRequest { 
-  string uzi_id = 100 [ json_name = "uzi_id" ]; 
+message UziIdRequest {
+  string uzi_id = 100
+      [ json_name = "uzi_id", (buf.validate.field).string.uuid = true ];
 }
 
-message ImageIdRequest { 
-  string image_id = 100 [ json_name = "image_id" ]; 
+message ImageIdRequest {
+  string image_id = 100
+      [ json_name = "image_id", (buf.validate.field).string.uuid = true ];
 }
 
-message FormationIdRequest { 
-  string formation_id = 100 [ json_name = "formation_id" ]; 
+message FormationIdRequest {
+  string formation_id = 100
+      [ json_name = "formation_id", (buf.validate.field).string.uuid = true ];
 }
-
 
 message Uzi {
   UziInfo uziInfo = 100 [ json_name = "uzi_info" ];
@@ -192,11 +196,10 @@ message Uzi {
 }
 
 message UpdateUziRequest {
-  string uzi_id = 100 [ json_name = "uzi_id" ]; 
+  string uzi_id = 100
+      [ json_name = "uzi_id", (buf.validate.field).string.uuid = true ];
   UziInfo uzi_info = 200 [ json_name = "uzi_info" ];
 }
-
-
 
 message ImageWithSegments {
   Image image = 100;
@@ -204,25 +207,21 @@ message ImageWithSegments {
   repeated Formation formations = 300;
 }
 
-
-
 message FormationWithSegments {
   Formation formation = 100;
   repeated Segment segments = 200;
 }
 
 message InsertFormationWithSegmentsRequest {
-  string uzi_id = 100 [ json_name = "uzi_id" ];
+  string uzi_id = 100
+      [ json_name = "uzi_id", (buf.validate.field).string.uuid = true ];
   FormationWithSegments formation_with_segments = 200;
 }
 
 message UpdateFormationRequest {
-  string formation_id = 100 [ json_name = "formation_id" ]; 
+  string formation_id = 100
+      [ json_name = "formation_id", (buf.validate.field).string.uuid = true ];
   Formation formation = 200;
 }
 
-
-
-message GetDeviceListResponse {
-  repeated Device devices = 100;
-}
+message GetDeviceListResponse { repeated Device devices = 100; }
