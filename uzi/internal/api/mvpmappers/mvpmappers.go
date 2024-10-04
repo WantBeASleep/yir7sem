@@ -10,30 +10,37 @@ import (
 	"github.com/google/uuid"
 )
 
-func UziToDTOUzi(req *pb.Uzi) *dto.Uzi {
-
-	images := make([]entity.Image, 0, len(req.Images))
-	for _, v := range req.Images {
-		images = append(images, entity.Image{
+func PBImagesToImages(images []*pb.Image, uziID uuid.UUID) []entity.Image {
+	entityImages := make([]entity.Image, 0, len(images))
+	for _, v := range images {
+		entityImages = append(entityImages, entity.Image{
 			Id:    uuid.MustParse(v.Id),
 			Url:   v.Url,
-			UziID: uuid.MustParse(req.UziInfo.Id),
+			UziID: uziID,
 			Page:  int(v.Page),
 		})
 	}
 
-	formations := make([]dto.Formation, 0, len(req.Formations))
-	for _, v := range req.Formations {
-		formations = append(formations, dto.Formation{
+	return entityImages
+}
+
+func PBFormationsToDTOFormations(formations []*pb.Formation) []dto.Formation {
+	entityFormation := make([]dto.Formation, 0, len(formations))
+	for _, v := range formations {
+		entityFormation = append(entityFormation, dto.Formation{
 			Id:     uuid.MustParse(v.Id),
 			Ai:     v.Ai,
 			Tirads: mappers.MustTransformObj[pb.Tirads, entity.Tirads](v.Tirads),
 		})
 	}
 
-	segments := make([]dto.Segment, 0, len(req.Segments))
-	for _, v := range req.Segments {
-		segments = append(segments, dto.Segment{
+	return entityFormation
+}
+
+func PBSegmentsToDTOSegments(segments []*pb.Segment) []dto.Segment {
+	entitySegments := make([]dto.Segment, 0, len(segments))
+	for _, v := range segments {
+		entitySegments = append(entitySegments, dto.Segment{
 			Id:          uuid.MustParse(v.Id),
 			ImageID:     uuid.MustParse(v.ImageId),
 			FormationID: uuid.MustParse(v.FormationId),
@@ -42,20 +49,30 @@ func UziToDTOUzi(req *pb.Uzi) *dto.Uzi {
 		})
 	}
 
+	return entitySegments
+}
+
+func PBUziInfoToUzi(uziInfo *pb.UziInfo) *entity.Uzi {
+	return &entity.Uzi{
+		Id:         uuid.MustParse(uziInfo.Id),
+		Url:        uziInfo.Url,
+		Projection: uziInfo.Projection,
+		PatientID:  uuid.MustParse(uziInfo.PatientId),
+		DeviceID:   int(uziInfo.DeviceId),
+	}
+}
+
+func UziToDTOUzi(req *pb.Uzi) *dto.Uzi {
+
+	images := PBImagesToImages(req.Images, uuid.MustParse(req.UziInfo.Id))
+	formations := PBFormationsToDTOFormations(req.Formations)
+	segments := PBSegmentsToDTOSegments(req.Segments)
+
 	return &dto.Uzi{
-		UziInfo: &entity.Uzi{
-			Id:         uuid.MustParse(req.UziInfo.Id),
-			Url:        req.UziInfo.Url,
-			Projection: req.UziInfo.Projection,
-			PatientID:  uuid.MustParse(req.UziInfo.PatientId),
-			DeviceID:   int(req.UziInfo.DeviceId),
-		},
+		UziInfo: PBUziInfoToUzi(req.UziInfo),
 		Images:     images,
 		Formations: formations,
 		Segments:   segments,
 	}
 }
 
-func DTOUziToUzi(uzi *dto.Uzi) *pb.Uzi {
-
-}
