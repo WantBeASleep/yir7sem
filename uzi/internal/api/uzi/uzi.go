@@ -86,5 +86,4 @@ func (s *Server) GetUzi(ctx context.Context, req *pb.UziIdRequest) (*pb.Uzi, err
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
 	}
 
-	
 }

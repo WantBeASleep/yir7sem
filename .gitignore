@@ -1,0 +1,9 @@
+vendor.protogen
+bin
+*.code-workspace
+*.task
+
+# gRPC + Proto
+*.pb.go
+*.pb.gw.go
+*.swagger.json
