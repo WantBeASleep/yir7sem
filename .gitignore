@@ -4,6 +4,7 @@ bin
 *.task
 store
 *.key
+*.vscode
 
 # gRPC + Proto
 *.pb.go

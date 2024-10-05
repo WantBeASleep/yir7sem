@@ -47,5 +47,5 @@ func CreateRecord[T any](ctx context.Context, db *gorm.DB, value any, opts ...Qu
 		query = opt(query)
 	}
 
-	return query.Create(&value).Error
+	return query.Create(value).Error
 }

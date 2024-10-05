@@ -62,7 +62,7 @@ func NewServer(
 func (s *Server) InsertUzi(ctx context.Context, req *pb.Uzi) (*empty.Empty, error) {
 	// ВАЛИДАЦИЮ ВЫНЕСТИ В middlewar! Tech debt
 	if err := s.validator.Validate(req); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %s", err.Error()))
+		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %v", err))
 	}
 
 	// MVP mapper moment

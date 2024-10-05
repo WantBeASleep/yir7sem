@@ -124,11 +124,26 @@ service UziAPI {
 // Базовые структуры
 
 message Tirads {
-  double tirads_1 = 1[(buf.validate.field).double.gte = 0.0, (buf.validate.field).double.lte = 100.0];
-  double tirads_2 = 2[(buf.validate.field).double.gte = 0.0, (buf.validate.field).double.lte = 100.0];
-  double tirads_3 = 3[(buf.validate.field).double.gte = 0.0, (buf.validate.field).double.lte = 100.0];
-  double tirads_4 = 4[(buf.validate.field).double.gte = 0.0, (buf.validate.field).double.lte = 100.0];
-  double tirads_5 = 5[(buf.validate.field).double.gte = 0.0, (buf.validate.field).double.lte = 100.0];
+  double tirads_1 = 1 [
+    (buf.validate.field).double.gte = 0.0,
+    (buf.validate.field).double.lte = 100.0
+  ];
+  double tirads_2 = 2 [
+    (buf.validate.field).double.gte = 0.0,
+    (buf.validate.field).double.lte = 100.0
+  ];
+  double tirads_3 = 3 [
+    (buf.validate.field).double.gte = 0.0,
+    (buf.validate.field).double.lte = 100.0
+  ];
+  double tirads_4 = 4 [
+    (buf.validate.field).double.gte = 0.0,
+    (buf.validate.field).double.lte = 100.0
+  ];
+  double tirads_5 = 5 [
+    (buf.validate.field).double.gte = 0.0,
+    (buf.validate.field).double.lte = 100.0
+  ];
 }
 
 message Device {
@@ -137,91 +152,132 @@ message Device {
 }
 
 message Segment {
-  string id = 100 [ (buf.validate.field).string.uuid = true ];
-  string formation_id = 200
-      [ json_name = "formation_id", (buf.validate.field).string.uuid = true ];
-  string image_id = 300
-      [ json_name = "image_id", (buf.validate.field).string.uuid = true ];
+  string id = 100 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  string formation_id = 200 [
+    json_name = "formation_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  string image_id = 300 [
+    json_name = "image_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
 
-  string contor_url = 400 [ json_name = "contor_url" ];
-  Tirads tirads = 500;
+  string contor_url = 400
+      [ json_name = "contor_url", (buf.validate.field).required = true ];
+  Tirads tirads = 500 [ (buf.validate.field).required = true ];
 }
 
 message Formation {
-  string id = 100 [ (buf.validate.field).string.uuid = true ];
+  string id = 100 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
 
-  Tirads tirads = 200;
+  Tirads tirads = 200 [ (buf.validate.field).required = true ];
   bool ai = 300;
 }
 
 message Image {
-  string id = 100 [ (buf.validate.field).string.uuid = true ];
-  string url = 200;
+  string id = 100 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  string url = 200 [ (buf.validate.field).required = true ];
 
-  int64 page = 300;
+  int64 page = 300 [ (buf.validate.field).required = true ];
 }
 
 message UziInfo {
-  string id = 100 [ (buf.validate.field).string.uuid = true ];
-  string url = 200;
+  string id = 100 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  string url = 200 [ (buf.validate.field).required = true ];
 
-  string projection = 300;
-  string patient_id = 400
-      [ json_name = "patient_id", (buf.validate.field).string.uuid = true ];
-  int64 device_id = 500 [ json_name = "device_id" ];
+  string projection = 300 [ (buf.validate.field).required = true ];
+  string patient_id = 400 [
+    json_name = "patient_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  int64 device_id = 500
+      [ json_name = "device_id", (buf.validate.field).required = true ];
 }
 
 // Структуры RPC
 
 message UziIdRequest {
-  string uzi_id = 100
-      [ json_name = "uzi_id", (buf.validate.field).string.uuid = true ];
+  string uzi_id = 100 [
+    json_name = "uzi_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
 }
 
 message ImageIdRequest {
-  string image_id = 100
-      [ json_name = "image_id", (buf.validate.field).string.uuid = true ];
+  string image_id = 100 [
+    json_name = "image_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
 }
 
 message FormationIdRequest {
-  string formation_id = 100
-      [ json_name = "formation_id", (buf.validate.field).string.uuid = true ];
+  string formation_id = 100 [
+    json_name = "formation_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
 }
 
 message Uzi {
-  UziInfo uziInfo = 100 [ json_name = "uzi_info" ];
-  repeated Image images = 200;
-  repeated Formation formations = 300;
-  repeated Segment segments = 400;
+  UziInfo uziInfo = 100
+      [ json_name = "uzi_info", (buf.validate.field).required = true ];
+  repeated Image images = 200 [ (buf.validate.field).required = true ];
+  repeated Formation formations = 300 [ (buf.validate.field).required = true ];
+  repeated Segment segments = 400 [ (buf.validate.field).required = true ];
 }
 
 message UpdateUziRequest {
-  string uzi_id = 100
-      [ json_name = "uzi_id", (buf.validate.field).string.uuid = true ];
-  UziInfo uzi_info = 200 [ json_name = "uzi_info" ];
+  string uzi_id = 100 [
+    json_name = "uzi_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  UziInfo uzi_info = 200
+      [ json_name = "uzi_info", (buf.validate.field).required = true ];
 }
 
 message ImageWithSegments {
   Image image = 100;
-  repeated Segment segments = 200;
   repeated Formation formations = 300;
+  repeated Segment segments = 200;
 }
 
 message FormationWithSegments {
-  Formation formation = 100;
-  repeated Segment segments = 200;
+  Formation formation = 100 [ (buf.validate.field).required = true ];
+  repeated Segment segments = 200 [ (buf.validate.field).required = true ];
 }
 
 message InsertFormationWithSegmentsRequest {
   string uzi_id = 100
       [ json_name = "uzi_id", (buf.validate.field).string.uuid = true ];
-  FormationWithSegments formation_with_segments = 200;
+  FormationWithSegments formation_with_segments = 200
+      [ (buf.validate.field).required = true ];
 }
 
 message UpdateFormationRequest {
-  string formation_id = 100
-      [ json_name = "formation_id", (buf.validate.field).string.uuid = true ];
-  Formation formation = 200;
+  string formation_id = 100 [
+    json_name = "formation_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  Formation formation = 200 [ (buf.validate.field).required = true ];
 }
 
 message GetDeviceListResponse { repeated Device devices = 100; }

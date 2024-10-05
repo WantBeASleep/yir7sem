@@ -69,7 +69,8 @@ func (r *UziRepo) UpdateTirads(ctx context.Context, id int, tirads *entity.Tirad
 }
 
 func (r *UziRepo) InsertUzi(ctx context.Context, uzi *entity.Uzi) error {
-	return db.CreateRecord[models.Uzi](ctx, r.db, uzi)
+	uziDB := mappers.MustTransformObj[entity.Uzi, models.Uzi](uzi)
+	return db.CreateRecord[models.Uzi](ctx, r.db, uziDB)
 }
 
 func (r *UziRepo) GetUziByID(ctx context.Context, id uuid.UUID) (*entity.Uzi, error) {
@@ -94,7 +95,8 @@ func (r *UziRepo) UpdateUzi(ctx context.Context, id uuid.UUID, uzi *entity.Uzi) 
 }
 
 func (r *UziRepo) InsertImages(ctx context.Context, images []entity.Image) error {
-	return db.CreateRecord[models.Image](ctx, r.db, images)
+	imagesDB := mappers.MustTransformSlice[entity.Image, models.Image](images)
+	return db.CreateRecord[models.Image](ctx, r.db, imagesDB)
 }
 
 func (r *UziRepo) GetUziImages(ctx context.Context, uziID uuid.UUID) ([]entity.Image, error) {
@@ -116,13 +118,14 @@ func (r *UziRepo) GetImageByID(ctx context.Context, id uuid.UUID) (*entity.Image
 }
 
 func (r *UziRepo) InsertFormations(ctx context.Context, formations []entity.Formation) error {
-	return db.CreateRecord[models.Formation](ctx, r.db, formations)
+	formationsDB := mappers.MustTransformSlice[entity.Formation, models.Formation](formations)
+	return db.CreateRecord[models.Formation](ctx, r.db, formationsDB)
 }
 
 func (r *UziRepo) GetUziFormations(ctx context.Context, uziID uuid.UUID) ([]entity.Formation, error) {
 	query := r.db.WithContext(ctx).
 		Model(&models.Uzi{}).
-		Distinct("formations.id").
+		Distinct("formations.id", "formations.ai", "formations.tirads_id").
 		Joins("inner join images on uzis.id = images.uzi_id").
 		Joins("inner join segments on images.id = segments.image_id").
 		Joins("inner join formations on segments.formation_id = formations.id").
@@ -139,7 +142,7 @@ func (r *UziRepo) GetUziFormations(ctx context.Context, uziID uuid.UUID) ([]enti
 func (r *UziRepo) GetImageFormations(ctx context.Context, imageID uuid.UUID) ([]entity.Formation, error) {
 	query := r.db.WithContext(ctx).
 		Model(&models.Image{}).
-		Distinct("formations.id").
+		Distinct("formations.id", "formations.ai", "formations.tirads_id").
 		Joins("inner join segments on images.id = segments.image_id").
 		Joins("inner join formations on segments.formation_id = formations.id").
 		Where("images.id = ?", imageID)
@@ -174,13 +177,14 @@ func (r *UziRepo) UpdateFormation(ctx context.Context, id uuid.UUID, formation *
 }
 
 func (r *UziRepo) InsertSegments(ctx context.Context, segments []entity.Segment) error {
-	return db.CreateRecord[models.Segment](ctx, r.db, segments)
+	segmentsDB := mappers.MustTransformSlice[entity.Segment, models.Segment](segments)
+	return db.CreateRecord[models.Segment](ctx, r.db, segmentsDB)
 }
 
 func (r *UziRepo) GetUziSegments(ctx context.Context, uziID uuid.UUID) ([]entity.Segment, error) {
 	query := r.db.WithContext(ctx).
 		Model(&models.Uzi{}).
-		Distinct("segments.id").
+		Distinct("segments.id", "segments.image_id", "segments.formation_id", "segments.contor_url", "segments.tirads_id").
 		Joins("inner join images on uzis.id = images.uzi_id").
 		Joins("inner join segments on images.id = segments.image_id").
 		Where("uzis.id = ?", uziID)
