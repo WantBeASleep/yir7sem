@@ -10,7 +10,7 @@ import (
 	dbRepos "yir/auth/internal/repositories/db/repositories"
 	serviceRepos "yir/auth/internal/repositories/services"
 	authUsecases "yir/auth/internal/usecases/auth"
-	"yir/internal/log"
+	"yir/pkg/log"
 
 	"go.uber.org/zap"
 )

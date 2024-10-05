@@ -2,16 +2,9 @@ version: '3'
 
 vars:
   proto_libs_path: '{{.proto_libs | default "../vendor.protogen"}}'
-  proto_target: '{{.proto_target | default "api/auth/auth.proto"}}'
-  proto_out: '{{.proto_out | default "api/auth"}}'
-  swagger_out: '{{.swagger_out | default "api/auth"}}'
-  
-env:
-  DB_PASS: 1234
-  TOKEN_PRIVATE_KEY: 1
-    # sh: cat "private.key"
-  TOKEN_PUBLIC_KEY: 1
-    # sh: cat "public.key"
+  proto_target: '{{.proto_target | default "api/uzi.proto"}}'
+  proto_out: '{{.proto_out | default "api"}}'
+  swagger_out: '{{.swagger_out | default "api"}}'
 
 tasks:
   generate:
@@ -42,18 +35,14 @@ tasks:
     cmds:
       - go fmt ./...
       - goimports -w .
-      - go build -v -o bin/auth cmd/auth/main.go
-      - go build -v -o bin/tools cmd/tools/main.go
+      - go build -v -o bin/uzi cmd/uzi/uzi.go
 
   run:
     deps: [build]
+    env:
+      DB_PASS: 1234
     cmds:
-      - ./bin/auth
-
-  tools:
-    deps: [build]
-    cmds:
-      - ./bin/tools
+      - ./bin/uzi
 
   default:
     cmds:
