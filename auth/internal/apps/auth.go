@@ -50,7 +50,7 @@ func (a *Auth) Run(cfg *config.App) error {
 	errFeedBack := make(chan error, 2)
 
 	wg.Add(1)
-// errGROUP
+	// errGROUP
 	go func() {
 		if err := s.Serve(GRPCLis); err != nil {
 			a.logger.Error("GRPC server serve error", zap.Error(err))
