@@ -2,6 +2,8 @@ vendor.protogen
 bin
 *.code-workspace
 *.task
+store
+*.key
 
 # gRPC + Proto
 *.pb.go

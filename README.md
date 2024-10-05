@@ -85,3 +85,21 @@ package в `.proto`: `option go_package = "yir/auth/api/v0/auth;auth";`
 + Логировать в едином стиле:
     + Запросы в `repository` слой через *Request/Reponse*: *log.Info("[Requset] Do smt...", zap.(...) ...Fields.)*
     + *Будет дополняться*
+
+
+## Кто что сделал?
+
++ *Gateway* - nil
++ *Auth* - Захар
++ *Rabbit/Kafka* - nil
++ *Med*
+    * *Patient* - Мага
+    * *Мед-Воркера* - Вова
+    * *Карты* - nil
++ *Uzi* - Захар
++ *ML-service* - nil `Python`
++ *S3 upload* - nil
+
+
+
+
