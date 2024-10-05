@@ -2,7 +2,7 @@ package uzirepo
 
 import (
 	"fmt"
-	"os"
+	// "os"
 
 	"yir/uzi/internal/config"
 	"yir/uzi/internal/db/models"
@@ -17,12 +17,12 @@ type ctrl struct{}
 
 var uziRepoCtrl ctrl
 
-type gormLog struct {
-}
+// type gormLog struct {
+// }
 
-func (l *gormLog) Printf(format string, args ...any) {
-	fmt.Fprintf(os.Stdout, format, args...)
-}
+// func (l *gormLog) Printf(format string, args ...any) {
+// 	fmt.Fprintf(os.Stdout, format, args...)
+// }
 
 func (r *ctrl) init(cfg *config.DB) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.New(postgres.Config{
