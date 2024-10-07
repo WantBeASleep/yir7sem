@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package yir.s3upload;
+
+option go_package = "yir/s3upload/api;api";
+
+service S3Upload {
+    rpc UploadAndSplitUziFile(stream UploadUziFileRequest) returns (UploadUziFileResponse);
+}
+
+message UploadUziFileRequest {
+    bytes file = 1;
+}
+
+message UploadUziFileResponse {
+    string uzi_id = 1;
+    repeated string images_ids = 2;
+}
