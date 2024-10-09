@@ -39,6 +39,10 @@ tasks:
 
   run:
     deps: [build]
+    env:
+      S3_ENDPOINT: localhost:9000
+      S3_ACCESS_TOKEN: wBNWsCXrAUxd8rriwJmD
+      S3_SECRET_TOKEN: S74hQGtft0HHTfYB4znplHFFs9WAsjusTEprGJKy
     cmds:
       - ./bin/s3upload
 

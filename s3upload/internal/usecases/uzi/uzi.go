@@ -1,16 +1,9 @@
 package uzi
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"path/filepath"
-
-	"image"
-	_ "image/jpeg"
-	_ "image/png"
-
-	_ "golang.org/x/image/tiff"
 
 	"yir/s3upload/internal/entity"
 	"yir/s3upload/internal/usecases/repo"
@@ -31,31 +24,27 @@ func NewUziUseCase(
 	logger *zap.Logger,
 ) *UziUseCase {
 	return &UziUseCase{
-		s3: s3,
+		s3:     s3,
 		logger: logger,
 	}
 }
 
-
 func (u *UziUseCase) UploadAndSplitUziFile(ctx context.Context, img []byte) (uuid.UUID, uuid.UUIDs, error) {
-	
-	_, format, err := image.DecodeConfig(bytes.NewBuffer(img))
+	mainFile, err := addMetaToImageData(img)
 	if err != nil {
-		return uuid.Nil, nil, fmt.Errorf("decode img format: %w", err)
+		return uuid.Nil, nil, fmt.Errorf("convert main file: %w", err)
 	}
 
-	// сюда нужен очевидно стейт machine, что бы ретраить, потом прикрутим temporal наверное
-	switch format {
-	case "tiff":
-		
-	default:
-		return uuid.Nil, nil, fmt.Errorf("decode img format: %w", err)
+	splitted, err := splitImageWithMeta(img)
+	if err != nil {
+		return uuid.Nil, nil, fmt.Errorf("splitting main file: %w", err)
 	}
 
-	return uuid.Nil, nil, nil
+	return u.uploadSplittingUzi(ctx, mainFile, splitted)
 }
 
-func (u *UziUseCase) UploadSplittingUzi(ctx context.Context, mainFile *entity.ImageDataWithFormat, splitted []entity.ImageDataWithFormat) (uuid.UUID, uuid.UUIDs, error) {
+func (u *UziUseCase) uploadSplittingUzi(ctx context.Context, mainFile *entity.ImageDataWithFormat, splitted []entity.ImageDataWithFormat) (uuid.UUID, uuid.UUIDs, error) {
+	// сюда нужен очевидно стейт machine, что бы ретраить, потом прикрутим temporal наверное
 	mainID, err := uuid.NewRandom()
 	if err != nil {
 		return uuid.Nil, nil, fmt.Errorf("generate main id: %w", err)
@@ -80,7 +69,7 @@ func (u *UziUseCase) UploadSplittingUzi(ctx context.Context, mainFile *entity.Im
 		splittedIDs = append(splittedIDs, splittedID)
 
 		if err := u.s3.Upload(ctx, filepath.Join(mainID.String(), splittedID.String()), fmt.Sprintf("%s.%s", splittedID.String(), v.Format), v.Image); err != nil {
-			u.logger.Error("Insert splitted file in S3", zap.Int("number of splitted", i + 1), zap.Error(err))
+			u.logger.Error("Insert splitted file in S3", zap.Int("number of splitted", i+1), zap.Error(err))
 			return uuid.Nil, nil, fmt.Errorf("insert splitted file [index %q] to S3: %w", i, err)
 		}
 	}

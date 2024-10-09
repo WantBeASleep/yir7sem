@@ -13,7 +13,7 @@ import (
 
 type Repo struct {
 	client *minio.Client
-	
+
 	// не уверен что так нужно делать, но по идее разные бакеты будут просто разные репы
 	bucket string
 }

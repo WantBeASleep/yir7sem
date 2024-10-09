@@ -18,7 +18,7 @@ type App struct {
 }
 
 type S3 struct {
-	Endpoint     string `env:"S3_ENDPOINT" env-required:"true"`
+	Endpoint    string `env:"S3_ENDPOINT" env-required:"true"`
 	AccessToken string `env:"S3_ACCESS_TOKEN" env-required:"true"`
 	SecretToken string `env:"S3_SECRET_TOKEN" env-required:"true"`
 }

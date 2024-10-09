@@ -27,6 +27,7 @@ require (
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
+	github.com/chai2010/tiff v0.0.0-20211005095045-4ec2aa243943 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
