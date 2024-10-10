@@ -5,6 +5,7 @@ bin
 store
 *.key
 *.vscode
+trash*
 
 # gRPC + Proto
 *.pb.go

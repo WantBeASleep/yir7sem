@@ -1,0 +1,51 @@
+version: '3'
+
+vars:
+  proto_libs_path: '{{.proto_libs | default "../vendor.protogen"}}'
+  proto_target: '{{.proto_target | default "api/s3upload.proto"}}'
+  proto_out: '{{.proto_out | default "api"}}'
+  swagger_out: '{{.swagger_out | default "api"}}'
+
+tasks:
+  generate:
+    vars:
+      LIBS_DIRS:
+        sh: find {{.proto_libs_path}} -mindepth 1 -maxdepth 1 -type d | xargs echo
+    cmds:
+      - > 
+        protoc
+        -I {{dir .proto_target}}
+        {{range $proto_lib := splitList " " .LIBS_DIRS}}-I {{$proto_lib}} {{end}}
+        --go_out {{.proto_out}} --go_opt paths=source_relative
+        --go-grpc_out {{.proto_out}} --go-grpc_opt paths=source_relative
+        --grpc-gateway_out {{.proto_out}} --grpc-gateway_opt logtostderr=true,paths=source_relative
+        --openapiv2_out {{.proto_out}} --openapiv2_opt logtostderr=true,allow_merge=true,merge_file_name={{trimSuffix (ext (base .proto_target)) (base .proto_target)}}
+        {{.proto_target}}
+
+    sources:
+      - '{{.proto_target}}'
+
+    generates:
+      - '{{.proto_out}}/*.pb.go'
+      - '{{.proto_out}}/*.pb.gw.go'
+      - '{{.proto_out}}/*.swagger.json'
+
+  build:
+    deps: [generate]
+    cmds:
+      - go fmt ./...
+      - goimports -w .
+      - go build -v -o bin/s3upload cmd/s3upload.go
+
+  run:
+    deps: [build]
+    env:
+      S3_ENDPOINT: localhost:9000
+      S3_ACCESS_TOKEN: BLAD0h1rTDPG70DQ7PUd
+      S3_SECRET_TOKEN: qtbVnWFWlu7hpIGt8A3HPYpOPiHF6cECHzaicigz
+    cmds:
+      - ./bin/s3upload
+
+  default:
+    cmds:
+      - task: generate

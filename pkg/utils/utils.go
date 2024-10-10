@@ -18,3 +18,17 @@ func MapToSlice[T comparable](src map[T]struct{}) []T {
 
 	return dst
 }
+
+func Flatten2DArray[T any](src [][]T) []T {
+	cntElems := 0
+	for _, arr := range src {
+		cntElems += len(arr)
+	}
+
+	res := make([]T, 0, cntElems)
+	for _, arr := range src {
+		res = append(res, arr...)
+	}
+
+	return res
+}
