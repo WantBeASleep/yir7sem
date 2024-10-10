@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"path/filepath"
 	"yir/s3upload/internal/config"
 
@@ -45,4 +46,14 @@ func (r *Repo) Upload(ctx context.Context, path string, filename string, data []
 	}
 
 	return err
+}
+
+// stream файла, поэтому io.ReadCloser
+func (r *Repo) Get(ctx context.Context, path string) (io.ReadCloser, error) {
+	obj, err := r.client.GetObject(ctx, r.bucket, path, minio.GetObjectOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("get obj from S3: %w", err)
+	}
+
+	return obj, nil
 }

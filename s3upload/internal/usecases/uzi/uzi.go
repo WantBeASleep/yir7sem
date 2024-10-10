@@ -3,6 +3,7 @@ package uzi
 import (
 	"context"
 	"fmt"
+	"io"
 	"path/filepath"
 
 	"yir/s3upload/internal/entity"
@@ -41,6 +42,18 @@ func (u *UziUseCase) UploadAndSplitUziFile(ctx context.Context, img []byte) (uui
 	}
 
 	return u.uploadSplittingUzi(ctx, mainFile, splitted)
+}
+
+func (u *UziUseCase) GetByPath(ctx context.Context, path string) (io.ReadCloser, error) {
+	u.logger.Info("[Request] Get file from S3", zap.String("path", path))
+	stream, err := u.s3.Get(ctx, path)
+	if err != nil {
+		u.logger.Error("Get file from S3", zap.Error(err))
+		return nil, fmt.Errorf("get file [path %q]: %w", path, err)
+	}
+	u.logger.Info("[Response] Got file from S3")
+
+	return stream, nil
 }
 
 func (u *UziUseCase) uploadSplittingUzi(ctx context.Context, mainFile *entity.ImageDataWithFormat, splitted []entity.ImageDataWithFormat) (uuid.UUID, uuid.UUIDs, error) {

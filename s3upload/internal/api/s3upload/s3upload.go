@@ -8,6 +8,7 @@ import (
 	pb "yir/s3upload/api"
 	"yir/s3upload/internal/api/usecases"
 
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -16,13 +17,16 @@ type Controller struct {
 	pb.UnimplementedS3UploadServer
 
 	uziUseCase usecases.Uzi
+	logger     *zap.Logger
 }
 
 func NewController(
 	uziUseCase usecases.Uzi,
+	logger *zap.Logger,
 ) *Controller {
 	return &Controller{
 		uziUseCase: uziUseCase,
+		logger:     logger,
 	}
 }
 
@@ -64,6 +68,40 @@ func (c *Controller) UploadAndSplitUziFile(req pb.S3Upload_UploadAndSplitUziFile
 
 	if err != nil {
 		return status.Errorf(codes.Internal, fmt.Sprintf("close gRPC stream: %v", err))
+	}
+
+	return nil
+}
+
+func (c *Controller) GetByPathImage(req *pb.GetImageRequest, apiStream pb.S3Upload_GetByPathImageServer) error {
+	ctx := apiStream.Context()
+
+	path := req.GetPath()
+
+	imageStream, err := c.uziUseCase.GetByPath(ctx, path)
+	if err != nil {
+		return fmt.Errorf("get image stream from S3: %w", err)
+	}
+
+	buff := make([]byte, 1024*1024) // 1MB
+
+	for {
+		n, err := imageStream.Read(buff)
+		if n != 0 {
+			err := apiStream.Send(&pb.ImageStream{
+				File: buff[:n],
+			})
+			if err != nil {
+				return fmt.Errorf("stream image to client: %w", err)
+			}
+		}
+
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return fmt.Errorf("read from s3: %w", err)
+		}
 	}
 
 	return nil
