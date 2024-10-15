@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package service.cards;
+
+option go_package = "service/cards/api/cards";
+
+import "google/api/annotations.proto";
+
+service MedCard {
+    //Получение всех карт пациентов
+    //
+    //
+    rpc GetCards(GetCardsRequest) returns (GetCardsResponse) {
+        option (google.api.http) = {
+            get: "/card/list"
+        };
+    }
+    //Добавить карту пациента
+    //
+    //
+    rpc PostCard(PostCardRequest) returns (PostCardResponse) {
+        option (google.api.http) = {
+            post: "/card/create"
+        };
+    }
+    //Получить карту по id
+    //
+    //
+    rpc GetCardByID(GetCardByIDRequest) returns (GetCardByIDResponse) {
+        option (google.api.http) = {
+            get: "/card/id/{id}"
+        };
+    }
+    //Запутить карту
+    //
+    //
+    rpc PutCard(PutCardRequest) returns (PutCardResponse) {
+        option (google.api.http) = {
+            put: "/card/update/{id}"
+        };
+    }
+    //Запатчить карту
+    //
+    //
+    rpc PatchCard(PatchCardRequest) returns (PatchCardResponse) {
+        option (google.api.http) = {
+            patch: "/card/update/{id}"
+        };
+    }
+    //Удалить карту
+    //
+    //
+    rpc DeleteCard(DeleteCardRequest) returns (DeleteCardResponse) {
+        option (google.api.http) = {
+            delete: "/card/{id}"
+        };
+    }
+}
+
+message Card {
+    uint64 id = 1;
+    string acceptance_datetime = 2;
+    bool has_nodules = 3;
+    string diagnosis = 4;
+    uint64 patient_id = 5;
+    uint64 medworker_id = 6;
+}
+
+message Patient{
+    uint64 id = 1 [json_name = "id"];
+    string first_name = 2 [json_name = "first_name"];
+    string last_name = 3 [json_name = "last_name"];
+    string father_name = 4 [json_name = "father_name"];
+    string medical_policy = 5[json_name = "medical_policy"]; 
+    string email = 6 [json_name = "email"]; 
+    bool is_active = 7 [json_name = "is_active"];
+  }
+
+  
+message MedWorker { 
+    uint64 id = 1;
+    string last_name = 2;
+    string first_name = 3;
+    string middle_name = 4;
+    string med_organization = 5;
+    string job = 6;
+    bool is_remote_worker = 7;
+    string expert_details = 8; 
+}
+
+message GetCardsRequest {
+    uint64 id = 1;
+    string acceptance_datetime = 2;
+    bool has_nodules = 3;
+    string diagnosis = 4;
+    uint64 patient_id = 5;
+    uint64 medworker_id = 6;
+    uint64 limit = 7;
+    uint64 offset = 8;
+}
+
+message GetCardsResponse {
+    uint64 count = 1;
+    string next = 2;
+    string previous = 3;
+    repeated Card results = 4;
+}
+
+message PostCardRequest {
+    bool has_nodules = 1;
+    string diagnosis = 2;
+    uint64 patient_id = 3;
+    uint64 medworker_id = 4;
+}
+
+message PostCardResponse {
+    Card postcard = 1;
+}
+
+message GetCardByIDRequest {
+    uint64 id = 1;
+}
+
+message GetCardByIDResponse {
+    Card postcard = 1;
+}
+
+message PutCardRequest {
+    uint64 id = 1;
+    bool has_nodules = 2;
+    string diagnosis = 3;
+    uint64 patient_id = 4;
+    uint64 medworker_id = 5;
+}
+
+message PutCardResponse {
+    Card postcard = 1;
+}
+
+message PatchCardRequest {
+    uint64 id = 1;
+    bool has_nodules = 2;
+    string diagnosis = 3;
+    uint64 patient_id = 4;
+    uint64 medworker_id = 5;
+}
+
+message PatchCardResponse {
+    Card postcard = 1;
+}
+
+message DeleteCardRequest {
+    uint64 id = 1;
+}
+
+message DeleteCardResponse {
+    bool success = 1;
+}
