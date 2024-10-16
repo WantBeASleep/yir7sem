@@ -1,0 +1,45 @@
+version: '3'
+
+vars:
+  proto_libs_path: '{{.proto_libs | default "../vendor.protogen"}}'
+  proto_target: '{{.proto_target | default "api/ml_api.proto"}}'
+  proto_out: '{{.proto_out | default "api"}}'
+  swagger_out: '{{.swagger_out | default "api"}}'
+
+tasks:
+  generate:
+    vars:
+      LIBS_DIRS:
+        sh: find {{.proto_libs_path}} -mindepth 1 -maxdepth 1 -type d | xargs echo
+    cmds:
+      - > 
+        python3 -m grpc_tools.protoc
+        {{range $proto_lib := splitList " " .LIBS_DIRS}}-I {{$proto_lib}} {{end}}
+        --python_out={{.proto_out}} 
+        --proto_path={{.proto_out}}
+        --grpc_python_out={{.proto_out}}
+        {{.proto_target}}
+
+    sources:
+      - '{{.proto_target}}'
+
+    generates:
+      - '{{.proto_out}}/*_pb2.py'
+      - '{{.proto_out}}/*_pb2_grpc.py'
+      - '{{.proto_out}}/*.swagger.json'
+
+  build:
+    deps: [generate]
+    cmds:
+      
+
+  run:
+    deps: [build]
+    env:
+      DB_PASS: 1234
+    cmds:
+      - ./bin/uzi
+
+  default:
+    cmds:
+      - task: generate
