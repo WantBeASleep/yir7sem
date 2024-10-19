@@ -11,3 +11,6 @@ trash*
 *.pb.go
 *.pb.gw.go
 *.swagger.json
+
+*_pb2_grpc.py
+*_pb2.py
