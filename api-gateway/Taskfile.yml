@@ -11,8 +11,11 @@ vars:
   proto_med_patients: 'api/med/patient.proto'
   proto_med_patients_out: 'internal/pb/med/patients/'
 
-  proto_med_workers: 'api/med/workers.proto'
+  proto_med_workers: 'api/med/worker.proto'
   proto_med_workers_out: 'internal/pb/med/workers/'
+
+  proto_med_cards: 'api/med/card.proto'
+  proto_med_cards_out: 'internal/pb/med/cards/'
   
   proto_s3: 'api/s3/s3upload.proto'
   proto_s3_out: 'internal/pb/s3/'
@@ -30,7 +33,6 @@ tasks:
       LIBS_DIRS:
         sh: find {{.proto_libs_path}} -mindepth 1 -maxdepth 1 -type d | xargs echo
     cmds:
-      - cat public.key $
       # Генерация для auth.proto
       - >
         protoc
@@ -53,7 +55,7 @@ tasks:
         --openapiv2_out {{.proto_med_patients_out}} --openapiv2_opt logtostderr=true,allow_merge=true,merge_file_name={{trimSuffix (ext (base .proto_med_patients)) (base .proto_med_patients)}}
         {{.proto_med_patients}}
 
-      # Генерация для workers.proto
+      # Генерация для worker.proto
       - >
         protoc
         -I {{dir .proto_med_workers}}
@@ -63,6 +65,17 @@ tasks:
         --grpc-gateway_out {{.proto_med_workers_out}} --grpc-gateway_opt logtostderr=true,paths=source_relative
         --openapiv2_out {{.proto_med_workers_out}} --openapiv2_opt logtostderr=true,allow_merge=true,merge_file_name={{trimSuffix (ext (base .proto_med_workers)) (base .proto_med_workers)}}
         {{.proto_med_workers}}
+
+      # Генерация для card.proto
+      - >
+        protoc
+        -I {{dir .proto_med_cards}}
+        {{range $proto_lib := splitList " " .LIBS_DIRS}} -I {{$proto_lib}} {{end}}
+        --go_out {{.proto_med_cards_out}} --go_opt paths=source_relative
+        --go-grpc_out {{.proto_med_cards_out}} --go-grpc_opt paths=source_relative
+        --grpc-gateway_out {{.proto_med_cards_out}} --grpc-gateway_opt logtostderr=true,paths=source_relative
+        --openapiv2_out {{.proto_med_cards_out}} --openapiv2_opt logtostderr=true,allow_merge=true,merge_file_name={{trimSuffix (ext (base .proto_med_cards)) (base .proto_med_cards)}}
+        {{.proto_med_cards}}
 
       # Генерация для s3upload.proto
       - >
@@ -104,6 +117,7 @@ tasks:
       - rm -rf {{.proto_auth_out}}*
       - rm -rf {{.proto_med_patients_out}}*
       - rm -rf {{.proto_med_workers_out}}*
+      - rm -rf {{.proto_med_cards_out}}*
       - rm -rf {{.proto_s3_out}}*
       - rm -rf {{.proto_uzi_out}}*
       
