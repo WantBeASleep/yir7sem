@@ -20,12 +20,17 @@ vars:
   proto_uzi: 'api/uzi/uzi.proto'
   proto_uzi_out: 'internal/pb/uzi/'
 
+env:
+  TOKEN_PUBLIC_KEY: 
+    sh: cat 'public.key'
+
 tasks:
   generate:
     vars:
       LIBS_DIRS:
         sh: find {{.proto_libs_path}} -mindepth 1 -maxdepth 1 -type d | xargs echo
     cmds:
+      - cat public.key $
       # Генерация для auth.proto
       - >
         protoc

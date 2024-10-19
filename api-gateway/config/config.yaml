@@ -9,6 +9,10 @@ auth:
   grpc: 50055
   http: 8081
 
+token:
+  access_time: 1m
+  refresh_time: 5m
+
 med:
   env: DEV
   host: localhost

@@ -6,13 +6,16 @@ import (
 	"yir/api-gateway/internal/controller/med/patient"
 	"yir/api-gateway/internal/controller/med/worker"
 	"yir/api-gateway/internal/controller/uzi"
+	"yir/api-gateway/internal/logger"
+	"yir/api-gateway/internal/middleware"
 
 	"github.com/gorilla/mux"
+	"go.uber.org/zap"
 )
 
 func InitRouter() *mux.Router {
 	r := mux.NewRouter()
-	r.Use(VerifyToken)
+	r.Use(middleware.VerifyToken)
 	r.HandleFunc("/healthcheck", Healthcheck)
 
 	authSubR := r.PathPrefix(authPrefix).Subrouter()
@@ -26,7 +29,9 @@ func InitRouter() *mux.Router {
 	medPatientSubR.HandleFunc(patientCreate, patient.Create)
 	medPatientSubR.HandleFunc(patientInfo, patient.Info)
 	medPatientSubR.HandleFunc(patientList, patient.List)
+	//
 	//medPatientSubR.HandleFunc(patientShots, patient.Shots) unimplemented in med patient service
+	//
 	medPatientSubR.HandleFunc(patientUpdate, patient.Update)
 
 	medWorkerSubR := medSubR.PathPrefix("/worker").Subrouter()
@@ -49,14 +54,8 @@ func InitRouter() *mux.Router {
 }
 
 func Healthcheck(w http.ResponseWriter, req *http.Request) {
-	w.Write([]byte("/ping: Hello world!"))
-}
-
-func VerifyToken(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Do stuff here
-		w.Write([]byte("Middleware: Token is verified!\n"))
-		// Call the next handler, which can be another middleware in the chain, or the final handler.
-		next.ServeHTTP(w, r)
-	})
+	logger.Logger.Info("Healthcheck",
+		zap.String("client_ip", req.RemoteAddr),
+	)
+	w.Write([]byte("Hello!"))
 }
