@@ -1,0 +1,550 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "worker.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "MedWorkers"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/medworkers/add": {
+      "post": {
+        "summary": "Добавление медработника",
+        "operationId": "MedWorkers_AddMedWorker",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medworkersAddMedWorkerResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "firstName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "middleName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "medOrganization",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "job",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "isRemoteWorker",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "expertDetails",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      }
+    },
+    "/medworkers/id/{id}": {
+      "get": {
+        "summary": "Получение информации о медработнике по ID",
+        "description": "Возвращает информацию о медработнике по ID",
+        "operationId": "MedWorkers_GetMedWorkerByID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medworkersGetMedWorkerByIDResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      }
+    },
+    "/medworkers/list": {
+      "get": {
+        "summary": "Получение списка медработников",
+        "description": "Возвращает список со всеми медработниками",
+        "operationId": "MedWorkers_GetMedWorkers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medworkersGetMedworkerListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "firstName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "middleName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "isRemoteWorker",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      }
+    },
+    "/medworkers/patients/{medWorkerId}": {
+      "get": {
+        "summary": "Получение пациентов, прикрепленных к врачу",
+        "description": "Вернет пациентов, их карточки и главого врача",
+        "operationId": "MedWorkers_GetPatientsByMedWorker",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medworkersGetPatientsByMedWorkerResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "medWorkerId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      }
+    },
+    "/medworkers/update/{id}": {
+      "put": {
+        "summary": "Полное обновление информации о медработнике",
+        "operationId": "MedWorkers_UpdateMedWorker",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medworkersUpdateMedWorkerResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "firstName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "middleName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "medOrganization",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "job",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "isRemoteWorker",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "expertDetails",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      },
+      "patch": {
+        "summary": "Частичное обновление информации о медработнике",
+        "operationId": "MedWorkers_PatchMedWorker",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medworkersUpdateMedWorkerResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "firstName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "middleName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "medOrganization",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "job",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "isRemoteWorker",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "expertDetails",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "medworkersAddMedWorkerResponse": {
+      "type": "object",
+      "properties": {
+        "worker": {
+          "$ref": "#/definitions/medworkersMedWorker"
+        }
+      }
+    },
+    "medworkersGetMedWorkerByIDResponse": {
+      "type": "object",
+      "properties": {
+        "worker": {
+          "$ref": "#/definitions/medworkersMedWorker"
+        }
+      }
+    },
+    "medworkersGetMedworkerListResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "next": {
+          "type": "string"
+        },
+        "previous": {
+          "type": "string"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/medworkersMedWorker"
+          }
+        }
+      }
+    },
+    "medworkersGetPatientsByMedWorkerResponse": {
+      "type": "object",
+      "properties": {
+        "cards": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/medworkersPatientCard"
+          }
+        },
+        "medWorker": {
+          "$ref": "#/definitions/medworkersMedWorker"
+        }
+      }
+    },
+    "medworkersMedWorker": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "medOrganization": {
+          "type": "string"
+        },
+        "job": {
+          "type": "string"
+        },
+        "isRemoteWorker": {
+          "type": "boolean"
+        },
+        "expertDetails": {
+          "type": "string"
+        }
+      }
+    },
+    "medworkersPatient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "father_name": {
+          "type": "string"
+        },
+        "medical_policy": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "is_active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "medworkersPatientCard": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "appointment_time": {
+          "type": "string"
+        },
+        "has_nodules": {
+          "type": "boolean"
+        },
+        "diagnosis": {
+          "type": "string"
+        },
+        "med_worker_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "patient": {
+          "$ref": "#/definitions/medworkersPatient",
+          "title": "uint64 patient_id = 6 [json_name = \"patient_id\"];"
+        }
+      }
+    },
+    "medworkersUpdateMedWorkerResponse": {
+      "type": "object",
+      "properties": {
+        "worker": {
+          "$ref": "#/definitions/medworkersMedWorker"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

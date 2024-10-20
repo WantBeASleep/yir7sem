@@ -1,0 +1,5 @@
+package uzi
+
+type UziUseCase interface{
+	
+}

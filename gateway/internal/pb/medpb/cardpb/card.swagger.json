@@ -1,0 +1,410 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "card.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "MedCard"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/cards": {
+      "get": {
+        "summary": "Получает список карт пациентов.",
+        "description": "Получает список карт пациентов с возможностью пагинации. Возвращает GetCardListResponse, содержащий список карт и информацию о пагинации.",
+        "operationId": "MedCard_GetCardList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceGetCardListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "Максимальное количество карт для возврата",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "description": "Смещение для пагинации",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      },
+      "post": {
+        "summary": "Создает новую карту пациента.",
+        "description": "Создает новую карту пациента. Возвращает CreateCardResponse с идентификатором созданной карты.",
+        "operationId": "MedCard_CreateCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceCreateCardResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Запрос для создания карты пациента.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/serviceCreateCardRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      }
+    },
+    "/cards/{id}": {
+      "get": {
+        "summary": "Получает карту пациента.",
+        "description": "Получает карту пациента по идентификатору. Возвращает GetCardResponse с информацией о карте.",
+        "operationId": "MedCard_GetCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/servicePatientCard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Идентификатор карты",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      },
+      "delete": {
+        "summary": "Удаляет карту пациента.",
+        "description": "Удаляет карту пациента по идентификатору. Возвращает пустой ответ в случае успешного удаления.",
+        "operationId": "MedCard_DeleteCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Идентификатор карты",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      },
+      "put": {
+        "summary": "Обновляет существующую карту пациента.",
+        "description": "Обновляет существующую карту пациента по идентификатору. Возвращает пустой ответ в случае успешного обновления.",
+        "operationId": "MedCard_UpdateCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Идентификатор карты",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MedCardUpdateCardBody"
+            }
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      },
+      "patch": {
+        "summary": "Частично обновляет карту пациента.",
+        "description": "Частично обновляет карту пациента по идентификатору с использованием маски полей. Возвращает обновленный объект PatientCard.",
+        "operationId": "MedCard_PatchCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/servicePatientCard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Идентификатор карты",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MedCardPatchCardBody"
+            }
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "MedCardPatchCardBody": {
+      "type": "object",
+      "properties": {
+        "updateMask": {
+          "type": "string",
+          "title": "Маска полей, которые нужно обновить"
+        }
+      },
+      "description": "Запрос для частичного обновления карты пациента с использованием маски полей."
+    },
+    "MedCardUpdateCardBody": {
+      "type": "object",
+      "properties": {
+        "hasNodules": {
+          "type": "boolean",
+          "title": "Наличие узлов"
+        },
+        "diagnosis": {
+          "type": "string",
+          "title": "Диагноз пациента"
+        },
+        "patientId": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Идентификатор пациента"
+        },
+        "medWorkerId": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Идентификатор медицинского работника"
+        }
+      },
+      "description": "Запрос для обновления карты пациента."
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "serviceCreateCardRequest": {
+      "type": "object",
+      "properties": {
+        "hasNodules": {
+          "type": "boolean",
+          "title": "Наличие узлов"
+        },
+        "diagnosis": {
+          "type": "string",
+          "title": "Диагноз пациента"
+        },
+        "patientId": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Идентификатор пациента"
+        },
+        "medWorkerId": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Идентификатор медицинского работника"
+        }
+      },
+      "description": "Запрос для создания карты пациента."
+    },
+    "serviceCreateCardResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Идентификатор карты"
+        }
+      },
+      "description": "Ответ на запрос создания карты пациента."
+    },
+    "serviceGetCardListResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Общее количество карт в списке cards"
+        },
+        "next": {
+          "type": "string",
+          "title": "URL для следующей страницы"
+        },
+        "previous": {
+          "type": "string",
+          "title": "URL для предыдущей страницы"
+        },
+        "first": {
+          "type": "string",
+          "title": "URL для первой страницы"
+        },
+        "last": {
+          "type": "string",
+          "title": "URL для последней страницы"
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/servicePatientCard"
+          },
+          "title": "Список карт пациентов"
+        }
+      },
+      "description": "Ответ на запрос получения списка карт."
+    },
+    "servicePatientCard": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Идентификатор карты"
+        },
+        "acceptanceDatetime": {
+          "type": "string",
+          "title": "Дата и время принятия карты"
+        },
+        "hasNodules": {
+          "type": "boolean",
+          "title": "Наличие узлов"
+        },
+        "diagnosis": {
+          "type": "string",
+          "title": "Диагноз пациента"
+        },
+        "patientId": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Идентификатор пациента"
+        },
+        "medWorkerId": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Идентификатор медицинского работника"
+        }
+      },
+      "description": "Сообщение для представления карты пациента."
+    }
+  }
+}
