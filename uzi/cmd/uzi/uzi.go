@@ -37,6 +37,7 @@ func init() {
 // MVP CODE Tech Debt
 func main() {
 	flag.Parse()
+	
 	cfg := config.MustLoad(configPath)
 
 	var logger *zap.Logger
