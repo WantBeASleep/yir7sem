@@ -1,0 +1,28 @@
+// переделать потом на асинхронщину и ивенты все, пока что так, MVP
+syntax = "proto3";
+
+package yir.ml_api;
+
+option go_package = "yir/ml_service/api;api";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+// import "buf/validate/validate.proto";
+
+service MLAPI {
+  rpc SegmentAndClassification(SegmentAndClassificationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+        post : "/mlmagic"
+        body : "*"
+    };
+  }
+}
+
+message SegmentAndClassificationRequest {
+  string uzi_id = 1;
+  // string uzi_id = 1 [
+  //   (buf.validate.field).string.uuid = true,
+  //   (buf.validate.field).required = true
+  // ];
+}
