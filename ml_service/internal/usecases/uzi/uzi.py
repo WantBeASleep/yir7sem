@@ -24,6 +24,10 @@ class uziUseCase():
         masks, rois = self.segmentUzi(data)
         indv, tracked = self.classificateUzi(rois)
 
+        print(rois)
+        print(indv)
+        print(tracked)
+
         # дальше код - насрать в S3
 
     
