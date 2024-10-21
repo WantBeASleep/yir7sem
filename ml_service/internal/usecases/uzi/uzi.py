@@ -19,7 +19,13 @@ class uziUseCase():
         return indv, tracked
     
     def segmentAndClassificateByID(self, uzi_id):
+        print("в с3 кабаном")
         data = self.store.load(uzi_id)
+
+        size_in_bytes = len(data)
+        size_in_kb = size_in_bytes/1024
+        size_in_mb = size_in_kb/1024    
+        print(f"Размер загруженных данных: {size_in_bytes} байт, {size_in_kb:.2f} Кб, {size_in_mb:.2f} Mb")
         
         masks, rois = self.segmentUzi(data)
         indv, tracked = self.classificateUzi(rois)

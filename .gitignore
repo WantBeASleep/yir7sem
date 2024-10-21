@@ -6,6 +6,9 @@ store
 *.key
 *.vscode
 trash*
+*__pycache__
+*.pkl
+*.pth
 
 # gRPC + Proto
 *.pb.go

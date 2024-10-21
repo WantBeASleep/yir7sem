@@ -8,7 +8,7 @@ option go_package = "yir/ml_service/api;api";
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
-import "buf/validate/validate.proto";
+// import "buf/validate/validate.proto";
 
 service MLAPI {
   rpc SegmentAndClassification(SegmentAndClassificationRequest) returns (google.protobuf.Empty) {
@@ -20,8 +20,9 @@ service MLAPI {
 }
 
 message SegmentAndClassificationRequest {
-  string uzi_id = 1 [
-    (buf.validate.field).string.uuid = true,
-    (buf.validate.field).required = true
-  ];
+  string uzi_id = 1;
+  // string uzi_id = 1 [
+  //   (buf.validate.field).string.uuid = true,
+  //   (buf.validate.field).required = true
+  // ];
 }

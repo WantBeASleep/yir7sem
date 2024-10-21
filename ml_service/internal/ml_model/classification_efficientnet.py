@@ -10,7 +10,7 @@ from neuro_class import ModelABC
 
 
 settings = settings = {
-    'classification': {'all': 'models/all/efficientnet.pth', 'long': 'models/long/efficientnet.pth', 'cross': 'models/cross/efficientnet.pth'}
+    'classification': {'all': '/home/wantbeasleep/yir/ml_service/internal/ml_model/models/all/efficientnet.pth', 'long': '/home/wantbeasleep/yir/ml_service/internal/ml_model/models/long/efficientnet.pth', 'cross': '/home/wantbeasleep/yir/ml_service/internal/ml_model/models/cross/efficientnet.pth'}
 }
 
 

@@ -18,6 +18,7 @@ class S3():
             self.minio_client.make_bucket(bucket)
 
     def load(self, path):
+        print("траим с3 вызов")
         try:
             response = self.minio_client.get_object(self.bucket, path)
             data = response.read()
