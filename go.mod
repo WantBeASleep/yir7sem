@@ -6,7 +6,6 @@ require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.34.2-20240920164238-5a7b106cbb87.2
 	github.com/brianvoe/gofakeit/v7 v7.0.4
 	github.com/bufbuild/protovalidate-go v0.7.1
-	github.com/chai2010/tiff v0.0.0-20211005095045-4ec2aa243943
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/golang/protobuf v1.5.4
@@ -17,7 +16,6 @@ require (
 	github.com/minio/minio-go/v7 v7.0.77
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.26.0
-	golang.org/x/image v0.21.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240820151423-278611b39280
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2

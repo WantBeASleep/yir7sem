@@ -1,16 +1,18 @@
 package s3upload
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 
 	pb "yir/s3upload/api"
 	"yir/s3upload/internal/api/usecases"
+	"yir/s3upload/internal/entity"
+	"yir/s3upload/internal/utils"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type Controller struct {
@@ -30,66 +32,48 @@ func NewController(
 	}
 }
 
-func (c *Controller) UploadAndSplitUziFile(req pb.S3Upload_UploadAndSplitUziFileServer) error {
+func (c *Controller) Upload(req pb.S3Upload_UploadServer) error {
 	ctx := req.Context()
-	buff := bytes.Buffer{}
+	reader := utils.NewUploadGRPCReader(req)
 
-	// потоково разбить на изображения .tiff не получится, так что будем просто загружать в оперативку
-	for {
-		req, err := req.Recv()
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return status.Errorf(codes.Internal, fmt.Sprintf("stream read failed: %v", err))
-		}
-
-		_, err = buff.Write(req.File)
-		if err != nil {
-			return status.Errorf(codes.Internal, fmt.Sprintf("add stream part to buff failed: %v", err))
-		}
-	}
-
-	uziID, splittedIDs, err := c.uziUseCase.UploadAndSplitUziFile(ctx, buff.Bytes())
+	path, err := reader.GetPath()
 	if err != nil {
-		return status.Errorf(codes.Internal, fmt.Sprintf("upload and splitting images: %v", err))
+		return status.Errorf(codes.Internal, fmt.Sprintf("get path failed: %v", err))
 	}
 
-	uziIDStr := uziID.String()
-	splittedIDsStr := make([]string, 0, len(splittedIDs))
-	for _, v := range splittedIDs {
-		splittedIDsStr = append(splittedIDsStr, v.String())
+	file := &entity.File{
+		Path: path,
+		Data: reader,
 	}
 
-	err = req.SendAndClose(&pb.UploadUziFileResponse{
-		UziId:     uziIDStr,
-		ImagesIds: splittedIDsStr,
-	})
+	if err := c.uziUseCase.UploadFile(ctx, file); err != nil {
+		return status.Errorf(codes.Internal, fmt.Sprintf("upload file: %v", err))
+	}
 
-	if err != nil {
+	if err := req.SendAndClose(&emptypb.Empty{}); err != nil {
 		return status.Errorf(codes.Internal, fmt.Sprintf("close gRPC stream: %v", err))
 	}
 
 	return nil
 }
 
-func (c *Controller) GetByPathImage(req *pb.GetImageRequest, apiStream pb.S3Upload_GetByPathImageServer) error {
-	ctx := apiStream.Context()
+func (c *Controller) Get(req *pb.GetRequest, stream pb.S3Upload_GetServer) error {
+	ctx := stream.Context()
 
 	path := req.GetPath()
 
-	imageStream, err := c.uziUseCase.GetByPath(ctx, path)
+	s3Stream, err := c.uziUseCase.GetFile(ctx, path)
 	if err != nil {
-		return fmt.Errorf("get image stream from S3: %w", err)
+		return fmt.Errorf("get stream from S3: %w", err)
 	}
 
-	buff := make([]byte, 1024*1024) // 1MB
+	buff := make([]byte, 5*1024*1024) // 5MB
 
 	for {
-		n, err := imageStream.Read(buff)
+		n, err := s3Stream.Read(buff)
 		if n != 0 {
-			err := apiStream.Send(&pb.ImageStream{
-				File: buff[:n],
+			err := stream.Send(&pb.GetFile{
+				FileContent: buff[:n],
 			})
 			if err != nil {
 				return fmt.Errorf("stream image to client: %w", err)

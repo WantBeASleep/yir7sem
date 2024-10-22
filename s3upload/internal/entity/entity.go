@@ -1,11 +1,8 @@
 package entity
 
-type ImageDataWithFormat struct {
-	Format      string
-	ContentType string
-	Image       []byte
-}
+import "io"
 
-type ImageMetaData struct {
-	ContentType string
+type File struct {
+	Path string
+	Data io.Reader
 }

@@ -31,9 +31,6 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
                   "**UZIINFO**. *UZIINFO* - обозначает инфу об узи, id, "
                   "projection, аппарат и тд. *UZI* - это *UZIINFO && IMAGES && "
                   "FORMATION && SEGMENTS*.\n"
-                  "**ВАЖНО**: Сервис **НЕ ГЕНЕРИРУЕТ ID UZI, IMAGE, "
-                  "FORMATION**. Все ID "
-                  "генерируются на стороне **ML/S3 Upload**."
     version : "v0"
   }
 };

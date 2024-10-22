@@ -3,12 +3,11 @@ package usecases
 import (
 	"context"
 	"io"
-
-	"github.com/google/uuid"
+	"yir/s3upload/internal/entity"
 )
 
 type Uzi interface {
-	UploadAndSplitUziFile(ctx context.Context, img []byte) (uuid.UUID, uuid.UUIDs, error)
+	UploadFile(ctx context.Context, file *entity.File) error
 
-	GetByPath(ctx context.Context, path string) (io.ReadCloser, error)
+	GetFile(ctx context.Context, path string) (io.Reader, error)
 }

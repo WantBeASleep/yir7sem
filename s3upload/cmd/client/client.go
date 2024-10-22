@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	pb "yir/s3upload/api"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 )
 
@@ -20,18 +20,26 @@ func main() {
 	client := pb.NewS3UploadClient(conn)
 
 	hdlr := func(w http.ResponseWriter, r *http.Request) {
-		stream, err := client.UploadAndSplitUziFile(context.Background())
+		stream, err := client.Upload(context.Background())
 		if err != nil {
 			w.WriteHeader(500)
 			w.Write([]byte(fmt.Sprintf("open stream: %v", err)))
 			return
 		}
 
+		fileID, _ := uuid.NewRandom()
+
+		total := 0
+
 		imgbuf := [1024 * 1024]byte{}
 		for {
 			n, err := r.Body.Read(imgbuf[:])
+			total += n
 			if n != 0 {
-				err := stream.Send(&pb.ImageStream{File: imgbuf[:n]})
+				err := stream.Send(&pb.UploadFile{
+					Path: fileID.String(),
+					File: imgbuf[:n],
+				})
 				if err != nil {
 					w.WriteHeader(500)
 					w.Write([]byte(fmt.Sprintf("send to stream: %v", err)))
@@ -48,26 +56,17 @@ func main() {
 			}
 		}
 
-		resp, err := stream.CloseAndRecv()
+		_, err = stream.CloseAndRecv()
 		if err != nil {
 			w.WriteHeader(500)
 			w.Write([]byte(fmt.Sprintf("close stream: %v", err)))
 			return
 		}
 
-		respJSON, err := json.Marshal(map[string]any{
-			"uzi_id":    resp.UziId,
-			"images_id": resp.ImagesIds,
-		})
-		if err != nil {
-			w.WriteHeader(500)
-			w.Write([]byte(fmt.Sprintf("json marshal response: %v", err)))
-			return
-		}
 		w.WriteHeader(200)
-		w.Write(respJSON)
+		w.Write([]byte(fmt.Sprintf("%s, %d", fileID.String(), total)))
 	}
 
-	http.HandleFunc("/split", hdlr)
+	http.HandleFunc("/upload", hdlr)
 	http.ListenAndServe("localhost:8080", nil)
 }

@@ -1,11 +1,9 @@
 package s3
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io"
-	"path/filepath"
 	"yir/s3upload/internal/config"
 	"yir/s3upload/internal/entity"
 
@@ -38,22 +36,38 @@ func NewRepo(cfg *config.S3, bucket string) (*Repo, error) {
 	}, nil
 }
 
-// не получается использовать opt pattern из-за невозможности отвязаться от реализации
-func metaDataToUploadOpts(meta *entity.ImageMetaData) minio.PutObjectOptions {
-	opts := minio.PutObjectOptions{}
+func entityLoadOptsToMinioPutOpts(opts []entity.LoadOption) minio.PutObjectOptions {
+	loadOpts := entity.LoadOpts{}
 
-	opts.ContentType = meta.ContentType
+	for _, opt := range opts {
+		opt(&loadOpts)
+	}
 
-	return opts
+	minioOpts := minio.PutObjectOptions{
+		ContentType: loadOpts.ContentType,
+	}
+
+	return minioOpts
 }
 
-func (r *Repo) Upload(ctx context.Context, path string, filename string, data []byte, meta *entity.ImageMetaData) error {
+func entityGetOptsToMinioGetOpts(opts []entity.GetOption) minio.GetObjectOptions {
+	getOpts := entity.GetOpts{}
+
+	for _, opt := range opts {
+		opt(&getOpts)
+	}
+
+	minioOpts := minio.GetObjectOptions{}
+
+	return minioOpts
+}
+
+func (r *Repo) Upload(ctx context.Context, path string, data io.Reader, opts ...entity.LoadOption) error {
 	// поправить с -1, на нужный размер, пока что так
-	// надо в entity сделать структурку для метаданных, но опять же, пока что плевать
 
-	minioOpts := metaDataToUploadOpts(meta)
+	minioOpts := entityLoadOptsToMinioPutOpts(opts)
 
-	_, err := r.client.PutObject(ctx, r.bucket, filepath.Join(path, filename), bytes.NewBuffer(data), -1, minioOpts)
+	_, err := r.client.PutObject(ctx, r.bucket, path, data, -1, minioOpts)
 	if err != nil {
 		return fmt.Errorf("upload to S3: %w", err)
 	}
@@ -62,8 +76,11 @@ func (r *Repo) Upload(ctx context.Context, path string, filename string, data []
 }
 
 // stream файла, поэтому io.ReadCloser
-func (r *Repo) Get(ctx context.Context, path string) (io.ReadCloser, error) {
-	obj, err := r.client.GetObject(ctx, r.bucket, path, minio.GetObjectOptions{})
+func (r *Repo) Get(ctx context.Context, path string, opts ...entity.GetOption) (io.Reader, error) {
+
+	minioOpts := entityGetOptsToMinioGetOpts(opts)
+
+	obj, err := r.client.GetObject(ctx, r.bucket, path, minioOpts)
 	if err != nil {
 		return nil, fmt.Errorf("get obj from S3: %w", err)
 	}

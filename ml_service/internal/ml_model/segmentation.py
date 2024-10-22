@@ -229,6 +229,14 @@ class SegmentationModel(ModelABC):
         return selected_nodules
 
     def predict(self, group: list) -> tuple:
+        """
+        на выход пойдут маски + rois
+        маски - массив масок контуров
+
+        rois - смотри описание в модельке классификации в методе predict
+    
+        
+        """
         tif_length = len(group)
         print(f'Images processed. Number of images: {tif_length}')
         print(f'Device: {self.device}')
@@ -285,7 +293,7 @@ class SegmentationModel(ModelABC):
                 dim1_cut_min, dim1_cut_max, dim2_cut_min, dim2_cut_max = self.preprocessing2(nd)
                 img_array_roi = img_array[dim1_cut_min:dim1_cut_max, dim2_cut_min:dim2_cut_max]
 
-                new_nodules.append([img_array_roi, node[1]])
+                # new_nodules.append([img_array_roi, node[1]])
 
                 n1_array = nd.astype(np.float32)
                 f1_mask = np.zeros(shape=or_shape, dtype=np.float32)
@@ -296,6 +304,9 @@ class SegmentationModel(ModelABC):
                 f1_mask = f1_mask.astype(np.float32)
                 cs = self.get_bbox(f1_mask)
                 coordinates.append(cs)
+
+                f1_mask = np.where(f1_mask > 0, 1., 0.).astype(np.float32)
+                new_nodules.append([img_array_roi, node[1], f1_mask]) # ИЗМЕНЕНИЕ: добавлен в список третий элемент: маска с конкретным узлом
 
             rois.append(new_nodules)
 

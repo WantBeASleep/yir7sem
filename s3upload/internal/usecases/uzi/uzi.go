@@ -4,12 +4,10 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"path/filepath"
 
 	"yir/s3upload/internal/entity"
 	"yir/s3upload/internal/usecases/repo"
 
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -30,21 +28,18 @@ func NewUziUseCase(
 	}
 }
 
-func (u *UziUseCase) UploadAndSplitUziFile(ctx context.Context, img []byte) (uuid.UUID, uuid.UUIDs, error) {
-	mainFile, err := addMetaToImageData(img)
-	if err != nil {
-		return uuid.Nil, nil, fmt.Errorf("convert main file: %w", err)
+func (u *UziUseCase) UploadFile(ctx context.Context, file *entity.File) error {
+	u.logger.Info("[Request] Upload file to S3", zap.String("path", file.Path))
+	if err := u.s3.Upload(ctx, file.Path, file.Data); err != nil {
+		u.logger.Info("Upload file to S3", zap.Error(err))
+		return fmt.Errorf("upload file to S3 [path %q]: %w", file.Path, err)
 	}
+	u.logger.Info("[Response] Uploaded file to S3")
 
-	splitted, err := splitImageWithMeta(img)
-	if err != nil {
-		return uuid.Nil, nil, fmt.Errorf("splitting main file: %w", err)
-	}
-
-	return u.uploadSplittingUzi(ctx, mainFile, splitted)
+	return nil
 }
 
-func (u *UziUseCase) GetByPath(ctx context.Context, path string) (io.ReadCloser, error) {
+func (u *UziUseCase) GetFile(ctx context.Context, path string) (io.Reader, error) {
 	u.logger.Info("[Request] Get file from S3", zap.String("path", path))
 	stream, err := u.s3.Get(ctx, path)
 	if err != nil {
@@ -56,49 +51,63 @@ func (u *UziUseCase) GetByPath(ctx context.Context, path string) (io.ReadCloser,
 	return stream, nil
 }
 
-func (u *UziUseCase) uploadSplittingUzi(ctx context.Context, mainFile *entity.ImageDataWithFormat, splitted []entity.ImageDataWithFormat) (uuid.UUID, uuid.UUIDs, error) {
-	// сюда нужен очевидно стейт machine, что бы ретраить, потом прикрутим temporal наверное
-	mainID, err := uuid.NewRandom()
-	if err != nil {
-		return uuid.Nil, nil, fmt.Errorf("generate main id: %w", err)
-	}
+// func (u *UziUseCase) UploadAndSplitUziFile(ctx context.Context, img []byte) (uuid.UUID, uuid.UUIDs, error) {
+// 	mainFile, err := addMetaToImageData(img)
+// 	if err != nil {
+// 		return uuid.Nil, nil, fmt.Errorf("convert main file: %w", err)
+// 	}
 
-	u.logger.Info("[Request] Insert main file in S3", zap.Any("id", mainID))
-	err = u.s3.Upload(ctx,
-		mainID.String(),
-		mainID.String(),
-		mainFile.Image,
-		&entity.ImageMetaData{ContentType: mainFile.ContentType},
-	)
-	if err != nil {
-		u.logger.Error("Insert main file in S3", zap.Error(err))
-		return uuid.Nil, nil, fmt.Errorf("insert main file to S3: %w", err)
-	}
-	u.logger.Info("[Response] Insert edsplitted files in S3", zap.Any("id", mainID))
+// 	splitted, err := splitImageWithMeta(img)
+// 	if err != nil {
+// 		return uuid.Nil, nil, fmt.Errorf("splitting main file: %w", err)
+// 	}
 
-	splittedIDs := uuid.UUIDs{}
+// 	return u.uploadSplittingUzi(ctx, mainFile, splitted)
+// }
 
-	u.logger.Info("[Request] Insert splitted files in S3", zap.Any("id", mainID))
-	for i, v := range splitted {
+// func (u *UziUseCase) uploadSplittingUzi(ctx context.Context, mainFile *entity.ImageDataWithFormat, splitted []entity.ImageDataWithFormat) (uuid.UUID, uuid.UUIDs, error) {
+// 	// сюда нужен очевидно стейт machine, что бы ретраить, потом прикрутим temporal наверное
+// 	mainID, err := uuid.NewRandom()
+// 	if err != nil {
+// 		return uuid.Nil, nil, fmt.Errorf("generate main id: %w", err)
+// 	}
 
-		splittedID, err := uuid.NewRandom()
-		if err != nil {
-			return uuid.Nil, nil, fmt.Errorf("generate split id: %w", err)
-		}
-		splittedIDs = append(splittedIDs, splittedID)
+// 	u.logger.Info("[Request] Insert main file in S3", zap.Any("id", mainID))
+// 	err = u.s3.Upload(ctx,
+// 		mainID.String(),
+// 		mainID.String(),
+// 		mainFile.Image,
+// 		&entity.ImageMetaData{ContentType: mainFile.ContentType},
+// 	)
+// 	if err != nil {
+// 		u.logger.Error("Insert main file in S3", zap.Error(err))
+// 		return uuid.Nil, nil, fmt.Errorf("insert main file to S3: %w", err)
+// 	}
+// 	u.logger.Info("[Response] Insert edsplitted files in S3", zap.Any("id", mainID))
 
-		err = u.s3.Upload(ctx,
-			filepath.Join(mainID.String(), splittedID.String()),
-			splittedID.String(),
-			v.Image,
-			&entity.ImageMetaData{ContentType: v.ContentType},
-		)
-		if err != nil {
-			u.logger.Error("Insert splitted file in S3", zap.Int("number of splitted", i+1), zap.Error(err))
-			return uuid.Nil, nil, fmt.Errorf("insert splitted file [index %q] to S3: %w", i, err)
-		}
-	}
-	u.logger.Info("[Response] Inserted splitted files in S3", zap.Any("id", mainID))
+// 	splittedIDs := uuid.UUIDs{}
 
-	return mainID, splittedIDs, nil
-}
+// 	u.logger.Info("[Request] Insert splitted files in S3", zap.Any("id", mainID))
+// 	for i, v := range splitted {
+
+// 		splittedID, err := uuid.NewRandom()
+// 		if err != nil {
+// 			return uuid.Nil, nil, fmt.Errorf("generate split id: %w", err)
+// 		}
+// 		splittedIDs = append(splittedIDs, splittedID)
+
+// 		err = u.s3.Upload(ctx,
+// 			filepath.Join(mainID.String(), splittedID.String()),
+// 			splittedID.String(),
+// 			v.Image,
+// 			&entity.ImageMetaData{ContentType: v.ContentType},
+// 		)
+// 		if err != nil {
+// 			u.logger.Error("Insert splitted file in S3", zap.Int("number of splitted", i+1), zap.Error(err))
+// 			return uuid.Nil, nil, fmt.Errorf("insert splitted file [index %q] to S3: %w", i, err)
+// 		}
+// 	}
+// 	u.logger.Info("[Response] Inserted splitted files in S3", zap.Any("id", mainID))
+
+// 	return mainID, splittedIDs, nil
+// }

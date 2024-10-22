@@ -52,9 +52,13 @@ class EfficientNetModel(ModelABC):
                 len(rois[i]) - количество узлов на i-ой картинке
                 [ <-- массив для изображений
                     [ <-- массив для изображения
-                        [binary_mask, roi_uniq_idx] <-- бин маска + уникальный индекс
+                        [scaled_pic_of_roi, roi_uniq_idx, segment_binary_masks] <-- увеличенное изображения узла + уникальный индекс + бинарная маска узла
                     ]
                 ]
+
+        # update 22.10.24 - теперь в тупол еще засовываем бин маску для каждого узла
+        # вместо [binary_mask, roi_uniq_idx]
+        # получаем [scaled_pic_of_roi, roi_uniq_idx, segment_binary_masks]
 
         return:
             individual_probs - лист в вероятностями tirads по сегментам (структура такая же как rois tiff->изображение->узел)
