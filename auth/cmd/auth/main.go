@@ -3,14 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"yir/auth/internal/apps"
-	"yir/auth/internal/config"
-	authApi "yir/auth/internal/controller/auth"
-	"yir/auth/internal/core/jwt"
-	dbRepos "yir/auth/internal/repositories/db/repositories"
-	serviceRepos "yir/auth/internal/repositories/services"
-	authUsecases "yir/auth/internal/usecases/auth"
-	"yir/pkg/log"
+	"service/auth/internal/apps"
+	"service/auth/internal/config"
+	authApi "service/auth/internal/controller/auth"
+	"service/auth/internal/core/jwt"
+	dbRepos "service/auth/internal/repositories/db/repositories"
+	serviceRepos "service/auth/internal/repositories/services"
+	authUsecases "service/auth/internal/usecases/auth"
+	"service/pkg_log/log"
 
 	"go.uber.org/zap"
 )
@@ -53,7 +53,12 @@ func main() {
 	}
 	logger.Info("DB load")
 
-	medRepo := serviceRepos.NewService()
+	// medRepo := serviceRepos.NewService()
+	medServiceAddress := fmt.Sprintf("%s:%s", cfg.MedService.Host, cfg.MedService.GRPCPort)
+	medRepo, err := serviceRepos.NewService(medServiceAddress)
+	if err != nil {
+		panic(fmt.Errorf("failed to create med service client: %w", err))
+	}
 
 	usecases := authUsecases.NewAuthUseCase(authRepo, medRepo, jwtService, logger)
 

@@ -6,12 +6,11 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"service/auth/internal/config"
+	"service/auth/internal/entity"
 	"time"
-	"yir/auth/internal/config"
-	"yir/auth/internal/entity"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 )
 
 type Service struct {
@@ -97,13 +96,13 @@ func (s *Service) ParseUserData(refreshToken string) (*entity.UserTokenVerify, e
 		return nil, entity.ErrInvalidToken
 	}
 
-	UUID, err := s.parseUUID(claims)
+	ID, err := s.parseID(claims)
 	if err != nil {
 		return nil, entity.ErrInvalidToken
 	}
 
 	return &entity.UserTokenVerify{
-		UserUUID:         UUID,
+		UserID:           ID,
 		RefreshTokenWord: rtw,
 	}, nil
 }
@@ -122,21 +121,16 @@ func (s *Service) parseRTW(claims jwt.MapClaims) (string, error) {
 	return tokenWord, nil
 }
 
-func (s *Service) parseUUID(claims jwt.MapClaims) (uuid.UUID, error) {
-	UUIDInterface, ok := claims["uuid"]
+func (s *Service) parseID(claims jwt.MapClaims) (int, error) {
+	IDInterface, ok := claims["id"]
 	if !ok {
-		return uuid.UUID{}, entity.ErrInvalidToken
+		return 0, entity.ErrInvalidToken
 	}
 
-	UUIDStr, ok := UUIDInterface.(string)
+	ID, ok := IDInterface.(float64)
 	if !ok {
-		return uuid.UUID{}, entity.ErrInvalidToken
+		return 0, entity.ErrInvalidToken
 	}
 
-	UUID, err := uuid.Parse(UUIDStr)
-	if err != nil {
-		return uuid.UUID{}, entity.ErrInvalidToken
-	}
-
-	return UUID, nil
+	return int(ID), nil
 }

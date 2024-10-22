@@ -1,30 +1,27 @@
 package mappers
 
 import (
-	"yir/auth/internal/entity"
-	"yir/auth/internal/repositories/db/models"
-
-	"github.com/google/uuid"
+	"service/auth/internal/entity"
+	"service/auth/internal/repositories/db/models"
 )
 
-func EntityUserCreditalsToModelUserCreditals(user *entity.UserCreditals) (*models.UserCreditals, error) {
-	return &models.UserCreditals{
+func UserToAuthInfo(user *entity.User) (*models.AuthInfo, error) {
+	return &models.AuthInfo{
 		ID:               uint64(user.ID),
-		UUID:             user.UUID.String(),
 		Login:            user.Login,
 		PasswordHash:     user.PasswordHash,
 		RefreshTokenWord: user.RefreshTokenWord,
-		MedWorkerUUID:    user.MedWorkerUUID.String(),
+		MedWorkerID:      uint64(user.MedWorkerID),
 	}, nil
 }
 
-func ModelUserCreditalsToEntityUserCreditals(auth *models.UserCreditals) (*entity.UserCreditals, error) {
-	return &entity.UserCreditals{
+func AuthInfoToUser(auth *models.AuthInfo) (*entity.User, error) {
+	return &entity.User{
+		// переполнение?
 		ID:               int(auth.ID),
-		UUID:             uuid.MustParse(auth.UUID),
 		Login:            auth.Login,
 		PasswordHash:     auth.PasswordHash,
 		RefreshTokenWord: auth.RefreshTokenWord,
-		MedWorkerUUID:    uuid.MustParse(auth.MedWorkerUUID),
+		MedWorkerID:      int(auth.MedWorkerID),
 	}, nil
 }

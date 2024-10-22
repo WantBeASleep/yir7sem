@@ -82,7 +82,7 @@ tasks:
     cmds:
       - go fmt ./...
       - goimports -w .
-      - go build -v -o bin/medservice cmd/main.go
+      - go build -v -o bin/medservice all/cmd/main.go
 
   run:
       deps: [build]

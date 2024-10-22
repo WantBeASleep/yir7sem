@@ -3,10 +3,10 @@ package auth
 import (
 	"context"
 	"errors"
-	pb "yir/auth/api/auth"
-	"yir/auth/internal/controller/usecases"
-	"yir/auth/internal/controller/validation"
-	"yir/auth/internal/entity"
+	pb "service/auth/api/auth"
+	"service/auth/internal/controller/usecases"
+	"service/auth/internal/controller/validation"
+	"service/auth/internal/entity"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -36,7 +36,7 @@ func (s *Server) Login(ctx context.Context, request *pb.LoginRequest) (*pb.Login
 		Password: request.Password,
 	}
 
-	resp, err := s.authUseCase.Login(ctx, &domainRequest)
+	tokensPair, err := s.authUseCase.Login(ctx, &domainRequest)
 	if err != nil {
 		switch {
 		case errors.Is(err, entity.ErrNotFound):
@@ -49,8 +49,8 @@ func (s *Server) Login(ctx context.Context, request *pb.LoginRequest) (*pb.Login
 	}
 
 	return &pb.LoginResponse{
-		AccessToken:  resp.AccessToken,
-		RefreshToken: resp.RefreshToken,
+		AccessToken:  tokensPair.AccessToken,
+		RefreshToken: tokensPair.RefreshToken,
 	}, nil
 }
 
@@ -68,13 +68,13 @@ func (s *Server) Register(ctx context.Context, request *pb.RegisterRequest) (*pb
 		Password:    request.Password,
 	}
 
-	resp, err := s.authUseCase.Register(ctx, &domainRegister)
+	userID, err := s.authUseCase.Register(ctx, &domainRegister)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &pb.RegisterResponse{
-		Uuid: resp.UUID.String(),
+		UserId: userID,
 	}, nil
 }
 
@@ -83,7 +83,7 @@ func (s *Server) TokenRefresh(ctx context.Context, request *pb.TokenRefreshReque
 		return nil, status.Errorf(codes.InvalidArgument, "validation token refresh request: %v", err.Error())
 	}
 
-	resp, err := s.authUseCase.TokenRefresh(ctx, request.RefreshToken)
+	tokensPair, err := s.authUseCase.TokenRefresh(ctx, request.RefreshToken)
 	if err != nil {
 		switch {
 		case errors.Is(err, entity.ErrExpiredSession):
@@ -98,7 +98,7 @@ func (s *Server) TokenRefresh(ctx context.Context, request *pb.TokenRefreshReque
 	}
 
 	return &pb.TokenRefreshResponse{
-		AccessToken:  resp.AccessToken,
-		RefreshToken: resp.RefreshToken,
+		AccessToken:  tokensPair.AccessToken,
+		RefreshToken: tokensPair.RefreshToken,
 	}, nil
 }

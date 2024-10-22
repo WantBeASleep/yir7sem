@@ -2,8 +2,8 @@ package validation
 
 import (
 	"fmt"
-	pb "yir/auth/api/auth"
-	"yir/auth/internal/entity"
+	pb "service/auth/api/auth"
+	"service/auth/internal/entity"
 )
 
 func ValidateTokenRefreshRequest(req *pb.TokenRefreshRequest) error {

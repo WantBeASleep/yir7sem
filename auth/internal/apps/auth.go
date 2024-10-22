@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	pb "service/auth/api/auth"
+	"service/auth/internal/config"
+	authctrl "service/auth/internal/controller/auth"
 	"sync"
-	pb "yir/auth/api/auth"
-	"yir/auth/internal/config"
-	authctrl "yir/auth/internal/controller/auth"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
@@ -50,7 +50,6 @@ func (a *Auth) Run(cfg *config.App) error {
 	errFeedBack := make(chan error, 2)
 
 	wg.Add(1)
-	// errGROUP
 	go func() {
 		if err := s.Serve(GRPCLis); err != nil {
 			a.logger.Error("GRPC server serve error", zap.Error(err))

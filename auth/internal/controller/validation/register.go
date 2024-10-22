@@ -2,7 +2,7 @@ package validation
 
 import (
 	"fmt"
-	pb "yir/auth/api/auth"
+	pb "service/auth/api/auth"
 )
 
 func ValidateRegisterRequest(req *pb.RegisterRequest) error {

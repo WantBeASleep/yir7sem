@@ -74,21 +74,23 @@ func (a *AuthUseCase) Login(ctx context.Context, request *entity.RequestLogin) (
 	return tokensPair, nil
 }
 
-func (a *AuthUseCase) Register(ctx context.Context, request *entity.RequestRegister) (*entity.ResponseRegister, error) {
-	a.logger.Debug("Register usecases started", zap.Any("Request", request))
+// заглушка https://popovza.kaiten.ru/space/420777/card/37360398
+// err := a.medRepo.AddMed()
+//
+//	if err != nil {
+//		a.logger.Warn("Med Repo not implemented")
+//	}
+//
+// medWorkerID := gofakeit.Number(0, 1<<10)
+func (a *AuthUseCase) Register(ctx context.Context, request *entity.RequestRegister) (uint64, error) {
+	a.logger.Debug("Register usecase started", zap.Any("Request", request))
 
-	// заглушка https://popovza.kaiten.ru/space/420777/card/37360398
-	err := a.medRepo.AddMed()
+	medWorkerID, err := a.medRepo.AddMed(ctx, request)
 	if err != nil {
-		a.logger.Warn("Med Repo not implemented")
+		a.logger.Warn("Failed to register med worker via med service", zap.Error(err))
+		return 0, fmt.Errorf("failed to add med worker: %w", err)
 	}
-	MedWorkerUUID, _ := uuid.NewRandom()
-
-	UUID, err := uuid.NewRandom()
-	if err != nil {
-		a.logger.Error("Generate new UUID", zap.Error(err))
-		return nil, fmt.Errorf("generate new userUUID: %w", err)
-	}
+	a.logger.Info("Med worker registered successfully", zap.Int("MedWorkerID", medWorkerID))
 
 	salt := gofakeit.MinecraftBiome()
 	passHash, err := entity.HashByScrypt(request.Password, salt)
