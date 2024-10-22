@@ -35,7 +35,7 @@ tasks:
     cmds:
       - go fmt ./...
       - goimports -w .
-      - go build -v -o bin/s3upload cmd/s3upload.go
+      - go build -v -o bin/s3upload cmd/server/s3upload.go
 
   run:
     deps: [build]

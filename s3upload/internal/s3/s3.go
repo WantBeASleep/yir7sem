@@ -7,6 +7,7 @@ import (
 	"io"
 	"path/filepath"
 	"yir/s3upload/internal/config"
+	"yir/s3upload/internal/entity"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -37,10 +38,22 @@ func NewRepo(cfg *config.S3, bucket string) (*Repo, error) {
 	}, nil
 }
 
-func (r *Repo) Upload(ctx context.Context, path string, filename string, data []byte) error {
+// не получается использовать opt pattern из-за невозможности отвязаться от реализации
+func metaDataToUploadOpts(meta *entity.ImageMetaData) minio.PutObjectOptions {
+	opts := minio.PutObjectOptions{}
+
+	opts.ContentType = meta.ContentType
+
+	return opts
+}
+
+func (r *Repo) Upload(ctx context.Context, path string, filename string, data []byte, meta *entity.ImageMetaData) error {
 	// поправить с -1, на нужный размер, пока что так
 	// надо в entity сделать структурку для метаданных, но опять же, пока что плевать
-	_, err := r.client.PutObject(ctx, r.bucket, filepath.Join(path, filename), bytes.NewBuffer(data), -1, minio.PutObjectOptions{})
+
+	minioOpts := metaDataToUploadOpts(meta)
+
+	_, err := r.client.PutObject(ctx, r.bucket, filepath.Join(path, filename), bytes.NewBuffer(data), -1, minioOpts)
 	if err != nil {
 		return fmt.Errorf("upload to S3: %w", err)
 	}

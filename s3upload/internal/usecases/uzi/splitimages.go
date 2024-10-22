@@ -3,6 +3,10 @@ package uzi
 // MVP MODE
 // DICOM AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
+// на REFACTOR
+// Очень плохо написано, 0 переиспользуемости, продекмозировать все, вынести в разные класс
+// open-close из solid
+
 import (
 	"bytes"
 	"fmt"
@@ -17,6 +21,19 @@ import (
 	"github.com/chai2010/tiff"
 	_ "golang.org/x/image/tiff"
 )
+
+func convertFormatToContentType(format string) (string, error) {
+	switch format {
+	case "tiff":
+		return "image/tiff", nil
+	case "png":
+		return "image/png", nil
+	case "dicom":
+		return "application/dicom", nil
+	default:
+		return "", entity.ErrUnsupportedFormat
+	}
+}
 
 func convertToPng(img image.Image) ([]byte, error) {
 	buff := bytes.Buffer{}
@@ -34,9 +51,15 @@ func addMetaToImageData(img []byte) (*entity.ImageDataWithFormat, error) {
 		return nil, fmt.Errorf("decode img format: %w", err)
 	}
 
+	contentType, err := convertFormatToContentType(format)
+	if err != nil {
+		return nil, fmt.Errorf("convert format: %w", err)
+	}
+
 	return &entity.ImageDataWithFormat{
-		Format: format,
-		Image:  img,
+		Format:      format,
+		ContentType: contentType,
+		Image:       img,
 	}, nil
 }
 
@@ -48,9 +71,12 @@ func convertToPngSliceWithMeta(imgs []image.Image) ([]entity.ImageDataWithFormat
 			return nil, fmt.Errorf("convert to png img [index %q]: %w", i, err)
 		}
 
+		contentType, _ := convertFormatToContentType("png")
+
 		res = append(res, entity.ImageDataWithFormat{
-			Format: "png",
-			Image:  pngEncode,
+			Format:      "png",
+			ContentType: contentType,
+			Image:       pngEncode,
 		})
 	}
 
@@ -81,7 +107,9 @@ func splitImageWithMeta(img []byte) ([]entity.ImageDataWithFormat, error) {
 		return splitted, nil
 
 	case "png":
-		img := entity.ImageDataWithFormat{Format: "png", Image: img}
+		contentType, _ := convertFormatToContentType("png")
+
+		img := entity.ImageDataWithFormat{Format: "png", ContentType: contentType, Image: img}
 		return []entity.ImageDataWithFormat{img}, nil
 
 	default:

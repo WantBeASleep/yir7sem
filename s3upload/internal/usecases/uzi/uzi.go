@@ -64,7 +64,13 @@ func (u *UziUseCase) uploadSplittingUzi(ctx context.Context, mainFile *entity.Im
 	}
 
 	u.logger.Info("[Request] Insert main file in S3", zap.Any("id", mainID))
-	if err := u.s3.Upload(ctx, mainID.String(), fmt.Sprintf("%s.%s", mainID.String(), mainFile.Format), mainFile.Image); err != nil {
+	err = u.s3.Upload(ctx,
+		mainID.String(),
+		mainID.String(),
+		mainFile.Image,
+		&entity.ImageMetaData{ContentType: mainFile.ContentType},
+	)
+	if err != nil {
 		u.logger.Error("Insert main file in S3", zap.Error(err))
 		return uuid.Nil, nil, fmt.Errorf("insert main file to S3: %w", err)
 	}
@@ -81,7 +87,13 @@ func (u *UziUseCase) uploadSplittingUzi(ctx context.Context, mainFile *entity.Im
 		}
 		splittedIDs = append(splittedIDs, splittedID)
 
-		if err := u.s3.Upload(ctx, filepath.Join(mainID.String(), splittedID.String()), fmt.Sprintf("%s.%s", splittedID.String(), v.Format), v.Image); err != nil {
+		err = u.s3.Upload(ctx,
+			filepath.Join(mainID.String(), splittedID.String()),
+			splittedID.String(),
+			v.Image,
+			&entity.ImageMetaData{ContentType: v.ContentType},
+		)
+		if err != nil {
 			u.logger.Error("Insert splitted file in S3", zap.Int("number of splitted", i+1), zap.Error(err))
 			return uuid.Nil, nil, fmt.Errorf("insert splitted file [index %q] to S3: %w", i, err)
 		}
