@@ -8,10 +8,12 @@ import (
 	"net/http"
 	"sync"
 	"yir/pkg/log"
+	s3api "yir/s3upload/api"
 	pb "yir/uzi/api"
 	uziapi "yir/uzi/internal/api/uzi"
 	"yir/uzi/internal/config"
 	"yir/uzi/internal/db/uzirepo"
+	"yir/uzi/internal/s3service"
 	uziusecase "yir/uzi/internal/usecases/uzi"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -37,7 +39,7 @@ func init() {
 // MVP CODE Tech Debt
 func main() {
 	flag.Parse()
-	
+
 	cfg := config.MustLoad(configPath)
 
 	var logger *zap.Logger
@@ -53,7 +55,14 @@ func main() {
 		panic(fmt.Errorf("init repo: %w", err))
 	}
 
-	uziUseCase := uziusecase.NewUziUseCase(uziRepo, logger)
+	s3serviceConn, err := grpc.Dial(cfg.Services.S3ServiceHost, grpc.WithInsecure())
+	if err != nil {
+		panic(fmt.Errorf("conn to s3 service: %w", err))
+	}
+	s3serviceClient := s3api.NewS3UploadClient(s3serviceConn)
+	s3Repo := s3service.NewS3Service(s3serviceClient)
+
+	uziUseCase := uziusecase.NewUziUseCase(uziRepo, s3Repo, logger)
 
 	uziController, err := uziapi.NewServer(uziUseCase)
 	if err != nil {

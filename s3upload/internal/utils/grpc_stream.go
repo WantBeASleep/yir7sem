@@ -7,6 +7,8 @@ import (
 )
 
 // NOT THREAD SAFE!
+// не хочется просто плюнуть сюда Mutex'ом
+// можно написать крутую кастом обертку, но работа на недельку где то
 type UploadGRPCReader struct {
 	stream pb.S3Upload_UploadServer
 
@@ -24,7 +26,9 @@ func (r *UploadGRPCReader) recv() error {
 	}
 
 	if msg != nil {
-		r.path = msg.Path
+		if r.cntReadOps == 0 {
+			r.path = msg.Path
+		}
 		r.cache = append(r.cache, msg.File...)
 	}
 

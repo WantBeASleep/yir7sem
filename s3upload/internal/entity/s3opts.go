@@ -19,13 +19,3 @@ type GetOpts struct{}
 type GetOption func(o *GetOpts)
 
 var ()
-
-// type ImageDataWithFormat struct {
-// 	Format      string
-// 	ContentType string
-// 	Image       []byte
-// }
-
-// type ImageMetaData struct {
-// 	ContentType string
-// }
