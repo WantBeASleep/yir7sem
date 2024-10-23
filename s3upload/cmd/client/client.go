@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"path/filepath"
 	pb "yir/s3upload/api"
 
 	"github.com/google/uuid"
@@ -20,6 +21,11 @@ func main() {
 	client := pb.NewS3UploadClient(conn)
 
 	hdlr := func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(500)
+		w.Write([]byte(fmt.Sprintf("open stream: %v", err)))
+		return
+
+		
 		stream, err := client.Upload(context.Background())
 		if err != nil {
 			w.WriteHeader(500)
@@ -37,7 +43,7 @@ func main() {
 			total += n
 			if n != 0 {
 				err := stream.Send(&pb.UploadFile{
-					Path: fileID.String(),
+					Path: filepath.Join(fileID.String(), fileID.String()),
 					File: imgbuf[:n],
 				})
 				if err != nil {
@@ -67,6 +73,6 @@ func main() {
 		w.Write([]byte(fmt.Sprintf("%s, %d", fileID.String(), total)))
 	}
 
-	http.HandleFunc("/upload", hdlr)
-	http.ListenAndServe("localhost:8080", nil)
+	http.HandleFunc("/load", hdlr)
+	http.ListenAndServe("localhost:8090", nil)
 }
