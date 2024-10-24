@@ -2,9 +2,3 @@ app:
   env: DEV
   host: localhost
   grpc: 50055
-
-db:
-  host: localhost
-  port: 5432
-  name: uzidb
-  user: postgres

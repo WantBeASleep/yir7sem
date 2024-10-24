@@ -10,6 +10,8 @@ import (
 
 type Uzi interface {
 	InsertUzi(ctx context.Context, req *dto.Uzi) error
+	CreateUziInfo(ctx context.Context, req *entity.Uzi) error
+
 	GetUzi(ctx context.Context, id uuid.UUID) (*dto.Uzi, error)
 	GetUziInfo(ctx context.Context, id uuid.UUID) (*entity.Uzi, error)
 	UpdateUziInfo(ctx context.Context, id uuid.UUID, req *entity.Uzi) error

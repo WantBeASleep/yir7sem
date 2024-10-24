@@ -9,6 +9,8 @@ import (
 type Config struct {
 	App App `yaml:"app"`
 	DB  DB  `yaml:"db"`
+
+	Services Services `yaml:"services"`
 }
 
 type App struct {
@@ -24,6 +26,10 @@ type DB struct {
 	Name     string `yaml:"name" env:"DB_NAME" env-required:"true"`
 	User     string `yaml:"user" env:"DB_USER" env-default:"postgres"`
 	Password string `env:"DB_PASS" env-required:"true"`
+}
+
+type Services struct {
+	S3ServiceHost string `yaml:"s3servicehost" env:"SERVICE_HOST_S3" env-default:"localhost:50055"`
 }
 
 func (d *DB) GetDSN() string {

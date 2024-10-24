@@ -4,21 +4,26 @@ package yir.s3upload;
 
 option go_package = "yir/s3upload/api;api";
 
+import "google/protobuf/empty.proto";
+
 service S3Upload {
-    rpc UploadAndSplitUziFile(stream ImageStream) returns (UploadUziFileResponse);
+    
+    // Передача path идет первым сообщением, далее его передавать не нужно
+    rpc Upload(stream UploadFile) returns (google.protobuf.Empty);
 
-    rpc GetByPathImage(GetImageRequest) returns (stream ImageStream);
+    rpc Get(GetRequest) returns (stream GetFile);
 }
 
-message ImageStream {
-    bytes file = 1;
+// Передача path идет первым сообщением, далее его передавать не нужно
+message UploadFile {
+    string path = 100;
+    bytes file = 200;
 }
 
-message UploadUziFileResponse {
-    string uzi_id = 1;
-    repeated string images_ids = 2;
+message GetFile {
+    bytes fileContent = 100;
 }
 
-message GetImageRequest {
-    string path = 1;
+message GetRequest {
+    string path = 100;
 }

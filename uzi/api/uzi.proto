@@ -31,9 +31,10 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
                   "**UZIINFO**. *UZIINFO* - обозначает инфу об узи, id, "
                   "projection, аппарат и тд. *UZI* - это *UZIINFO && IMAGES && "
                   "FORMATION && SEGMENTS*.\n"
-                  "**ВАЖНО**: Сервис **НЕ ГЕНЕРИРУЕТ ID UZI, IMAGE, "
-                  "FORMATION**. Все ID "
-                  "генерируются на стороне **ML/S3 Upload**."
+                  "\n"
+                  "Наименование нуждается в рефакторинге, теперь все id генерируются"
+                  "на стороне сервиса, поэтому никаких insert, а нормальный create"
+                  "~не спрашивайте как так получилось~"
     version : "v0"
   }
 };
@@ -41,10 +42,18 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 service UziAPI {
   // /uzi/ блок
 
-  // Добавить uzi
+  // Добавить uzi c 
   rpc InsertUzi(Uzi) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post : "/uzi"
+      body : "*"
+    };
+  }
+
+  // ID сгенерируется на стороне сервиса!
+  rpc CreateUziInfo(CreateUziInfoRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post : "/uzi/info"
       body : "*"
     };
   }
@@ -241,6 +250,22 @@ message Uzi {
   repeated Image images = 200 [ (buf.validate.field).required = true ];
   repeated Formation formations = 300 [ (buf.validate.field).required = true ];
   repeated Segment segments = 400 [ (buf.validate.field).required = true ];
+}
+
+// Так делать плохо, такделать неправильно, но я не потяну это рефакторить еще раз
+// пока что просто еще одну структуру поверх, оставляем на Tech Debt
+// 
+message CreateUziInfoRequest {
+  string url = 100 [ (buf.validate.field).required = true ];
+
+  string projection = 200 [ (buf.validate.field).required = true ];
+  string patient_id = 300 [
+    json_name = "patient_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  int64 device_id = 400
+      [ json_name = "device_id", (buf.validate.field).required = true ];
 }
 
 message UpdateUziRequest {

@@ -31,6 +31,14 @@ type FormationWithSegments struct {
 	Segments  []Segment
 }
 
+// общий стиль не возвращать всю структуру
+// это нужно исключительно для dto
+// вопрос релевантности в Tech Debt
+type FormationWithSegmentsIDs struct {
+	FormationID uuid.UUID
+	Segments    uuid.UUIDs
+}
+
 type ImageWithSegmentsFormations struct {
 	Image      *entity.Image
 	Formations []Formation

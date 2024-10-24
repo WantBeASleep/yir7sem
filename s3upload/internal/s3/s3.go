@@ -1,12 +1,11 @@
 package s3
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io"
-	"path/filepath"
 	"yir/s3upload/internal/config"
+	"yir/s3upload/internal/entity"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -37,10 +36,38 @@ func NewRepo(cfg *config.S3, bucket string) (*Repo, error) {
 	}, nil
 }
 
-func (r *Repo) Upload(ctx context.Context, path string, filename string, data []byte) error {
+func entityLoadOptsToMinioPutOpts(opts []entity.LoadOption) minio.PutObjectOptions {
+	loadOpts := entity.LoadOpts{}
+
+	for _, opt := range opts {
+		opt(&loadOpts)
+	}
+
+	minioOpts := minio.PutObjectOptions{
+		ContentType: loadOpts.ContentType,
+	}
+
+	return minioOpts
+}
+
+func entityGetOptsToMinioGetOpts(opts []entity.GetOption) minio.GetObjectOptions {
+	getOpts := entity.GetOpts{}
+
+	for _, opt := range opts {
+		opt(&getOpts)
+	}
+
+	minioOpts := minio.GetObjectOptions{}
+
+	return minioOpts
+}
+
+func (r *Repo) Upload(ctx context.Context, path string, data io.Reader, opts ...entity.LoadOption) error {
 	// поправить с -1, на нужный размер, пока что так
-	// надо в entity сделать структурку для метаданных, но опять же, пока что плевать
-	_, err := r.client.PutObject(ctx, r.bucket, filepath.Join(path, filename), bytes.NewBuffer(data), -1, minio.PutObjectOptions{})
+
+	minioOpts := entityLoadOptsToMinioPutOpts(opts)
+
+	_, err := r.client.PutObject(ctx, r.bucket, path, data, -1, minioOpts)
 	if err != nil {
 		return fmt.Errorf("upload to S3: %w", err)
 	}
@@ -49,8 +76,11 @@ func (r *Repo) Upload(ctx context.Context, path string, filename string, data []
 }
 
 // stream файла, поэтому io.ReadCloser
-func (r *Repo) Get(ctx context.Context, path string) (io.ReadCloser, error) {
-	obj, err := r.client.GetObject(ctx, r.bucket, path, minio.GetObjectOptions{})
+func (r *Repo) Get(ctx context.Context, path string, opts ...entity.GetOption) (io.Reader, error) {
+
+	minioOpts := entityGetOptsToMinioGetOpts(opts)
+
+	obj, err := r.client.GetObject(ctx, r.bucket, path, minioOpts)
 	if err != nil {
 		return nil, fmt.Errorf("get obj from S3: %w", err)
 	}

@@ -9,3 +9,6 @@ db:
   port: 5432
   name: uzidb
   user: postgres
+
+services:
+  s3servicehost: localhost:50055
