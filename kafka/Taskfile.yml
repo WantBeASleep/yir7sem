@@ -18,12 +18,19 @@ tasks:
         {{range $proto_lib := splitList " " .LIBS_DIRS}}-I {{$proto_lib}} {{end}}
         --go_out {{.proto_out}} --go_opt paths=source_relative
         {{.proto_target}}
+      - >
+        python3 -m grpc_tools.protoc
+        {{range $proto_lib := splitList " " .LIBS_DIRS}}-I {{$proto_lib}} {{end}}
+        --python_out={{.proto_out}} 
+        --proto_path={{.proto_out}}
+        {{.proto_target}}
 
     sources:
       - '{{.proto_target}}'
 
     generates:
       - '{{.proto_out}}/*.pb.go'
+      - '{{.proto_out}}/*_pb2.py'
 
   default:
     cmds:

@@ -3,11 +3,23 @@ package uzi
 import (
 	"context"
 	"fmt"
+	"yir/uzi/internal/entity"
 	"yir/uzi/internal/entity/dto"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
+
+func (u *UziUseCase) InsertImages(ctx context.Context, images []entity.Image) error {
+	u.logger.Debug("[Request] Insert images")
+	if err := u.uziRepo.InsertImages(ctx, images); err != nil {
+		u.logger.Error("Insert images", zap.Error(err))
+		return fmt.Errorf("insert images: %w", err)
+	}
+	u.logger.Debug("[Response] Inserted images")
+
+	return nil
+}
 
 func (u *UziUseCase) GetImageWithSegmentsFormations(ctx context.Context, id uuid.UUID) (*dto.ImageWithSegmentsFormations, error) {
 	u.logger.Debug("[Request] Get image by ID", zap.Any("id", id))

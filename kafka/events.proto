@@ -4,18 +4,6 @@ package yir.kafka;
 
 option go_package = "yir/kafka;kafka";
 
-message uzi_upload_event { string uzi_id = 100; }
-
-message uzi_splitted_event {
-  string uzi_id = 100;
-  repeated string pages_id = 200;
-}
-
-message uzi_loaded_event {
-  string uzi_id = 100;
-  repeated string pages_id = 200;
-}
-
 message Tirads {
   double tirads_1 = 1;
   double tirads_2 = 2;
@@ -26,7 +14,6 @@ message Tirads {
 
 // Приписка ML указывает на другой формат хранения структур, они не содержат ID
 // так как он должен быть сгенерен на стороне Uzi Service
-
 message MlSegment {
   string image_id = 300;
 
@@ -39,6 +26,13 @@ message MlFormation {
   Tirads tirads = 200;
 }
 
-message uzi_ml_processed_event {
+message uzi_upload_event { string uzi_id = 100; }
+
+message uzi_splitted_loaded_event {
+  string uzi_id = 100;
+  repeated string pages_id = 200;
+}
+
+message uzi_ml_segmentated_classificated_event {
   repeated MlFormation formations = 100;
 }

@@ -47,6 +47,7 @@ func NewServer(
 			&pb.UpdateUziRequest{},
 			&pb.InsertFormationWithSegmentsRequest{},
 			&pb.UpdateFormationRequest{},
+			&pb.CreateUziInfoRequest{},
 		),
 	)
 	if err != nil {
@@ -70,6 +71,18 @@ func (s *Server) InsertUzi(ctx context.Context, req *pb.Uzi) (*empty.Empty, erro
 	// Здесь нужен именно конфиг для string --> uuid
 	if err := s.uziUseCase.InsertUzi(ctx, mvpmappers.PBUziToDTOUzi(req)); err != nil {
 		// пока 500-тим оставляем на рефакторинг
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
+	}
+
+	return &empty.Empty{}, nil
+}
+
+func (s *Server) CreateUziInfo(ctx context.Context, req *pb.CreateUziInfoRequest) (*empty.Empty, error) {
+	if err := s.validator.Validate(req); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %v", err))
+	}
+
+	if err := s.uziUseCase.CreateUziInfo(ctx, mvpmappers.PBCreateUziInfoReqToUzi(req)); err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
 	}
 
