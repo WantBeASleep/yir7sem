@@ -26,13 +26,14 @@ func (r *UploadGRPCReader) recv() error {
 	}
 
 	if msg != nil {
-		if r.cntReadOps == 0 {
+		// получение Path при первом чтении
+		if r.cntReadOps == 1 {
 			r.path = msg.Path
 		}
 		r.cache = append(r.cache, msg.File...)
 	}
 
-	if err == io.EOF || msg == nil {
+	if err == io.EOF {
 		r.eof = true
 		return io.EOF
 	}

@@ -35,11 +35,13 @@ class uziUseCase():
         masks, rois = self.segmentUzi(data)
         indv, tracked = self.classificateUzi(rois)
 
+        print_lengths_return_ndarray_list(rois)
+
         # print(f"размер indv {len(indv)}")
         # print(indv)
 
-        print(f"размер tracked {len(tracked)}")
-        print(tracked)
+        # print(f"размер tracked {len(tracked)}")
+        # print(tracked)
 
 
         # дальше код - насрать в S3

@@ -33,15 +33,12 @@ func NewController(
 }
 
 func (c *Controller) Upload(req pb.S3Upload_UploadServer) error {
-	// req.SendAndClose(&emptypb.Empty{})
-	// return status.Errorf(codes.DataLoss, "drata loz")
-
 	ctx := req.Context()
 	reader := utils.NewUploadGRPCReader(req)
 
 	path, err := reader.GetPath()
 	if err != nil {
-		return status.Errorf(codes.Internal, fmt.Sprintf("get path failed: %v", err))
+		return status.Errorf(codes.InvalidArgument, fmt.Sprintf("get path failed: %v", err))
 	}
 
 	file := &entity.File{
