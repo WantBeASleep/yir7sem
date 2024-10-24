@@ -41,17 +41,17 @@ func (u *UziUseCase) LoadSplitSaveUzi(ctx context.Context, uziID uuid.UUID) (uui
 		id, _ := uuid.NewRandom()
 		imagesIDs = append(imagesIDs, id)
 		url := filepath.Join(uziID.String(), id.String(), id.String())
-		
+
 		if err := u.s3Repo.Upload(ctx, url, split); err != nil {
 			u.logger.Error("page upload err", zap.Int("page number", i+1), zap.Error(err))
 			return nil, fmt.Errorf("upload page [page number %q]: %w", i+1, err)
 		}
 
 		images = append(images, entity.Image{
-			Id: id,
-			Url: url,
+			Id:    id,
+			Url:   url,
 			UziID: uziID,
-			Page: i + 1,
+			Page:  i + 1,
 		})
 	}
 	u.logger.Info("[Response] Uploaded all pages to S3")
