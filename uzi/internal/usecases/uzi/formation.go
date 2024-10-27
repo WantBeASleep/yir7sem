@@ -23,6 +23,7 @@ func (u *UziUseCase) InsertFormationWithSegments(ctx context.Context, req *dto.F
 	return nil
 }
 
+//generates ID
 func (u *UziUseCase) CreateFormationsWithSegments(ctx context.Context, req []dto.FormationWithSegments) ([]dto.FormationWithSegmentsIDs, error) {
 	resp := make([]dto.FormationWithSegmentsIDs, 0, len(req))
 	for i, formation := range req {

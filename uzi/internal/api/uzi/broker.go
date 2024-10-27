@@ -1,17 +1,19 @@
 package uzi
 
 import (
+	"context"
 	pb "yir/uzi/events"
 	"yir/uzi/internal/api/usecases"
+	"yir/uzi/internal/api/mvpmappers"
+	"yir/uzi/internal/entity/dto"
+	
 
 	"google.golang.org/protobuf/proto"
 
-	"github.com/IBM/sarama"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
-// Как же плохо, просто уауауауййй бляяя
 type Broker struct {
 	logger *zap.Logger
 
@@ -28,46 +30,47 @@ func NewBroker(
 	}
 }
 
-func (b *Broker) Setup(sarama.ConsumerGroupSession) error {
-	return nil
-}
+func (b *Broker) ProcessingEvents(ctx context.Context, topic string, msg []byte) error {
+	b.logger.Info("[EVENTS] New event", zap.String("Topic", topic))
 
-func (b *Broker) Cleanup(sarama.ConsumerGroupSession) error {
-	return nil
-}
-
-func (b *Broker) ConsumeClaim(s sarama.ConsumerGroupSession, g sarama.ConsumerGroupClaim) error {
-	b.logger.Info("[EVENTS] Start consume events", zap.String("Topic", g.Topic()), zap.Int64("Lag", g.HighWaterMarkOffset()))
-	for msg := range g.Messages() {
-		b.logger.Info("[EVENTS] New event", zap.String("Topic", g.Topic()))
-
-		var eventData pb.UziUploadEvent
-		err := proto.Unmarshal(msg.Value, &eventData)
+	// dependency injection
+	switch topic {
+	case "uziUpload":
+		var eventData pb.UziUpload
+		err := proto.Unmarshal(msg, &eventData)
 		if err != nil {
-			// Tech Debt
-			b.logger.Error("[EVENTS] Error while processing event; Parse data", zap.Error(err))
-			s.MarkMessage(msg, "")
-			s.Commit()
-			continue
+			b.logger.Error("[EVENTS] parse data", zap.Error(err))
+			return nil
 		}
 
 		uziID, err := uuid.Parse(eventData.UziId)
 		if err != nil {
-			b.logger.Error("[EVENTS] Error while processing event; Parse uuid", zap.Error(err))
-			s.MarkMessage(msg, "")
-			s.Commit()
-			continue
+			b.logger.Error("[EVENTS] parse uzi uuid", zap.Error(err))
+			return nil
 		}
 
-		pagesID, err := b.uziUseCase.SplitLoadSaveUzi(s.Context(), uziID)
+		pagesID, err := b.uziUseCase.SplitLoadSaveUzi(ctx, uziID)
 		if err != nil {
-			b.logger.Error("[EVENTS] Error while processing event; Event run", zap.Error(err))
-			s.MarkMessage(msg, "")
-			s.Commit()
-			continue
+			b.logger.Error("[EVENTS] split load save", zap.Error(err))
 		}
 
 		b.logger.Info("[EVENTS] Successfull process event", zap.Any("pages id", pagesID))
+
+	case "uziProcessed":
+		var eventData pb.UziProcessed
+		err := proto.Unmarshal(msg, &eventData)
+		if err != nil {
+			b.logger.Error("[EVENTS] parse data", zap.Error(err))
+			return nil
+		}
+
+		req := make([]dto.FormationWithSegments, 0, len(eventData.Formations))
+		for _, pbFormation := range eventData.Formations {
+			
+		}
+
+	default:
+		b.logger.Error("[EVENTS] unsupported event")
 	}
 
 	return nil

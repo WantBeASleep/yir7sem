@@ -88,6 +88,7 @@ func main() {
 		panic(fmt.Errorf("lister grpc host:port: %w", err))
 	}
 
+	// errgroup need
 	var wg sync.WaitGroup
 
 	wg.Add(1)
@@ -114,7 +115,17 @@ func main() {
 		config.Consumer.Group.Heartbeat.Interval = 3 * time.Second
 		config.Consumer.Return.Errors = true
 
-		
+		// затащить в кфг
+		consumer, err := kafka.NewGroupConsumer("uziService", []string{"uziUpload"}, []string{"localhost:9092"}, config, uziBroker.ProcessingEvents)
+		if err != nil {
+			panic(fmt.Errorf("open consumer: %w", err))
+		}
+
+		if err := consumer.Start(context.Background()); err != nil {
+			panic(fmt.Errorf("start consumer"))
+		}
+
+		defer consumer.Close()
 	}()
 
 	wg.Wait()
