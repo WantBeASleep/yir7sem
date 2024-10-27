@@ -44,6 +44,8 @@ func NewGroupConsumer(
 	}
 
 	return &GroupConsumer{
+		topics: topics,
+
 		consumer: consumer,
 		handler: handler,
 	}, nil
