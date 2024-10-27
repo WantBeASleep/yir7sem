@@ -51,7 +51,7 @@ func (s *S3) Upload(ctx context.Context, path string, data []byte) error {
 	}
 
 	reader := bytes.NewReader(data)
-	buf := [5 * 1024 * 1024]byte{}
+	buf := [1024 * 1024]byte{}
 	for {
 		n, err := reader.Read(buf[:])
 		if n != 0 {

@@ -11,6 +11,12 @@ import ml_service.api.ml_api_pb2 as pb
 import ml_service.api.ml_api_pb2_grpc as pb_grpc
 
 
+
+sys.path.append("/home/wantbeasleep/yir/ml_service/internal/s3go")
+sys.path.append("/home/wantbeasleep/yir/ml_service/internal/events")
+import ml_service.internal.events.events as kafkaevents
+
+
 sys.path.append("/home/wantbeasleep/yir/ml_service/internal/s3")
 import ml_service.internal.s3.s3 as mys3
 sys.path.append("/home/wantbeasleep/yir/ml_service/internal/ml_model")
@@ -38,12 +44,15 @@ claml = cla.EfficientNetModel('cross')
 usecase = usecaseuzi.uziUseCase(segmdl, claml, s3)
 
 controller = ctrl.MlController(usecase)
+kafka = kafkaevents.EventsYo(usecase)
+print("РАЗЪЕБНАЯ КАФКА ПОЕХАЛА")
+kafka.run()
 
 server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 pb_grpc.add_MLAPIServicer_to_server(controller, server)
-server.add_insecure_port('[::]:50055')
+server.add_insecure_port('[::]:50057')
 server.start()  # Запускаем сервер
-print("Server started on port 50055")
+print("Server started on port 50057")
 
 try:
     while True:

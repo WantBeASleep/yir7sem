@@ -7,6 +7,8 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	"time"
+	"yir/pkg/kafka"
 	"yir/pkg/log"
 	s3api "yir/s3upload/api"
 	pb "yir/uzi/api"
@@ -15,6 +17,8 @@ import (
 	"yir/uzi/internal/db/uzirepo"
 	"yir/uzi/internal/s3service"
 	uziusecase "yir/uzi/internal/usecases/uzi"
+
+	"github.com/IBM/sarama"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
@@ -69,6 +73,8 @@ func main() {
 		panic(fmt.Errorf("init ctrl: %w", err))
 	}
 
+	uziBroker := uziapi.NewBroker(logger, uziUseCase)
+
 	grpcServer := grpc.NewServer()
 	pb.RegisterUziAPIServer(grpcServer, uziController)
 
@@ -98,6 +104,17 @@ func main() {
 			logger.Error("HTTP server serve error", zap.Error(err))
 		}
 		wg.Done()
+	}()
+
+	wg.Add(1)
+	go func() {
+		config := sarama.NewConfig()
+		config.Consumer.Group.Rebalance.Strategy = sarama.BalanceStrategyRoundRobin
+		config.Consumer.Group.Session.Timeout = 10 * time.Second
+		config.Consumer.Group.Heartbeat.Interval = 3 * time.Second
+		config.Consumer.Return.Errors = true
+
+		
 	}()
 
 	wg.Wait()

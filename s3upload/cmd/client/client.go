@@ -79,7 +79,7 @@ func main() {
 	}
 
 	getHdl := func(w http.ResponseWriter, r *http.Request) {
-		path := &struct{Path string}{}
+		path := &struct{ Path string }{}
 		json.NewDecoder(r.Body).Decode(&path)
 
 		stream, err := client.Get(context.Background(), &pb.GetRequest{Path: path.Path})

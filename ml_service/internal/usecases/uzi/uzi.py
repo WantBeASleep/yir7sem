@@ -1,9 +1,13 @@
 import numpy as np
+import cv2
+from confluent_kafka import Producer
+import json
 import imageio
 import matplotlib.pyplot as plt
 from ml_service.internal.ml_model.neuro_class import ModelABC
 from ml_service.internal.s3.s3 import S3
 from ml_service.internal.utils import image_parser
+import ml_service.internal.events.kafka_pb2 as pb_event
 
 res_for_recursive = []
 
@@ -36,15 +40,84 @@ class uziUseCase():
         indv, tracked = self.classificateUzi(rois)
 
         print_lengths_return_ndarray_list(rois)
+        print("\n\n\n\n")
+        print_lengths_return_ndarray_list(indv)
+        print("\n\n\n\n")
+        print_lengths_return_ndarray_list(tracked)
 
-        # print(f"размер indv {len(indv)}")
-        # print(indv)
+    def segmentClassificateSave(self, uzi_id, pages_id):
+        # фул похуй поехали
+        print("в с3 кабаном")
+        data = self.store.load(uzi_id + "/" + uzi_id)
 
-        # print(f"размер tracked {len(tracked)}")
-        # print(tracked)
+        masks, rois = self.segmentUzi(data)
+        indv, tracked = self.classificateUzi(rois)
+
+        formations = dict()
+        for k in tracked:
+            tirads = pb_event.Tirads(
+                tirads_1=0,
+                tirads_2=0,
+                tirads_3=tracked[k][0],
+                tirads_4=tracked[k][0],
+                tirads_5=tracked[k][0]
+            )
+            formations[k] = pb_event.MlFormation(
+                tirads=tirads
+            )
 
 
-        # дальше код - насрать в S3
+        for i in range(len(rois)):
+            print("РАЗЪЕБНАЯ И:", i)
+            for j in range(len(rois[i])):
+                # бинаризуем
+                mask = rois[i][j][2]
+                mask = mask.astype(np.uint8)
+                mask = (mask * 255).astype(np.uint8)
+                print(mask.shape, type(mask))
+                print(np.unique(mask))
+
+                contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                print("КОЛИЧЕСТВО КОНТУТУРОВ: ", len(contours))
+                contour = contours[0].squeeze()
+                contour_points = [{"x": int(point[0]), "y": int(point[1])} for point in contour]
+                contourJSSSSSSSSS = json.dumps(contour_points)
+
+                tirads = pb_event.Tirads(
+                    tirads_1=0,
+                    tirads_2=0,
+                    tirads_3=indv[i][j][0],
+                    tirads_4=indv[i][j][1],
+                    tirads_5=indv[i][j][2]
+                )
+                ml_segment = pb_event.MlSegment(
+                    image_id=pages_id[i],
+                    contor=contourJSSSSSSSSS,
+                    tirads = tirads
+                )
+                
+                formations[rois[i][j][1]].segments.append(ml_segment)
+
+        msg_event = pb_event.uziProcessed(
+            formations=list(formations.values())
+        )
+
+        content = msg_event.SerializeToString()
+
+        producer_config = {
+            'bootstrap.servers': 'localhost:9092'  # Адрес вашего Kafka брокера
+        }
+        producer = Producer(producer_config)
+
+        producer.produce('uziProcessed', content)
+        producer.flush()
+
+        
+
+        
+
+
+
 
 def print_lengths_return_ndarray_list(data, level=0):
     """Рекурсивная функция для вывода длин всех вложенных массивов/list."""

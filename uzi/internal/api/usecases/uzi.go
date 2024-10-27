@@ -23,4 +23,6 @@ type Uzi interface {
 	UpdateFormation(ctx context.Context, id uuid.UUID, req *dto.Formation) error
 
 	DeviceList(ctx context.Context) ([]entity.Device, error)
+
+	SplitLoadSaveUzi(ctx context.Context, uziID uuid.UUID) (uuid.UUIDs, error)
 }

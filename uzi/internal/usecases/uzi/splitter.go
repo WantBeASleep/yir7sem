@@ -14,7 +14,7 @@ import (
 
 // 1.загрузить из S3 && 2.Split uzi && 3.load to S3 && 4.load to postgres
 // все декомпозировано, usecase реализует uzi_splitted_event
-func (u *UziUseCase) LoadSplitSaveUzi(ctx context.Context, uziID uuid.UUID) (uuid.UUIDs, error) {
+func (u *UziUseCase) SplitLoadSaveUzi(ctx context.Context, uziID uuid.UUID) (uuid.UUIDs, error) {
 	// какой же колхоз то блять, надо все это в мидлвары обернуть
 	u.logger.Info("[Request] SplitUziAndLoadS3 request")
 

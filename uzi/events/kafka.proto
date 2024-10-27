@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package yir.uzi;
+
+option go_package = "yir/uzi/events;events";
+
+message uzi_upload_event { string uzi_id = 100; }

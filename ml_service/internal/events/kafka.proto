@@ -1,9 +1,5 @@
 syntax = "proto3";
 
-package yir.kafka;
-
-option go_package = "yir/kafka;kafka";
-
 message Tirads {
   double tirads_1 = 1;
   double tirads_2 = 2;

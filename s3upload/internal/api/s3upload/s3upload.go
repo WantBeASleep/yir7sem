@@ -67,7 +67,7 @@ func (c *Controller) Get(req *pb.GetRequest, stream pb.S3Upload_GetServer) error
 		return fmt.Errorf("get stream from S3: %w", err)
 	}
 
-	buff := make([]byte, 5*1024*1024) // 5MB
+	buff := make([]byte, 1024*1024) // 1MB
 
 	for {
 		n, err := s3Stream.Read(buff)
