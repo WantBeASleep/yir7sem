@@ -19,7 +19,6 @@ tasks:
         --go_out {{.proto_out}} --go_opt paths=source_relative
         --go-grpc_out {{.proto_out}} --go-grpc_opt paths=source_relative
         --grpc-gateway_out {{.proto_out}} --grpc-gateway_opt logtostderr=true,paths=source_relative
-        --openapiv2_out {{.proto_out}} --openapiv2_opt logtostderr=true,allow_merge=true,merge_file_name={{trimSuffix (ext (base .proto_target)) (base .proto_target)}}
         {{.proto_target}}
 
     sources:
@@ -28,14 +27,13 @@ tasks:
     generates:
       - '{{.proto_out}}/*.pb.go'
       - '{{.proto_out}}/*.pb.gw.go'
-      - '{{.proto_out}}/*.swagger.json'
 
   build:
     deps: [generate]
     cmds:
       - go fmt ./...
       - goimports -w .
-      - go build -v -o bin/s3upload cmd/s3upload.go
+      - go build -v -o bin/s3upload cmd/server/s3upload.go
 
   run:
     deps: [build]
@@ -48,4 +46,4 @@ tasks:
 
   default:
     cmds:
-      - task: generate
+      - task: build

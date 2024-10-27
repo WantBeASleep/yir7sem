@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package yir.uzi;
+
+option go_package = "yir/uzi/events;events";
+
+message uziUpload { string uzi_id = 100; }
+
+message Tirads {
+  double tirads_1 = 1;
+  double tirads_2 = 2;
+  double tirads_3 = 3;
+  double tirads_4 = 4;
+  double tirads_5 = 5;
+}
+
+message MlSegment {
+  string image_id = 300;
+
+  string contor = 400;
+  Tirads tirads = 500;
+}
+
+message MlFormation {
+  repeated MlSegment segments = 100;
+  Tirads tirads = 200;
+}
+
+message uziProcessed { repeated MlFormation formations = 100; }

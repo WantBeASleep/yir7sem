@@ -36,6 +36,23 @@ func (u *UziUseCase) InsertUzi(ctx context.Context, req *dto.Uzi) error {
 	return nil
 }
 
+func (u *UziUseCase) CreateUziInfo(ctx context.Context, req *entity.Uzi) error {
+	// можно делать на стороне postgre
+	uziID, err := uuid.NewRandom()
+	if err != nil {
+		return fmt.Errorf("generate uzi uuid: %w", err)
+	}
+	req.Id = uziID
+
+	u.logger.Debug("[Request] Create Uzi Info", zap.Any("Data", req))
+	if err := u.uziRepo.InsertUzi(ctx, req); err != nil {
+		u.logger.Error("Create Uzi Info", zap.Error(err))
+		return fmt.Errorf("create uzi info: %w", err)
+	}
+	u.logger.Debug("[Response] Created Uzi Info")
+	return nil
+}
+
 func (u *UziUseCase) GetUzi(ctx context.Context, id uuid.UUID) (*dto.Uzi, error) {
 	u.logger.Debug("[Request] Get Uzi", zap.Any("uzi id", id))
 	uzi, err := u.uziRepo.GetUziByID(ctx, id)

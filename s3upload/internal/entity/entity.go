@@ -1,6 +1,8 @@
 package entity
 
-type ImageDataWithFormat struct {
-	Format string
-	Image  []byte
+import "io"
+
+type File struct {
+	Path string
+	Data io.Reader
 }

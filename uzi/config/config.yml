@@ -1,11 +1,14 @@
 app:
   env: DEV
   host: localhost
-  grpc: 50055
-  http: 8080
+  grpc: 50056
+  http: 8081
 
 db:
   host: localhost
   port: 5432
   name: uzidb
   user: postgres
+
+services:
+  s3servicehost: localhost:50055

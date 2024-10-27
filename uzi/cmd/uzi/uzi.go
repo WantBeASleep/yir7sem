@@ -7,12 +7,18 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	"time"
+	"yir/pkg/kafka"
 	"yir/pkg/log"
+	s3api "yir/s3upload/api"
 	pb "yir/uzi/api"
 	uziapi "yir/uzi/internal/api/uzi"
 	"yir/uzi/internal/config"
 	"yir/uzi/internal/db/uzirepo"
+	"yir/uzi/internal/s3service"
 	uziusecase "yir/uzi/internal/usecases/uzi"
+
+	"github.com/IBM/sarama"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
@@ -37,6 +43,7 @@ func init() {
 // MVP CODE Tech Debt
 func main() {
 	flag.Parse()
+
 	cfg := config.MustLoad(configPath)
 
 	var logger *zap.Logger
@@ -52,12 +59,21 @@ func main() {
 		panic(fmt.Errorf("init repo: %w", err))
 	}
 
-	uziUseCase := uziusecase.NewUziUseCase(uziRepo, logger)
+	s3serviceConn, err := grpc.Dial(cfg.Services.S3ServiceHost, grpc.WithInsecure())
+	if err != nil {
+		panic(fmt.Errorf("conn to s3 service: %w", err))
+	}
+	s3serviceClient := s3api.NewS3UploadClient(s3serviceConn)
+	s3Repo := s3service.NewS3Service(s3serviceClient)
+
+	uziUseCase := uziusecase.NewUziUseCase(uziRepo, s3Repo, logger)
 
 	uziController, err := uziapi.NewServer(uziUseCase)
 	if err != nil {
 		panic(fmt.Errorf("init ctrl: %w", err))
 	}
+
+	uziBroker := uziapi.NewBroker(logger, uziUseCase)
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterUziAPIServer(grpcServer, uziController)
@@ -72,6 +88,7 @@ func main() {
 		panic(fmt.Errorf("lister grpc host:port: %w", err))
 	}
 
+	// errgroup need
 	var wg sync.WaitGroup
 
 	wg.Add(1)
@@ -88,6 +105,27 @@ func main() {
 			logger.Error("HTTP server serve error", zap.Error(err))
 		}
 		wg.Done()
+	}()
+
+	wg.Add(1)
+	go func() {
+		config := sarama.NewConfig()
+		config.Consumer.Group.Rebalance.Strategy = sarama.BalanceStrategyRoundRobin
+		config.Consumer.Group.Session.Timeout = 10 * time.Second
+		config.Consumer.Group.Heartbeat.Interval = 3 * time.Second
+		config.Consumer.Return.Errors = true
+
+		// затащить в кфг
+		consumer, err := kafka.NewGroupConsumer("uziService", []string{"uziUpload"}, []string{"localhost:9092"}, config, uziBroker.ProcessingEvents)
+		if err != nil {
+			panic(fmt.Errorf("open consumer: %w", err))
+		}
+
+		if err := consumer.Start(context.Background()); err != nil {
+			panic(fmt.Errorf("start consumer"))
+		}
+
+		defer consumer.Close()
 	}()
 
 	wg.Wait()

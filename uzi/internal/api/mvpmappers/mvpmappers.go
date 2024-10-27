@@ -124,6 +124,15 @@ func PBUziInfoToUzi(uziInfo *pb.UziInfo) *entity.Uzi {
 	}
 }
 
+func PBCreateUziInfoReqToUzi(uziInfo *pb.CreateUziInfoRequest) *entity.Uzi {
+	return &entity.Uzi{
+		Url:        uziInfo.Url,
+		Projection: uziInfo.Projection,
+		PatientID:  uuid.MustParse(uziInfo.PatientId),
+		DeviceID:   int(uziInfo.DeviceId),
+	}
+}
+
 func UziToPBUziInfo(uziInfo *entity.Uzi) *pb.UziInfo {
 	return &pb.UziInfo{
 		Id:         uziInfo.Id.String(),

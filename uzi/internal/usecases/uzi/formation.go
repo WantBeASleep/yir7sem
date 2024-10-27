@@ -23,6 +23,33 @@ func (u *UziUseCase) InsertFormationWithSegments(ctx context.Context, req *dto.F
 	return nil
 }
 
+//generates ID
+func (u *UziUseCase) CreateFormationsWithSegments(ctx context.Context, req []dto.FormationWithSegments) ([]dto.FormationWithSegmentsIDs, error) {
+	resp := make([]dto.FormationWithSegmentsIDs, 0, len(req))
+	for i, formation := range req {
+		formationID, _ := uuid.NewRandom()
+		req[i].Formation.Id = formationID
+
+		segmentsIDs := make(uuid.UUIDs, 0, len(formation.Segments))
+		for j := range formation.Segments {
+			segmentID, _ := uuid.NewRandom()
+			segmentsIDs = append(segmentsIDs, segmentID)
+			req[i].Segments[j].Id = segmentID
+		}
+
+		if err := u.InsertFormationWithSegments(ctx, &req[i]); err != nil {
+			return nil, fmt.Errorf("insert formation [number %d] with segments: %w", i, err)
+		}
+
+		resp = append(resp, dto.FormationWithSegmentsIDs{
+			FormationID: formationID,
+			Segments:    segmentsIDs,
+		})
+	}
+
+	return resp, nil
+}
+
 func (u *UziUseCase) GetFormationWithSegments(ctx context.Context, id uuid.UUID) (*dto.FormationWithSegments, error) {
 	u.logger.Debug("[Request] Get formation by ID", zap.Any("id", id))
 	formation, err := u.uziRepo.GetFormationByID(ctx, id)
