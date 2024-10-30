@@ -2,7 +2,12 @@ package entity
 
 import "io"
 
+type FileMeta struct {
+	Path        string
+	ContentType string
+}
+
 type File struct {
-	Path string
+	Meta *FileMeta
 	Data io.Reader
 }

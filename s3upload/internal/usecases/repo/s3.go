@@ -7,8 +7,8 @@ import (
 )
 
 type S3 interface {
-	Upload(ctx context.Context, path string, data io.Reader, opts ...entity.LoadOption) error
+	Upload(ctx context.Context, file *entity.File) error
 
 	// стримим объект поэтому тут ReadCloser
-	Get(ctx context.Context, path string, opts ...entity.GetOption) (io.Reader, error)
+	Get(ctx context.Context, path string, opts ...entity.GetOption) (*entity.FileMeta, io.Reader, error)
 }

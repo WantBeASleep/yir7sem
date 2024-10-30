@@ -53,7 +53,7 @@ func main() {
 	}
 
 	uziUseCase := uziusecase.NewUziUseCase(s3Repo, logger)
-	uziContoller := uzicontroller.NewController(uziUseCase, logger)
+	uziContoller := uzicontroller.NewController(uziUseCase)
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterS3UploadServer(grpcServer, uziContoller)

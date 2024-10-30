@@ -36,18 +36,23 @@ func NewRepo(cfg *config.S3, bucket string) (*Repo, error) {
 	}, nil
 }
 
-func entityLoadOptsToMinioPutOpts(opts []entity.LoadOption) minio.PutObjectOptions {
-	loadOpts := entity.LoadOpts{}
+func s3MetaToEntityMeta(meta minio.ObjectInfo) *entity.FileMeta {
+	res := entity.FileMeta{}
 
-	for _, opt := range opts {
-		opt(&loadOpts)
+	res.Path = meta.Key
+	res.ContentType = meta.ContentType
+
+	return &res
+}
+
+func entityMetaToMinioPutOpts(meta *entity.FileMeta) minio.PutObjectOptions {
+	res := minio.PutObjectOptions{}
+
+	if meta.ContentType != "" {
+		res.ContentType = meta.ContentType
 	}
 
-	minioOpts := minio.PutObjectOptions{
-		ContentType: loadOpts.ContentType,
-	}
-
-	return minioOpts
+	return res
 }
 
 func entityGetOptsToMinioGetOpts(opts []entity.GetOption) minio.GetObjectOptions {
@@ -62,12 +67,11 @@ func entityGetOptsToMinioGetOpts(opts []entity.GetOption) minio.GetObjectOptions
 	return minioOpts
 }
 
-func (r *Repo) Upload(ctx context.Context, path string, data io.Reader, opts ...entity.LoadOption) error {
+func (r *Repo) Upload(ctx context.Context, file *entity.File) error {
 	// поправить с -1, на нужный размер, пока что так
+	minioOpts := entityMetaToMinioPutOpts(file.Meta)
 
-	minioOpts := entityLoadOptsToMinioPutOpts(opts)
-
-	_, err := r.client.PutObject(ctx, r.bucket, path, data, -1, minioOpts)
+	_, err := r.client.PutObject(ctx, r.bucket, file.Meta.Path, file.Data, -1, minioOpts)
 	if err != nil {
 		return fmt.Errorf("upload to S3: %w", err)
 	}
@@ -76,14 +80,19 @@ func (r *Repo) Upload(ctx context.Context, path string, data io.Reader, opts ...
 }
 
 // stream файла, поэтому io.ReadCloser
-func (r *Repo) Get(ctx context.Context, path string, opts ...entity.GetOption) (io.Reader, error) {
+func (r *Repo) Get(ctx context.Context, path string, opts ...entity.GetOption) (*entity.FileMeta, io.Reader, error) {
+
+	metaInfo, err := r.client.StatObject(ctx, r.bucket, path, minio.StatObjectOptions{})
+	if err != nil {
+		return nil, nil, fmt.Errorf("get meta info from S3: %w", err)
+	}
 
 	minioOpts := entityGetOptsToMinioGetOpts(opts)
 
 	obj, err := r.client.GetObject(ctx, r.bucket, path, minioOpts)
 	if err != nil {
-		return nil, fmt.Errorf("get obj from S3: %w", err)
+		return nil, nil, fmt.Errorf("get obj from S3: %w", err)
 	}
 
-	return obj, nil
+	return s3MetaToEntityMeta(metaInfo), obj, nil
 }

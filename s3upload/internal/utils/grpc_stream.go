@@ -12,9 +12,9 @@ import (
 type UploadGRPCReader struct {
 	stream pb.S3Upload_UploadServer
 
-	path       string
+	meta       *pb.FileMeta
 	cntReadOps int
-	cache      []byte
+	file       []byte
 	eof        bool
 }
 
@@ -28,9 +28,12 @@ func (r *UploadGRPCReader) recv() error {
 	if msg != nil {
 		// получение Path при первом чтении
 		if r.cntReadOps == 1 {
-			r.path = msg.Path
+			if msg.FileMeta == nil {
+				return fmt.Errorf("required file meta")
+			}
+			r.meta = msg.FileMeta
 		}
-		r.cache = append(r.cache, msg.File...)
+		r.file = append(r.file, msg.File...)
 	}
 
 	if err == io.EOF {
@@ -41,21 +44,21 @@ func (r *UploadGRPCReader) recv() error {
 }
 
 // прочитает поток если до этого не было чтения
-func (r *UploadGRPCReader) GetPath() (string, error) {
+func (r *UploadGRPCReader) GetMeta() (*pb.FileMeta, error) {
 	if r.cntReadOps == 0 {
 		if err := r.recv(); err != nil && err != io.EOF {
-			return "", fmt.Errorf("receive grpc msg: %w", err)
+			return nil, fmt.Errorf("receive grpc msg: %w", err)
 		}
 	}
 
-	if r.path == "" {
-		return "", fmt.Errorf("empty path not supported")
+	if r.meta == nil {
+		return nil, fmt.Errorf("empty path not supported")
 	}
-	return r.path, nil
+	return r.meta, nil
 }
 
 func (r *UploadGRPCReader) Read(p []byte) (int, error) {
-	for !r.eof && len(r.cache) < len(p) {
+	for !r.eof && len(r.file) < len(p) {
 		if err := r.recv(); err != nil {
 			if err == io.EOF {
 				break
@@ -64,8 +67,8 @@ func (r *UploadGRPCReader) Read(p []byte) (int, error) {
 		}
 	}
 
-	copyBytes := copy(p, r.cache)
-	r.cache = r.cache[copyBytes:]
+	copyBytes := copy(p, r.file)
+	r.file = r.file[copyBytes:]
 
 	if r.eof && copyBytes == 0 {
 		return 0, io.EOF
