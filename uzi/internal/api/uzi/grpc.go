@@ -55,6 +55,8 @@ func NewServer(
 	}, nil
 }
 
+// REFACTOR COMMIT
+
 func (s *Server) InsertUzi(ctx context.Context, req *pb.Uzi) (*empty.Empty, error) {
 	// ВАЛИДАЦИЮ ВЫНЕСТИ В middlewar! Tech debt
 	if err := s.validator.Validate(req); err != nil {
