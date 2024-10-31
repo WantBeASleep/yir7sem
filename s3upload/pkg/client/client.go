@@ -18,14 +18,14 @@ type File struct {
 	FileBin []byte
 }
 
-func FileMetaToPB(meta *FileMeta) *pb.FileMeta {
+func fileMetaToPB(meta *FileMeta) *pb.FileMeta {
 	return &pb.FileMeta{
 		Path: meta.Path,
 		ContentType: meta.ContentType,
 	}
 }
 
-func PBFileMetaToEntity(meta *pb.FileMeta) *FileMeta {
+func pBFileMetaToEntity(meta *pb.FileMeta) *FileMeta {
 	return &FileMeta{
 		Path: meta.GetPath(),
 		ContentType: meta.GetContentType(),
@@ -82,7 +82,7 @@ func (c *S3Client) Upload(ctx context.Context, meta *FileMeta, fileBin io.Reader
 		n, err := fileBin.Read(buf)
 		if n != 0 {
 			err := stream.Send(&pb.File{
-				FileMeta: FileMetaToPB(meta),
+				FileMeta: fileMetaToPB(meta),
 				FileBin:  buf,
 			})
 			if err != nil {
@@ -120,7 +120,7 @@ func (c *S3Client) GetFullFileByStream(ctx context.Context, path string) (*File,
 		i++
 		if file != nil {
 			if i == 1 {
-				res.FileMeta = *PBFileMetaToEntity(file.FileMeta)
+				res.FileMeta = *pBFileMetaToEntity(file.FileMeta)
 			}
 			buf.Write(file.FileBin)
 		}

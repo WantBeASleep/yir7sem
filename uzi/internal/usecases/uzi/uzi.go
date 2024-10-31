@@ -15,7 +15,7 @@ func (u *UziUseCase) CreateUzi(ctx context.Context, req *entity.Uzi) (uuid.UUID,
 	uziID, err := u.uziRepo.CreateUzi(ctx, req)
 	if err != nil {
 		u.logger.Error("Create Uzi", zap.Error(err))
-		return fmt.Errorf("create uzi: %w", err)
+		return uuid.Nil, fmt.Errorf("create uzi: %w", err)
 	}
 	u.logger.Debug("[Response] Created Uzi")
 	
