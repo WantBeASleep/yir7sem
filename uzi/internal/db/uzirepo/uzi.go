@@ -68,9 +68,15 @@ func (r *UziRepo) UpdateTirads(ctx context.Context, id int, tirads *entity.Tirad
 	return err
 }
 
-func (r *UziRepo) InsertUzi(ctx context.Context, uzi *entity.Uzi) error {
+// UZI
+
+func (r *UziRepo) CreateUzi(ctx context.Context, uzi *entity.Uzi) (uuid.UUID, error) {
 	uziDB := mappers.MustTransformObj[entity.Uzi, models.Uzi](uzi)
-	return db.CreateRecord[models.Uzi](ctx, r.db, uziDB)
+	if err := db.CreateRecord[models.Uzi](ctx, r.db, uziDB); err != nil {
+		return uuid.Nil, err
+	}
+
+	return uziDB.Id, nil
 }
 
 func (r *UziRepo) GetUziByID(ctx context.Context, id uuid.UUID) (*entity.Uzi, error) {

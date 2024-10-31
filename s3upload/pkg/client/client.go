@@ -8,6 +8,30 @@ import (
 	pb "yir/s3upload/api"
 )
 
+type FileMeta struct {
+	Path        string
+	ContentType string
+}
+
+type File struct {
+	FileMeta FileMeta
+	FileBin []byte
+}
+
+func FileMetaToPB(meta *FileMeta) *pb.FileMeta {
+	return &pb.FileMeta{
+		Path: meta.Path,
+		ContentType: meta.ContentType,
+	}
+}
+
+func PBFileMetaToEntity(meta *pb.FileMeta) *FileMeta {
+	return &FileMeta{
+		Path: meta.GetPath(),
+		ContentType: meta.GetContentType(),
+	}
+}
+
 type Config struct {
 	UploaderBatchSize int
 }
@@ -47,7 +71,7 @@ func NewS3Client(
 	}
 }
 
-func (c *S3Client) Upload(ctx context.Context, meta *pb.FileMeta, fileBin io.Reader) error {
+func (c *S3Client) Upload(ctx context.Context, meta *FileMeta, fileBin io.Reader) error {
 	stream, err := c.client.Upload(ctx)
 	if err != nil {
 		return fmt.Errorf("open stream to upload: %w", err)
@@ -58,7 +82,7 @@ func (c *S3Client) Upload(ctx context.Context, meta *pb.FileMeta, fileBin io.Rea
 		n, err := fileBin.Read(buf)
 		if n != 0 {
 			err := stream.Send(&pb.File{
-				FileMeta: meta,
+				FileMeta: FileMetaToPB(meta),
 				FileBin:  buf,
 			})
 			if err != nil {
@@ -82,13 +106,13 @@ func (c *S3Client) Upload(ctx context.Context, meta *pb.FileMeta, fileBin io.Rea
 }
 
 // используется стрим под капотом
-func (c *S3Client) GetFullFileByStream(ctx context.Context, path string) (*pb.File, error) {
+func (c *S3Client) GetFullFileByStream(ctx context.Context, path string) (*File, error) {
 	stream, err := c.client.Get(ctx, &pb.GetRequest{Path: path})
 	if err != nil {
 		return nil, fmt.Errorf("open stream to download: %w", err)
 	}
 
-	res := &pb.File{}
+	res := &File{}
 	buf := bytes.Buffer{}
 	i := 0
 	for {
@@ -96,7 +120,7 @@ func (c *S3Client) GetFullFileByStream(ctx context.Context, path string) (*pb.Fi
 		i++
 		if file != nil {
 			if i == 1 {
-				res.FileMeta = file.FileMeta
+				res.FileMeta = *PBFileMetaToEntity(file.FileMeta)
 			}
 			buf.Write(file.FileBin)
 		}

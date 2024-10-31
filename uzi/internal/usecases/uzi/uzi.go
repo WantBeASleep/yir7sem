@@ -10,47 +10,16 @@ import (
 	"go.uber.org/zap"
 )
 
-func (u *UziUseCase) InsertUzi(ctx context.Context, req *dto.Uzi) error {
-	u.logger.Debug("[Request] Insert Uzi", zap.Any("Data", req.UziInfo))
-	if err := u.uziRepo.InsertUzi(ctx, req.UziInfo); err != nil {
-		u.logger.Error("Insert Uzi", zap.Error(err))
-		return fmt.Errorf("insert uzi: %w", err)
-	}
-	u.logger.Debug("[Response] Inserted Uzi")
-
-	u.logger.Debug("[Request] Insert images")
-	if err := u.uziRepo.InsertImages(ctx, req.Images); err != nil {
-		u.logger.Error("Insert images", zap.Error(err))
-		return fmt.Errorf("insert images: %w", err)
-	}
-	u.logger.Debug("[Response] Inserted images")
-
-	if err := u.InsertDTOFormations(ctx, req.Formations); err != nil {
-		return fmt.Errorf("insert dto formations: %w", err)
-	}
-
-	if err := u.InsertDTOSegments(ctx, req.Segments); err != nil {
-		return fmt.Errorf("insert dto segments: %w", err)
-	}
-
-	return nil
-}
-
-func (u *UziUseCase) CreateUziInfo(ctx context.Context, req *entity.Uzi) error {
-	// можно делать на стороне postgre
-	uziID, err := uuid.NewRandom()
+func (u *UziUseCase) CreateUzi(ctx context.Context, req *entity.Uzi) (uuid.UUID, error) {
+	u.logger.Debug("[Request] Create Uzi", zap.Any("Data", req))
+	uziID, err := u.uziRepo.CreateUzi(ctx, req)
 	if err != nil {
-		return fmt.Errorf("generate uzi uuid: %w", err)
+		u.logger.Error("Create Uzi", zap.Error(err))
+		return fmt.Errorf("create uzi: %w", err)
 	}
-	req.Id = uziID
-
-	u.logger.Debug("[Request] Create Uzi Info", zap.Any("Data", req))
-	if err := u.uziRepo.InsertUzi(ctx, req); err != nil {
-		u.logger.Error("Create Uzi Info", zap.Error(err))
-		return fmt.Errorf("create uzi info: %w", err)
-	}
-	u.logger.Debug("[Response] Created Uzi Info")
-	return nil
+	u.logger.Debug("[Response] Created Uzi")
+	
+	return uziID, nil
 }
 
 func (u *UziUseCase) GetUzi(ctx context.Context, id uuid.UUID) (*dto.Uzi, error) {

@@ -55,26 +55,7 @@ func NewServer(
 	}, nil
 }
 
-// REFACTOR COMMIT
-
-func (s *Server) InsertUzi(ctx context.Context, req *pb.Uzi) (*empty.Empty, error) {
-	// ВАЛИДАЦИЮ ВЫНЕСТИ В middlewar! Tech debt
-	if err := s.validator.Validate(req); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %v", err))
-	}
-
-	// MVP mapper moment
-	// Нужен кастомный маппер с возможностью задачи конфига маппинга между структурами
-	// Здесь нужен именно конфиг для string --> uuid
-	if err := s.uziUseCase.InsertUzi(ctx, mvpmappers.PBUziToDTOUzi(req)); err != nil {
-		// пока 500-тим оставляем на рефакторинг
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
-	}
-
-	return &empty.Empty{}, nil
-}
-
-func (s *Server) CreateUziInfo(ctx context.Context, req *pb.CreateUziInfoRequest) (*empty.Empty, error) {
+func (s *Server) CreateUzi(ctx context.Context, req *pb.CreateUziRequest) (*pb.Id, error) {
 	if err := s.validator.Validate(req); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %v", err))
 	}
