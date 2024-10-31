@@ -55,18 +55,6 @@ func entityMetaToMinioPutOpts(meta *entity.FileMeta) minio.PutObjectOptions {
 	return res
 }
 
-func entityGetOptsToMinioGetOpts(opts []entity.GetOption) minio.GetObjectOptions {
-	getOpts := entity.GetOpts{}
-
-	for _, opt := range opts {
-		opt(&getOpts)
-	}
-
-	minioOpts := minio.GetObjectOptions{}
-
-	return minioOpts
-}
-
 func (r *Repo) Upload(ctx context.Context, file *entity.File) error {
 	// поправить с -1, на нужный размер, пока что так
 	minioOpts := entityMetaToMinioPutOpts(file.Meta)
@@ -80,16 +68,14 @@ func (r *Repo) Upload(ctx context.Context, file *entity.File) error {
 }
 
 // stream файла, поэтому io.ReadCloser
-func (r *Repo) Get(ctx context.Context, path string, opts ...entity.GetOption) (*entity.FileMeta, io.Reader, error) {
+func (r *Repo) Get(ctx context.Context, path string) (*entity.FileMeta, io.Reader, error) {
 
 	metaInfo, err := r.client.StatObject(ctx, r.bucket, path, minio.StatObjectOptions{})
 	if err != nil {
 		return nil, nil, fmt.Errorf("get meta info from S3: %w", err)
 	}
 
-	minioOpts := entityGetOptsToMinioGetOpts(opts)
-
-	obj, err := r.client.GetObject(ctx, r.bucket, path, minioOpts)
+	obj, err := r.client.GetObject(ctx, r.bucket, path, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, nil, fmt.Errorf("get obj from S3: %w", err)
 	}

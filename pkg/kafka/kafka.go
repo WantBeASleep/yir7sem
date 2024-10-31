@@ -10,8 +10,9 @@ import (
 type EventHandler func(ctx context.Context, topic string, msg []byte) error
 
 type saramaEventWrapper EventHandler
-func (saramaEventWrapper) Setup(sarama.ConsumerGroupSession) error {return nil}
-func (saramaEventWrapper) Cleanup(sarama.ConsumerGroupSession) error {return nil}
+
+func (saramaEventWrapper) Setup(sarama.ConsumerGroupSession) error   { return nil }
+func (saramaEventWrapper) Cleanup(sarama.ConsumerGroupSession) error { return nil }
 func (w saramaEventWrapper) ConsumeClaim(s sarama.ConsumerGroupSession, c sarama.ConsumerGroupClaim) error {
 	for msg := range c.Messages() {
 		if err := w(s.Context(), c.Topic(), msg.Value); err != nil {
@@ -28,7 +29,7 @@ type GroupConsumer struct {
 	topics []string
 
 	consumer sarama.ConsumerGroup
-	handler EventHandler
+	handler  EventHandler
 }
 
 func NewGroupConsumer(
@@ -47,7 +48,7 @@ func NewGroupConsumer(
 		topics: topics,
 
 		consumer: consumer,
-		handler: handler,
+		handler:  handler,
 	}, nil
 }
 

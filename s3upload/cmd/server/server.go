@@ -56,7 +56,7 @@ func main() {
 	uziContoller := uzicontroller.NewController(uziUseCase)
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterS3UploadServer(grpcServer, uziContoller)
+	pb.RegisterS3Server(grpcServer, uziContoller)
 
 	GRPCLis, err := net.Listen("tcp", cfg.App.Host+":"+cfg.App.GRPCPort)
 	if err != nil {

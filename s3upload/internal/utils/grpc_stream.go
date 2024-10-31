@@ -10,7 +10,7 @@ import (
 // не хочется просто плюнуть сюда Mutex'ом
 // можно написать крутую кастом обертку, но работа на недельку где то
 type UploadGRPCReader struct {
-	stream pb.S3Upload_UploadServer
+	stream pb.S3_UploadServer
 
 	meta       *pb.FileMeta
 	cntReadOps int
@@ -33,7 +33,7 @@ func (r *UploadGRPCReader) recv() error {
 			}
 			r.meta = msg.FileMeta
 		}
-		r.file = append(r.file, msg.File...)
+		r.file = append(r.file, msg.FileBin...)
 	}
 
 	if err == io.EOF {
@@ -77,7 +77,7 @@ func (r *UploadGRPCReader) Read(p []byte) (int, error) {
 }
 
 // написать на дженериках универсальный - ебани на неделю, пока что так
-func NewUploadGRPCReader(stream pb.S3Upload_UploadServer) *UploadGRPCReader {
+func NewUploadGRPCReader(stream pb.S3_UploadServer) *UploadGRPCReader {
 	return &UploadGRPCReader{
 		stream: stream,
 	}

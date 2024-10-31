@@ -3,10 +3,9 @@ package uzi
 import (
 	"context"
 	pb "yir/uzi/events"
-	"yir/uzi/internal/api/usecases"
 	"yir/uzi/internal/api/mvpmappers"
+	"yir/uzi/internal/api/usecases"
 	"yir/uzi/internal/entity/dto"
-	
 
 	"google.golang.org/protobuf/proto"
 
@@ -66,7 +65,7 @@ func (b *Broker) ProcessingEvents(ctx context.Context, topic string, msg []byte)
 
 		req := make([]dto.FormationWithSegments, 0, len(eventData.Formations))
 		for _, pbFormation := range eventData.Formations {
-			
+
 		}
 
 	default:

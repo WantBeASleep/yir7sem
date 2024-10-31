@@ -2,10 +2,8 @@ version: '3'
 
 vars:
   proto_libs_path: '{{.proto_libs | default "../vendor.protogen"}}'
-  proto_target: '{{.proto_target | default "api/uzi.proto"}}'
-  events_target: '{{.events_target | default "events/kafka.proto"}}'
+  proto_dir: '{{.proto_target | default "api"}}'
   proto_out: '{{.proto_out | default "api"}}'
-  events_out: '{{.events_out | default "events"}}'
   swagger_out: '{{.swagger_out | default "api"}}'
 
 tasks:
@@ -13,32 +11,27 @@ tasks:
     vars:
       LIBS_DIRS:
         sh: find {{.proto_libs_path}} -mindepth 1 -maxdepth 1 -type d | xargs echo
+      PROTO_TARGET:
+        sh: find {{.proto_dir}} -type f -name '*.proto'
     cmds:
-      - > 
-        protoc
-        -I {{dir .proto_target}}
-        {{range $proto_lib := splitList " " .LIBS_DIRS}}-I {{$proto_lib}} {{end}}
-        --go_out {{.proto_out}} --go_opt paths=source_relative
-        --go-grpc_out {{.proto_out}} --go-grpc_opt paths=source_relative
-        --grpc-gateway_out {{.proto_out}} --grpc-gateway_opt logtostderr=true,paths=source_relative
-        --openapiv2_out {{.proto_out}} --openapiv2_opt logtostderr=true,allow_merge=true,merge_file_name={{trimSuffix (ext (base .proto_target)) (base .proto_target)}}
-        {{.proto_target}}
-      - >
-        protoc
-        -I {{dir .events_target}}
-        {{range $proto_lib := splitList " " .LIBS_DIRS}}-I {{$proto_lib}} {{end}}
-        --go_out {{.events_out}} --go_opt paths=source_relative
-        {{.events_target}}
+      - |
+        for proto_file in $(find {{.proto_dir}} -type f -name '*.proto'); do
+          protoc \
+            -I $(dirname "$proto_file") \
+            {{range $proto_lib := splitList " " .LIBS_DIRS}}-I {{$proto_lib}} {{end}} \
+            --go_out={{.proto_out}} --go_opt=paths=source_relative \
+            --go-grpc_out={{.proto_out}} --go-grpc_opt=paths=source_relative \
+            --grpc-gateway_out={{.proto_out}} --grpc-gateway_opt=logtostderr=true,paths=source_relative \
+            --openapiv2_out={{.swagger_out}} --openapiv2_opt=logtostderr=true,allow_merge=true,merge_file_name=$(basename "$proto_file" .proto) \
+            "$proto_file"
+        done
 
     sources:
-      - '{{.proto_target}}'
-      - '{{.events_target}}'
+      - '{{.proto_dir}}/*.proto'
 
     generates:
-      - '{{.proto_out}}/*.pb.go'
-      - '{{.events_target}}/*.pb.go'
-      - '{{.proto_out}}/*.pb.gw.go'
-      - '{{.proto_out}}/*.swagger.json'
+      - '{{.proto_out}}/*.go'
+      - '{{.swagger_out}}/*.json'
 
 
   build:
