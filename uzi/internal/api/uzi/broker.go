@@ -3,7 +3,6 @@ package uzi
 import (
 	"context"
 	pb "yir/uzi/events"
-	"yir/uzi/internal/api/mvpmappers"
 	"yir/uzi/internal/api/usecases"
 	"yir/uzi/internal/entity/dto"
 

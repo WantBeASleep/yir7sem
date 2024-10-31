@@ -34,7 +34,7 @@ func NewS3Client(
 ) *S3Client {
 	// default
 	cfg := Config{
-		UploaderBatchSize: 1024*1024,
+		UploaderBatchSize: 1024 * 1024,
 	}
 
 	for _, opt := range opts {
@@ -43,25 +43,23 @@ func NewS3Client(
 
 	return &S3Client{
 		client: client,
-		cfg: cfg,
+		cfg:    cfg,
 	}
 }
 
-// используется стрим под капотом
-func (c *S3Client) UploadFull(ctx context.Context, file *pb.File) error {
+func (c *S3Client) Upload(ctx context.Context, meta *pb.FileMeta, fileBin io.Reader) error {
 	stream, err := c.client.Upload(ctx)
 	if err != nil {
 		return fmt.Errorf("open stream to upload: %w", err)
 	}
-	
-	reader := bytes.NewReader(file.FileBin)
+
 	buf := make([]byte, c.cfg.UploaderBatchSize)
 	for {
-		n, err := reader.Read(buf)
+		n, err := fileBin.Read(buf)
 		if n != 0 {
 			err := stream.Send(&pb.File{
-				FileMeta: file.FileMeta,
-				FileBin: buf,
+				FileMeta: meta,
+				FileBin:  buf,
 			})
 			if err != nil {
 				return fmt.Errorf("send data to upload stream: %w", err)
@@ -84,7 +82,7 @@ func (c *S3Client) UploadFull(ctx context.Context, file *pb.File) error {
 }
 
 // используется стрим под капотом
-func (c *S3Client) GetFullFile(ctx context.Context, path string) (*pb.File, error) {
+func (c *S3Client) GetFullFileByStream(ctx context.Context, path string) (*pb.File, error) {
 	stream, err := c.client.Get(ctx, &pb.GetRequest{Path: path})
 	if err != nil {
 		return nil, fmt.Errorf("open stream to download: %w", err)

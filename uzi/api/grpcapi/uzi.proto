@@ -1,0 +1,302 @@
+syntax = "proto3";
+
+package yir.uzi;
+
+option go_package = "yir/uzi/api/grpc;grpcapi";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "buf/validate/validate.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info : {
+    title : "UZI API **ПУТИ КАК ЗАГЛУШКА**"
+    description : "Сервис нужен для хранения отношений **REPORT**, **UZI**, "
+                  "**IMAGES**, **FORMATION**, **SEGMENT**.\n"
+                  "\n"
+                  "**SEGMENT** - контур конкретного узла на конкретном "
+                  "изображении.\n"
+                  "*при добавлении узлов врачем, tirads можно опустить*\n"
+                  "**FORMATION** - конкретный узел, можно ассоциировать с "
+                  "физическим узлом, его сегменты могут быть на многих "
+                  "изображениях.\n"
+                  "**IMAGE** - одно изображение UZI, может содержать на себе "
+                  "несколько сегментов.\n"
+                  "**UZI** - общая информация об узи. Все "
+                  "остальные сущности так или иначе относятся к конкретному "
+                  "узи\n"
+                  "**REPORT** - это uzi && images && formations && segments\n"
+                  "**report id = uzi id**, *сущность нужна для охвата "
+                  "остальных*"
+    version : "v0"
+  }
+};
+
+/*
+DEPRECATED:
+rpc InsertUzi(Uzi) returns (google.protobuf.Empty) - ручка ответственная за
+добавления REPORT. Более не требуется из-за декомпозиции этого процесса
+
+
+*/
+
+service UziAPI {
+  // Создать uzi
+  rpc CreateUzi(CreateUziRequest) returns (Id) {
+    option (google.api.http) = {
+      post : "/uzi/create"
+      body : "*"
+    };
+  }
+
+  // Получить uzi
+  rpc GetUzi(Id) returns (UziReponse) {
+    option (google.api.http) = {
+      get : "/uzi/get/{id}"
+    };
+  }
+
+  // Получить report (файлы идут как ссылки в S3)
+  rpc GetReport(Id) returns (Report) {
+    option (google.api.http) = {
+      get : "/report/get/{id}"
+    };
+  }
+
+  rpc UpdateUzi(UpdateUziRequest) returns (UziReponse) {
+    option (google.api.http) = {
+      patch : "/uzi/info/{id}"
+      body : "*"
+    };
+  }
+
+  // /image/ блок
+
+  // Получить image с сегментами и узлами на нем
+  rpc GetImageWithInfo(Id) returns (ImageWithInfo) {
+    option (google.api.http) = {
+      get : "/image/info/{id}"
+    };
+  }
+
+  // /formation/ блок
+
+  // Добавить formation + segments
+  rpc CreateFormationWithSegments(CreateFormationWithSegmentsRequest)
+      returns (CreateFormationWithSegmentsResponse) {
+    option (google.api.http) = {
+      post : "/formation/withsegments/{uzi_id}"
+      body : "*"
+    };
+  }
+
+  // Получить formation + segments
+  rpc GetFormationWithSegments(Id) returns (FormationWithSegments) {
+    option (google.api.http) = {
+      get : "/formation/withsegments/{id}"
+    };
+  }
+
+  // Обновить formation
+  //
+  // **ID при обновлении будет игнорироваться**
+  rpc UpdateFormation(UpdateFormationRequest) returns (FormationResponse) {
+    option (google.api.http) = {
+      patch : "/formation/{id}"
+      body : "*"
+    };
+  }
+
+  // segments
+
+  rpc UpdateSegment(UpdateSegmentRequest) returns (SegmentResponse) {
+    option (google.api.http) = {
+      patch : "/segment/{id}"
+      body : "*"
+    };
+  }
+
+  // /device/
+
+  // Получить список девайсов
+  rpc GetDeviceList(google.protobuf.Empty) returns (GetDeviceListResponse) {
+    option (google.api.http) = {
+      get : "/device/list"
+    };
+  }
+}
+
+// Базовые структуры
+// REQUEST - без ID, с валидацией
+// RESPONSE - с ID, без валидации
+
+message Device {
+  int64 id = 100;
+  string name = 200;
+}
+
+message Tirads {
+  double tirads_23 = 3 [
+    (buf.validate.field).double.gte = 0.0,
+    (buf.validate.field).double.lte = 100.0
+  ];
+  double tirads_4 = 4 [
+    (buf.validate.field).double.gte = 0.0,
+    (buf.validate.field).double.lte = 100.0
+  ];
+  double tirads_5 = 5 [
+    (buf.validate.field).double.gte = 0.0,
+    (buf.validate.field).double.lte = 100.0
+  ];
+}
+
+message SegmentRequest {
+  string formation_id = 200 [
+    json_name = "formation_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  string image_id = 300 [
+    json_name = "image_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+
+  string contor_url = 400
+      [ json_name = "contor_url", (buf.validate.field).required = true ];
+  Tirads tirads = 500 [ (buf.validate.field).required = true ];
+}
+
+message SegmentResponse {
+  string id = 100;
+  string formation_id = 200;
+  string image_id = 300;
+
+  string contor_url = 400;
+  Tirads tirads = 500;
+}
+
+message FormationRequest {
+  Tirads tirads = 200 [ (buf.validate.field).required = true ];
+  bool ai = 300;
+}
+
+message FormationResponse {
+  string id = 100;
+
+  Tirads tirads = 200;
+  bool ai = 300;
+}
+
+message ImageRequest {
+  string url = 200 [ (buf.validate.field).required = true ];
+  int64 page = 300 [ (buf.validate.field).required = true ];
+}
+
+message ImageResponse {
+  string id = 100;
+
+  string url = 200;
+  int64 page = 300;
+}
+
+message UziRequest {
+  string url = 200 [ (buf.validate.field).required = true ];
+  string projection = 300 [ (buf.validate.field).required = true ];
+  string patient_id = 400 [
+    json_name = "patient_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  int64 device_id = 500
+      [ json_name = "device_id", (buf.validate.field).required = true ];
+}
+
+message UziReponse {
+  string id = 100;
+
+  string url = 200;
+  string projection = 300;
+  string patient_id = 400;
+  int64 device_id = 500;
+}
+
+message Report {
+  UziReponse uzi = 100;
+  repeated ImageResponse images = 200;
+  repeated FormationResponse formations = 300;
+  repeated SegmentResponse segments = 400;
+}
+
+// Структуры RPC
+
+message Id {
+  string id = 100 [
+    json_name = "id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+}
+
+message FormationWithSegments {
+  FormationResponse formation = 100;
+  repeated SegmentResponse segments = 200;
+}
+
+message CreateUziRequest {
+  UziRequest uzi = 100 [ (buf.validate.field).required = true ];
+}
+
+message UpdateUziRequest {
+  string id = 100 [
+    json_name = "id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  UziRequest uzi = 200
+      [ json_name = "uzi", (buf.validate.field).required = true ];
+}
+
+message ImageWithInfo {
+  ImageResponse image = 100;
+  repeated FormationResponse formations = 300;
+  repeated SegmentResponse segments = 200;
+}
+
+message CreateFormationWithSegmentsRequest {
+  string uzi_id = 100 [
+    json_name = "uzi_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  repeated FormationRequest formations = 300
+      [ (buf.validate.field).required = true ];
+  repeated SegmentRequest segments = 200
+      [ (buf.validate.field).required = true ];
+}
+
+message CreateFormationWithSegmentsResponse {
+  Id formation_id = 100 [ json_name = "formation_id" ];
+  repeated Id segments_ids = 200 [ json_name = "segments_ids" ];
+}
+
+message UpdateFormationRequest {
+  string id = 100 [
+    json_name = "id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  FormationRequest formation = 200 [ (buf.validate.field).required = true ];
+}
+
+message UpdateSegmentRequest {
+  string id = 100 [
+    json_name = "id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  SegmentRequest segment = 200 [ (buf.validate.field).required = true ];
+}
+
+message GetDeviceListResponse { repeated Device devices = 100; }

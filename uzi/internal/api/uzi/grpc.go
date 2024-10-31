@@ -5,7 +5,7 @@ package uzi
 import (
 	"context"
 	"fmt"
-	pb "yir/uzi/api"
+	pb "yir/uzi/api/grpcapi"
 	"yir/uzi/internal/api/mvpmappers"
 	"yir/uzi/internal/api/usecases"
 
@@ -32,22 +32,17 @@ func NewServer(
 		protovalidate.WithDisableLazy(true),
 		protovalidate.WithMessages(
 			&pb.Tirads{},
-			&pb.Device{},
-			&pb.Segment{},
-			&pb.Formation{},
-			&pb.Image{},
-			&pb.UziInfo{},
-			&pb.Uzi{},
+			&pb.SegmentRequest{},
+			&pb.FormationRequest{},
+			&pb.ImageRequest{},
+			&pb.UziRequest{},
+			&pb.Id{},
 
-			&pb.UziIdRequest{},
-			&pb.UziIdRequest{},
-			&pb.ImageIdRequest{},
-			&pb.FormationIdRequest{},
-
+			&pb.CreateUziRequest{},
 			&pb.UpdateUziRequest{},
-			&pb.InsertFormationWithSegmentsRequest{},
+			&pb.CreateFormationWithSegmentsRequest{},
 			&pb.UpdateFormationRequest{},
-			&pb.CreateUziInfoRequest{},
+			&pb.UpdateSegmentRequest{},
 		),
 	)
 	if err != nil {
