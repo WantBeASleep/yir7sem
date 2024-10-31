@@ -1,53 +1,19 @@
 version: '3'
 
-vars:
-  proto_libs_path: '{{.proto_libs | default "../vendor.protogen"}}'
-  proto_dir: '{{.proto_target | default "api"}}'
-  proto_out: '{{.proto_out | default "api"}}'
-  swagger_out: '{{.swagger_out | default "api"}}'
+includes:
+  root_tasks: ../Taskfile.yml
 
 tasks:
-  generate:
-    vars:
-      LIBS_DIRS:
-        sh: find {{.proto_libs_path}} -mindepth 1 -maxdepth 1 -type d | xargs echo
-      PROTO_TARGET:
-        sh: find {{.proto_dir}} -type f -name '*.proto'
-    cmds:
-      - |
-        for proto_file in $(find {{.proto_dir}} -type f -name '*.proto'); do
-          protoc \
-            -I $(dirname "$proto_file") \
-            {{range $proto_lib := splitList " " .LIBS_DIRS}}-I {{$proto_lib}} {{end}} \
-            --go_out={{.proto_out}} --go_opt=paths=source_relative \
-            --go-grpc_out={{.proto_out}} --go-grpc_opt=paths=source_relative \
-            --grpc-gateway_out={{.proto_out}} --grpc-gateway_opt=logtostderr=true,paths=source_relative \
-            --openapiv2_out={{.swagger_out}} --openapiv2_opt=logtostderr=true,allow_merge=true,merge_file_name=$(basename "$proto_file" .proto) \
-            "$proto_file"
-        done
-
-    sources:
-      - '{{.proto_dir}}/*.proto'
-
-    generates:
-      - '{{.proto_out}}/*.go'
-      - '{{.swagger_out}}/*.json'
-
-
   build:
-    deps: [generate]
-    cmds:
-      - go fmt ./...
-      - goimports -w .
-      - go build -v -o bin/uzi cmd/uzi/uzi.go
+    - task: root_tasks:build
 
   run:
     deps: [build]
     env:
       DB_PASS: 1234
+
     cmds:
-      - ./bin/uzi
+      - ./bin/server
 
   default:
-    cmds:
-      - task: build
+    - task: root_tasks:build
