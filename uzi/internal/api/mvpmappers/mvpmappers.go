@@ -4,7 +4,7 @@ package mvpmappers
 
 import (
 	"yir/pkg/mappers"
-	pb "yir/uzi/api"
+	pb "yir/uzi/api/grpcapi"
 	"yir/uzi/internal/entity"
 	"yir/uzi/internal/entity/dto"
 
@@ -114,7 +114,7 @@ func DTOSegmentsToPBSegments(segments []dto.Segment) []*pb.Segment {
 	return PBSegments
 }
 
-func PBUziInfoToUzi(uziInfo *pb.UziInfo) *entity.Uzi {
+func PBUziToUzi(uziInfo *pb.UziRequest) *entity.Uzi {
 	return &entity.Uzi{
 		Id:         uuid.MustParse(uziInfo.Id),
 		Url:        uziInfo.Url,
@@ -124,24 +124,6 @@ func PBUziInfoToUzi(uziInfo *pb.UziInfo) *entity.Uzi {
 	}
 }
 
-func PBCreateUziInfoReqToUzi(uziInfo *pb.CreateUziInfoRequest) *entity.Uzi {
-	return &entity.Uzi{
-		Url:        uziInfo.Url,
-		Projection: uziInfo.Projection,
-		PatientID:  uuid.MustParse(uziInfo.PatientId),
-		DeviceID:   int(uziInfo.DeviceId),
-	}
-}
-
-func UziToPBUziInfo(uziInfo *entity.Uzi) *pb.UziInfo {
-	return &pb.UziInfo{
-		Id:         uziInfo.Id.String(),
-		Url:        uziInfo.Url,
-		Projection: uziInfo.Projection,
-		PatientId:  uziInfo.PatientID.String(),
-		DeviceId:   int64(uziInfo.DeviceID),
-	}
-}
 
 func PBUziToDTOUzi(req *pb.Uzi) *dto.Uzi {
 

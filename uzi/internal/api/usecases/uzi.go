@@ -10,5 +10,5 @@ import (
 
 type Uzi interface {
 	CreateUzi(ctx context.Context, req *entity.Uzi) (uuid.UUID, error)
-
+	GetUzi(ctx context.Context, id uuid.UUID) (*entity.Uzi, error)
 }

@@ -6,6 +6,13 @@ import (
 
 // Не увидел смысла декомпозировать в отдельные таблички meta инфы
 
+type Report struct {
+	Uzi Uzi
+	Image []Image
+	Formations []Formation
+	Segments []Segment
+}
+
 type Uzi struct {
 	Id  uuid.UUID
 	Url string
@@ -49,6 +56,6 @@ type Device struct {
 
 type Tirads struct {
 	Tirads23 float64
-	Tirads4 float64
-	Tirads5 float64
+	Tirads4  float64
+	Tirads5  float64
 }

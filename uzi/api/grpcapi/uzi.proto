@@ -37,8 +37,6 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 DEPRECATED:
 rpc InsertUzi(Uzi) returns (google.protobuf.Empty) - ручка ответственная за
 добавления REPORT. Более не требуется из-за декомпозиции этого процесса
-
-
 */
 
 service UziAPI {

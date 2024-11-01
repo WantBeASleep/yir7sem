@@ -60,25 +60,37 @@ func (s *Server) CreateUzi(ctx context.Context, req *pb.CreateUziRequest) (*pb.I
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %v", err))
 	}
 
-	if err := s.uziUseCase.CreateUziInfo(ctx, mvpmappers.PBCreateUziInfoReqToUzi(req)); err != nil {
+	id, err := s.uziUseCase.CreateUzi(ctx, mvpmappers.CreateUziReqToUzi(req))
+	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
 	}
 
-	return &empty.Empty{}, nil
+	return &pb.Id{
+		Id: id.String(),
+	}, nil
 }
 
-func (s *Server) GetUzi(ctx context.Context, req *pb.UziIdRequest) (*pb.Uzi, error) {
+func (s *Server) GetUzi(ctx context.Context, req *pb.Id) (*pb.UziReponse, error) {
 	if err := s.validator.Validate(req); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %s", err.Error()))
 	}
 
-	uziID := uuid.MustParse(req.UziId)
+	uziID := uuid.MustParse(req.Id)
 	uzi, err := s.uziUseCase.GetUzi(ctx, uziID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
 	}
 
-	return mvpmappers.DTOUziToPBUzi(uzi), nil
+	return mvpmappers.UziToPBUziResp(uzi), nil
+}
+
+func (s *Server) GetReport(ctx context.Context, req *pb.Id) (*pb.Report, error) {
+	if err := s.validator.Validate(req); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %s", err.Error()))
+	}
+
+	reportID := uuid.MustParse(req.Id)
+	
 }
 
 func (s *Server) GetUziInfo(ctx context.Context, req *pb.UziIdRequest) (*pb.UziInfo, error) {
