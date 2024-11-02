@@ -7,10 +7,10 @@ import (
 // Не увидел смысла декомпозировать в отдельные таблички meta инфы
 
 type Report struct {
-	Uzi Uzi
-	Image []Image
+	Uzi        Uzi
+	Image      []Image
 	Formations []Formation
-	Segments []Segment
+	Segments   []Segment
 }
 
 type Uzi struct {

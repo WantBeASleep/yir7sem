@@ -20,8 +20,8 @@ func (u *UziUseCase) SplitLoadSaveUzi(ctx context.Context, uziID uuid.UUID) (uui
 
 	uziURL := filepath.Join(uziID.String(), uziID.String())
 
-	u.logger.Info("[Request] Get uzi file from S3", zap.String("Uzi ID", uziID.String()))
-	uzi, err := u.s3Repo.FullGetByPath(ctx, uziURL)
+	u.logger.Info("[Request] Get uzi file from S3", zap.String("Uzi ID", uziID.String()), zap.String("Path", uziURL))
+	uzi, err := u.s3Repo.GetFile(ctx, uziURL)
 	if err != nil {
 		u.logger.Error("Get uzi file from S3", zap.Error(err))
 		return nil, fmt.Errorf("get uzi from s3: %w", err)
@@ -39,10 +39,10 @@ func (u *UziUseCase) SplitLoadSaveUzi(ctx context.Context, uziID uuid.UUID) (uui
 	u.logger.Info("[Request] Upload pages to S3", zap.Int("pages count", len(splitted)))
 	for i, split := range splitted {
 		id, _ := uuid.NewRandom()
-		imagesIDs = append(imagesIDs, id)
+		imagesIDs = append(imagesIDs, id)		
 		url := filepath.Join(uziID.String(), id.String(), id.String())
 
-		if err := u.s3Repo.Upload(ctx, url, split); err != nil {
+		if err := u.s3Repo.Upload(ctx, url, &split); err != nil {
 			u.logger.Error("page upload err", zap.Int("page number", i+1), zap.Error(err))
 			return nil, fmt.Errorf("upload page [page number %q]: %w", i+1, err)
 		}
@@ -56,7 +56,7 @@ func (u *UziUseCase) SplitLoadSaveUzi(ctx context.Context, uziID uuid.UUID) (uui
 	}
 	u.logger.Info("[Response] Uploaded all pages to S3")
 
-	if err := u.InsertImages(ctx, images); err != nil {
+	if _, err := u.CreateImages(ctx, images); err != nil {
 		return nil, fmt.Errorf("insert images to postgres: %w", err)
 	}
 

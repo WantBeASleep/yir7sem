@@ -15,19 +15,19 @@ type FileMeta struct {
 
 type File struct {
 	FileMeta FileMeta
-	FileBin []byte
+	FileBin  []byte
 }
 
 func fileMetaToPB(meta *FileMeta) *pb.FileMeta {
 	return &pb.FileMeta{
-		Path: meta.Path,
+		Path:        meta.Path,
 		ContentType: meta.ContentType,
 	}
 }
 
 func pBFileMetaToEntity(meta *pb.FileMeta) *FileMeta {
 	return &FileMeta{
-		Path: meta.GetPath(),
+		Path:        meta.GetPath(),
 		ContentType: meta.GetContentType(),
 	}
 }

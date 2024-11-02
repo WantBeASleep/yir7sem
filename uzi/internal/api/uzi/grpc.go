@@ -34,7 +34,6 @@ func NewServer(
 			&pb.Tirads{},
 			&pb.SegmentRequest{},
 			&pb.FormationRequest{},
-			&pb.ImageRequest{},
 			&pb.UziRequest{},
 			&pb.Id{},
 
@@ -60,7 +59,7 @@ func (s *Server) CreateUzi(ctx context.Context, req *pb.CreateUziRequest) (*pb.I
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %v", err))
 	}
 
-	id, err := s.uziUseCase.CreateUzi(ctx, mvpmappers.CreateUziReqToUzi(req))
+	id, err := s.uziUseCase.CreateUzi(ctx, mvpmappers.PBCreateUziReqToUzi(req))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
 	}
@@ -90,75 +89,66 @@ func (s *Server) GetReport(ctx context.Context, req *pb.Id) (*pb.Report, error) 
 	}
 
 	reportID := uuid.MustParse(req.Id)
-	
-}
-
-func (s *Server) GetUziInfo(ctx context.Context, req *pb.UziIdRequest) (*pb.UziInfo, error) {
-	if err := s.validator.Validate(req); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %s", err.Error()))
-	}
-
-	uziID := uuid.MustParse(req.UziId)
-	uziInfo, err := s.uziUseCase.GetUziInfo(ctx, uziID)
+	report, err := s.uziUseCase.GetReport(ctx, reportID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
 	}
 
-	return mvpmappers.UziToPBUziInfo(uziInfo), nil
+	return mvpmappers.DTOReportToPBReport(report), nil
 }
 
-func (s *Server) UpdateUziInfo(ctx context.Context, req *pb.UpdateUziRequest) (*empty.Empty, error) {
+func (s *Server) UpdateUzi(ctx context.Context, req *pb.UpdateUziRequest) (*pb.UziReponse, error) {
 	if err := s.validator.Validate(req); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %s", err.Error()))
 	}
 
-	uziID := uuid.MustParse(req.UziId)
-	uziInfo := mvpmappers.PBUziInfoToUzi(req.UziInfo)
-	if err := s.uziUseCase.UpdateUziInfo(ctx, uziID, uziInfo); err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
-	}
-
-	return &empty.Empty{}, nil
-}
-
-func (s *Server) GetImageWithSegments(ctx context.Context, req *pb.ImageIdRequest) (*pb.ImageWithSegments, error) {
-	if err := s.validator.Validate(req); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %s", err.Error()))
-	}
-
-	imageID := uuid.MustParse(req.ImageId)
-	imageWithSegments, err := s.uziUseCase.GetImageWithSegmentsFormations(ctx, imageID)
+	uziID := uuid.MustParse(req.Id)
+	uzi := mvpmappers.PBUziReqToUzi(req.Uzi)
+	updatedUzi, err := s.uziUseCase.UpdateUzi(ctx, uziID, uzi)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
 	}
 
-	return mvpmappers.DTOImageWithSegmentsToPBImageWithSegments(imageWithSegments), nil
+	return mvpmappers.UziToPBUziResp(updatedUzi), nil
 }
 
-func (s *Server) InsertFormationWithSegments(ctx context.Context, req *pb.InsertFormationWithSegmentsRequest) (*empty.Empty, error) {
+func (s *Server) GetImageWithFormationsSegments(ctx context.Context, req *pb.Id) (*pb.ImageWithFormationsSegments, error) {
 	if err := s.validator.Validate(req); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %s", err.Error()))
 	}
 
-	// Не отследил при проектировании API
-	// Добавляем узлы с сегментами, сегменты строго привязанные к картинкам
-	// Картинки строго привязанны в uzi --> не нужен uziID здесь
-	// uziID := uuid.MustParse(req.UziId)
-
-	formationWithSegment := mvpmappers.PBFormationWithSegmentsToDTOFormationWithSegments(req.FormationWithSegments)
-	if err := s.uziUseCase.InsertFormationWithSegments(ctx, formationWithSegment); err != nil {
+	imageID := uuid.MustParse(req.Id)
+	imageWithSegments, err := s.uziUseCase.GetImageWithFormationsSegments(ctx, imageID)
+	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
 	}
 
-	return &empty.Empty{}, nil
+	return mvpmappers.DTOImageWithFormationsSegmentsToPBImageWithFormationsSegments(imageWithSegments), nil
 }
 
-func (s *Server) GetFormationWithSegments(ctx context.Context, req *pb.FormationIdRequest) (*pb.FormationWithSegments, error) {
+func (s *Server) CreateFormationWithSegments(ctx context.Context, req *pb.CreateFormationWithSegmentsRequest) (*pb.CreateFormationWithSegmentsResponse, error) {
 	if err := s.validator.Validate(req); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %s", err.Error()))
 	}
 
-	formationID := uuid.MustParse(req.FormationId)
+	formationWithSegment := mvpmappers.PBCreateFormationWithSegmentsReqToDTOFormationWithSegments(req)
+	formationID, segmentsIDS, err := s.uziUseCase.CreateFormationWithSegments(ctx, formationWithSegment)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
+	}
+
+	return &pb.CreateFormationWithSegmentsResponse{
+		FormationId: formationID.String(),
+		SegmentsIds: segmentsIDS.Strings(),
+	}, nil
+}
+
+func (s *Server) GetFormationWithSegments(ctx context.Context, req *pb.Id) (*pb.FormationWithSegments, error) {
+	if err := s.validator.Validate(req); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %s", err.Error()))
+	}
+
+	formationID := uuid.MustParse(req.Id)
 	formationsWithSegments, err := s.uziUseCase.GetFormationWithSegments(ctx, formationID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
@@ -167,19 +157,36 @@ func (s *Server) GetFormationWithSegments(ctx context.Context, req *pb.Formation
 	return mvpmappers.DTOFormationWithSegmentsToPBFormationWithSegments(formationsWithSegments), nil
 }
 
-func (s *Server) UpdateFormation(ctx context.Context, req *pb.UpdateFormationRequest) (*empty.Empty, error) {
+func (s *Server) UpdateFormation(ctx context.Context, req *pb.UpdateFormationRequest) (*pb.FormationResponse, error) {
 	if err := s.validator.Validate(req); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %s", err.Error()))
 	}
 
-	formationID := uuid.MustParse(req.FormationId)
-	formation := mvpmappers.PBFormationsToDTOFormations([]*pb.Formation{req.Formation})[0]
+	formationID := uuid.MustParse(req.Id)
+	formation := mvpmappers.PBFormationReqToDTOFormation(req.Formation)
 
-	if err := s.uziUseCase.UpdateFormation(ctx, formationID, &formation); err != nil {
+	updatedFormation, err := s.uziUseCase.UpdateFormation(ctx, formationID, formation)
+	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
 	}
 
-	return &empty.Empty{}, nil
+	return mvpmappers.DTOFormationToPBFormationResp(updatedFormation), nil
+}
+
+func (s *Server) UpdateSegment(ctx context.Context, req *pb.UpdateSegmentRequest) (*pb.SegmentResponse, error) {
+	if err := s.validator.Validate(req); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %s", err.Error()))
+	}
+
+	segmentID := uuid.MustParse(req.Id)
+	segment := mvpmappers.PBSegmentReqToDTOSegment(req.Segment)
+
+	updatedSegment, err := s.uziUseCase.UpdateSegment(ctx, segmentID, segment)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
+	}
+
+	return mvpmappers.DTOSegmentToPBSegmentResp(*updatedSegment), nil
 }
 
 func (s *Server) GetDeviceList(ctx context.Context, _ *empty.Empty) (*pb.GetDeviceListResponse, error) {

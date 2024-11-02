@@ -2,10 +2,11 @@ package repositories
 
 import (
 	"context"
+	"yir/uzi/internal/entity/imagesplitter"
 )
 
 type S3 interface {
-	Upload(ctx context.Context, path string, data []byte) error
+	Upload(ctx context.Context, path string, file *imagesplitter.File) error
 
-	FullGetByPath(ctx context.Context, path string) ([]byte, error)
+	GetFile(ctx context.Context, path string) (*imagesplitter.File, error)
 }

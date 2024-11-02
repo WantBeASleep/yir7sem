@@ -6,12 +6,9 @@ import (
 	"github.com/google/uuid"
 )
 
-// здесь нейминг структур будет совпадать с swagger
-
 type Formation struct {
 	Id uuid.UUID
 
-	// meta
 	Ai     bool
 	Tirads *entity.Tirads
 }
@@ -21,9 +18,15 @@ type Segment struct {
 	ImageID     uuid.UUID
 	FormationID uuid.UUID
 
-	// meta
 	ContorURL string
 	Tirads    *entity.Tirads
+}
+
+type Report struct {
+	Uzi        *entity.Uzi
+	Images     []entity.Image
+	Formations []Formation
+	Segments   []Segment
 }
 
 type FormationWithSegments struct {
@@ -31,23 +34,14 @@ type FormationWithSegments struct {
 	Segments  []Segment
 }
 
-// общий стиль не возвращать всю структуру
-// это нужно исключительно для dto
-// вопрос релевантности в Tech Debt
+// нужно для массивов
 type FormationWithSegmentsIDs struct {
 	FormationID uuid.UUID
-	Segments    uuid.UUIDs
+	SegmentsIDs uuid.UUIDs
 }
 
-type ImageWithSegmentsFormations struct {
+type ImageWithFormationsSegments struct {
 	Image      *entity.Image
-	Formations []Formation
-	Segments   []Segment
-}
-
-type Uzi struct {
-	UziInfo    *entity.Uzi
-	Images     []entity.Image
 	Formations []Formation
 	Segments   []Segment
 }

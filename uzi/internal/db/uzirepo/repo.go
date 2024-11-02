@@ -2,41 +2,21 @@ package uzirepo
 
 import (
 	"fmt"
-	// "os"
-
 	"yir/uzi/internal/config"
 	"yir/uzi/internal/db/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	// "time"
-	// "gorm.io/gorm/logger"
 )
 
 type ctrl struct{}
 
 var uziRepoCtrl ctrl
 
-// type gormLog struct {
-// }
-
-// func (l *gormLog) Printf(format string, args ...any) {
-// 	fmt.Fprintf(os.Stdout, format, args...)
-// }
-
 func (r *ctrl) init(cfg *config.DB) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN: cfg.GetDSN(),
-	}), &gorm.Config{
-		// Logger: logger.New(
-		// 	&gormLog{},
-		// 	logger.Config{
-		// 		SlowThreshold: time.Second,
-		// 		LogLevel:      logger.Info,
-		// 		Colorful:      true,
-		// 	},
-		// ),
-	})
+	}), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("create db gorm obj: %w", err)
 	}
@@ -54,4 +34,19 @@ func (r *ctrl) init(cfg *config.DB) (*gorm.DB, error) {
 	)
 
 	return db, nil
+}
+
+type UziRepo struct {
+	db *gorm.DB
+}
+
+func NewRepository(cfg *config.DB) (*UziRepo, error) {
+	db, err := uziRepoCtrl.init(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("init repo layer: %w", err)
+	}
+
+	return &UziRepo{
+		db: db,
+	}, nil
 }

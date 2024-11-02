@@ -4,61 +4,62 @@ import (
 	"context"
 	"fmt"
 	"yir/uzi/internal/entity"
-	"yir/uzi/internal/entity/dto"
+	"yir/uzi/internal/usecases/dto"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
-func (u *UziUseCase) InsertImages(ctx context.Context, images []entity.Image) error {
-	u.logger.Debug("[Request] Insert images")
-	if err := u.uziRepo.InsertImages(ctx, images); err != nil {
-		u.logger.Error("Insert images", zap.Error(err))
-		return fmt.Errorf("insert images: %w", err)
+func (u *UziUseCase) CreateImages(ctx context.Context, images []entity.Image) (uuid.UUIDs, error) {
+	u.logger.Debug("[Request] Create images")
+	ids, err := u.uziRepo.CreateImages(ctx, images)
+	if err != nil {
+		u.logger.Error("Create images", zap.Error(err))
+		return nil, fmt.Errorf("create images: %w", err)
 	}
-	u.logger.Debug("[Response] Inserted images")
+	u.logger.Debug("[Response] Created images")
 
-	return nil
+	return ids, nil
 }
 
-func (u *UziUseCase) GetImageWithSegmentsFormations(ctx context.Context, id uuid.UUID) (*dto.ImageWithSegmentsFormations, error) {
-	u.logger.Debug("[Request] Get image by ID", zap.Any("id", id))
+func (u *UziUseCase) GetImageWithFormationsSegments(ctx context.Context, id uuid.UUID) (*dto.ImageWithFormationsSegments, error) {
+	u.logger.Debug("[Request] Get image by ID", zap.String("image id", id.String()))
 	image, err := u.uziRepo.GetImageByID(ctx, id)
 	if err != nil {
 		u.logger.Error("Get image by ID", zap.Error(err))
 		return nil, fmt.Errorf("get image by ID: %w", err)
 	}
-	u.logger.Debug("[Response] Got image by ID", zap.Any("image", image))
+	u.logger.Debug("[Response] Got image by ID", zap.String("image id", id.String()))
 
-	u.logger.Debug("[Request] Get image formations", zap.Any("id", id))
-	formations, err := u.uziRepo.GetImageFormations(ctx, id)
+	u.logger.Debug("[Request] Get image formations", zap.String("image id", id.String()))
+	formations, err := u.uziRepo.GetFormationsByImageID(ctx, id)
 	if err != nil {
 		u.logger.Error("Get image formations", zap.Error(err))
 		return nil, fmt.Errorf("get image formations: %w", err)
 	}
-	u.logger.Debug("[Response] Got image formations", zap.Any("formations", formations))
+	u.logger.Debug("[Response] Got image formations", zap.Int("count formations", len(formations)))
 
-	u.logger.Debug("[Request] Get image segments", zap.Any("id", id))
-	segments, err := u.uziRepo.GetImageSegments(ctx, id)
-	if err != nil {
-		u.logger.Error("Get image segments", zap.Error(err))
-		return nil, fmt.Errorf("get image segments: %w", err)
-	}
-	u.logger.Debug("[Response] Got image segments", zap.Any("segments", segments))
-
-	dtoFormations, err := u.GetDTOFormation(ctx, formations)
+	formationsWithTirads, err := u.GetDTOFormations(ctx, formations)
 	if err != nil {
 		return nil, fmt.Errorf("get dto formations: %w", err)
 	}
 
-	dtoSegments, err := u.GetDTOSegments(ctx, segments)
+	u.logger.Debug("[Request] Get image segments", zap.String("image id", id.String()))
+	segments, err := u.uziRepo.GetSegmentsByImageID(ctx, id)
+	if err != nil {
+		u.logger.Error("Get image segments", zap.Error(err))
+		return nil, fmt.Errorf("get image segments: %w", err)
+	}
+	u.logger.Debug("[Response] Got image segments", zap.Int("count segments", len(segments)))
+
+	segmentsWithTirads, err := u.GetDTOSegments(ctx, segments)
 	if err != nil {
 		return nil, fmt.Errorf("get dto segments: %w", err)
 	}
 
-	return &dto.ImageWithSegmentsFormations{
+	return &dto.ImageWithFormationsSegments{
 		Image:      image,
-		Formations: dtoFormations,
-		Segments:   dtoSegments,
+		Formations: formationsWithTirads,
+		Segments:   segmentsWithTirads,
 	}, nil
 }
