@@ -11,7 +11,7 @@ import (
 	"yir/auth/internal/entity"
 	serviceRepos "yir/auth/internal/medservice"
 	authUsecases "yir/auth/internal/usecases/auth"
-	"yir/pkg_log/log"
+	"yir/pkg/log"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"

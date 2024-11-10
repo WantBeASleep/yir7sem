@@ -14,7 +14,7 @@ import (
 	"yir/med/internal/repository/config"
 	medworkerRep "yir/med/internal/repository/medworkers"
 	"yir/med/internal/usecase"
-	"yir/pkg_log/log"
+	"yir/pkg/log"
 
 	"go.uber.org/zap"
 )
