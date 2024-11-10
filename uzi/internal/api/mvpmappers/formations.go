@@ -1,8 +1,11 @@
 package mvpmappers
 
 import (
+	kafka "yir/uzi/api/broker"
 	pb "yir/uzi/api/grpcapi"
 	"yir/uzi/internal/usecases/dto"
+
+	"github.com/google/uuid"
 )
 
 func PBFormationReqToDTOFormation(formation *pb.FormationRequest) *dto.Formation {
@@ -12,10 +15,27 @@ func PBFormationReqToDTOFormation(formation *pb.FormationRequest) *dto.Formation
 	}
 }
 
+func KafkaFormationToDTOFormation(formation *kafka.KafkaFormation) *dto.Formation {
+	return &dto.Formation{
+		Id:     uuid.MustParse(formation.Id),
+		Tirads: KafkaTiradsToTirads(formation.Tirads),
+		Ai:     formation.Ai,
+	}
+}
+
 func PBFormationsReqToDTOFormations(formations []*pb.FormationRequest) []dto.Formation {
 	dtoFormations := make([]dto.Formation, 0, len(formations))
 	for _, formation := range formations {
 		dtoFormations = append(dtoFormations, *PBFormationReqToDTOFormation(formation))
+	}
+
+	return dtoFormations
+}
+
+func KafkaFormationsToDTOFormations(formations []*kafka.KafkaFormation) []dto.Formation {
+	dtoFormations := make([]dto.Formation, 0, len(formations))
+	for _, formation := range formations {
+		dtoFormations = append(dtoFormations, *KafkaFormationToDTOFormation(formation))
 	}
 
 	return dtoFormations
@@ -39,9 +59,14 @@ func DTOFormationsToPBFormationsResp(formations []dto.Formation) []*pb.Formation
 }
 
 func PBCreateFormationWithSegmentsReqToDTOFormationWithSegments(formationWithSegments *pb.CreateFormationWithSegmentsRequest) *dto.FormationWithSegments {
+	formation := &dto.Formation{
+		Tirads: PBTiradsToTirads(formationWithSegments.Formation.Tirads),
+		Ai:     formationWithSegments.Formation.Ai,
+	}
+
 	return &dto.FormationWithSegments{
-		Formation: PBFormationReqToDTOFormation(formationWithSegments.Formation),
-		Segments:  PBSegmentsReqToDTOSegments(formationWithSegments.Segments),
+		Formation: formation,
+		Segments:  PBSegmentsNestedReqToDTOSegments(formationWithSegments.Formation.Segments),
 	}
 }
 

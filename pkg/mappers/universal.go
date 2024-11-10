@@ -13,7 +13,6 @@ func MustTransformObj[S any, T any](src *S) *T {
 	return &dst
 }
 
-// опция применяется к каждому конкретному значению, а не к всему слайсу
 func MustTransformSlice[S any, T any](src []S) []T {
 	var dst []T
 	copier.Copy(&dst, &src)

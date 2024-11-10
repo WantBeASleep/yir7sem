@@ -9,11 +9,11 @@ import (
 )
 
 type Client struct {
-	client client.S3Client
+	client *client.S3Client
 }
 
 func NewClient(
-	client client.S3Client,
+	client *client.S3Client,
 ) *Client {
 	return &Client{
 		client: client,

@@ -2,9 +2,9 @@ package uzi
 
 import (
 	"context"
-	pb "yir/uzi/events"
+	pb "yir/uzi/api/broker"
+	"yir/uzi/internal/api/mvpmappers"
 	"yir/uzi/internal/api/usecases"
-	"yir/uzi/internal/entity/dto"
 
 	"google.golang.org/protobuf/proto"
 
@@ -13,18 +13,18 @@ import (
 )
 
 type Broker struct {
-	logger *zap.Logger
-
 	uziUseCase usecases.Uzi
+
+	logger *zap.Logger
 }
 
 func NewBroker(
-	logger *zap.Logger,
 	uziUseCase usecases.Uzi,
+	logger *zap.Logger,
 ) *Broker {
 	return &Broker{
-		logger:     logger,
 		uziUseCase: uziUseCase,
+		logger:     logger,
 	}
 }
 
@@ -35,13 +35,12 @@ func (b *Broker) ProcessingEvents(ctx context.Context, topic string, msg []byte)
 	switch topic {
 	case "uziUpload":
 		var eventData pb.UziUpload
-		err := proto.Unmarshal(msg, &eventData)
-		if err != nil {
+		if err := proto.Unmarshal(msg, &eventData); err != nil {
 			b.logger.Error("[EVENTS] parse data", zap.Error(err))
 			return nil
 		}
 
-		uziID, err := uuid.Parse(eventData.UziId)
+		uziID, err := uuid.Parse(eventData.Id)
 		if err != nil {
 			b.logger.Error("[EVENTS] parse uzi uuid", zap.Error(err))
 			return nil
@@ -50,22 +49,27 @@ func (b *Broker) ProcessingEvents(ctx context.Context, topic string, msg []byte)
 		pagesID, err := b.uziUseCase.SplitLoadSaveUzi(ctx, uziID)
 		if err != nil {
 			b.logger.Error("[EVENTS] split load save", zap.Error(err))
+			return nil
 		}
 
-		b.logger.Info("[EVENTS] Successfull process event", zap.Any("pages id", pagesID))
+		b.logger.Info("[EVENTS] Successfull process uziUpload event", zap.Any("pages id", pagesID))
 
 	case "uziProcessed":
 		var eventData pb.UziProcessed
-		err := proto.Unmarshal(msg, &eventData)
-		if err != nil {
+		if err := proto.Unmarshal(msg, &eventData); err != nil {
 			b.logger.Error("[EVENTS] parse data", zap.Error(err))
 			return nil
 		}
 
-		req := make([]dto.FormationWithSegments, 0, len(eventData.Formations))
-		for _, pbFormation := range eventData.Formations {
+		formations := mvpmappers.KafkaFormationsToDTOFormations(eventData.Formations)
+		segments := mvpmappers.KafkaSegmentsToDTOSegments(eventData.Segments)
 
+		if err := b.uziUseCase.InsertFormationsAndSegemetsSeparately(ctx, formations, segments); err != nil {
+			b.logger.Error("[EVENTS] insert formations and segments", zap.Error(err))
+			return nil
 		}
+
+		b.logger.Info("[EVENTS] Successfull process uziProcessed event")
 
 	default:
 		b.logger.Error("[EVENTS] unsupported event")

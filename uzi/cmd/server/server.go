@@ -11,11 +11,12 @@ import (
 	"yir/pkg/kafka"
 	"yir/pkg/log"
 	s3api "yir/s3upload/api"
-	pb "yir/uzi/api"
+	s3apiclient "yir/s3upload/pkg/client"
+	pbgrpc "yir/uzi/api/grpcapi"
 	uziapi "yir/uzi/internal/api/uzi"
 	"yir/uzi/internal/config"
 	"yir/uzi/internal/db/uzirepo"
-	"yir/uzi/internal/s3service"
+	s3repo "yir/uzi/internal/s3"
 	uziusecase "yir/uzi/internal/usecases/uzi"
 
 	"github.com/IBM/sarama"
@@ -63,8 +64,9 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("conn to s3 service: %w", err))
 	}
-	s3serviceClient := s3api.NewS3UploadClient(s3serviceConn)
-	s3Repo := s3service.NewS3Service(s3serviceClient)
+	s3serviceGrpcClient := s3api.NewS3Client(s3serviceConn)
+	s3serviceClient := s3apiclient.NewS3Client(s3serviceGrpcClient)
+	s3Repo := s3repo.NewClient(s3serviceClient)
 
 	uziUseCase := uziusecase.NewUziUseCase(uziRepo, s3Repo, logger)
 
@@ -73,13 +75,13 @@ func main() {
 		panic(fmt.Errorf("init ctrl: %w", err))
 	}
 
-	uziBroker := uziapi.NewBroker(logger, uziUseCase)
+	uziBroker := uziapi.NewBroker(uziUseCase, logger)
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterUziAPIServer(grpcServer, uziController)
+	pbgrpc.RegisterUziAPIServer(grpcServer, uziController)
 
 	mux := runtime.NewServeMux()
-	if err := pb.RegisterUziAPIHandlerFromEndpoint(context.TODO(), mux, cfg.App.Host+":"+cfg.App.GRPCPort, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
+	if err := pbgrpc.RegisterUziAPIHandlerFromEndpoint(context.TODO(), mux, cfg.App.Host+":"+cfg.App.GRPCPort, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
 		panic(fmt.Errorf("register http handlers: %w", err))
 	}
 
@@ -116,7 +118,7 @@ func main() {
 		config.Consumer.Return.Errors = true
 
 		// затащить в кфг
-		consumer, err := kafka.NewGroupConsumer("uziService", []string{"uziUpload"}, []string{"localhost:9092"}, config, uziBroker.ProcessingEvents)
+		consumer, err := kafka.NewGroupConsumer("uziService", []string{"uziUpload", "uziProcessed"}, []string{"localhost:9092"}, config, uziBroker.ProcessingEvents)
 		if err != nil {
 			panic(fmt.Errorf("open consumer: %w", err))
 		}

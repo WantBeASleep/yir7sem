@@ -36,6 +36,8 @@ func NewServer(
 			&pb.FormationRequest{},
 			&pb.UziRequest{},
 			&pb.Id{},
+			&pb.FormationWithNestedSegmentsRequest{},
+			&pb.SegmentNestedRequest{},
 
 			&pb.CreateUziRequest{},
 			&pb.UpdateUziRequest{},

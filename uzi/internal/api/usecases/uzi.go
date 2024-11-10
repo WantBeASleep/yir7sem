@@ -22,6 +22,7 @@ type Uzi interface {
 
 	// formations
 	CreateFormationWithSegments(ctx context.Context, req *dto.FormationWithSegments) (uuid.UUID, uuid.UUIDs, error)
+	InsertFormationsAndSegemetsSeparately(ctx context.Context, formations []dto.Formation, segments []dto.Segment) error
 	GetFormationWithSegments(ctx context.Context, id uuid.UUID) (*dto.FormationWithSegments, error)
 	UpdateFormation(ctx context.Context, id uuid.UUID, req *dto.Formation) (*dto.Formation, error)
 
@@ -30,4 +31,7 @@ type Uzi interface {
 
 	// device
 	DeviceList(ctx context.Context) ([]entity.Device, error)
+
+	// splitted
+	SplitLoadSaveUzi(ctx context.Context, uziID uuid.UUID) (uuid.UUIDs, error)
 }

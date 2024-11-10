@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// ID генерится на стороне DB, поэтому функция Create/Insert
 func (u *UziUseCase) CreateFormationWithSegments(ctx context.Context, req *dto.FormationWithSegments) (uuid.UUID, uuid.UUIDs, error) {
 	formationID, err := u.CreateDTOFormation(ctx, req.Formation)
 	if err != nil {
@@ -23,6 +24,23 @@ func (u *UziUseCase) CreateFormationWithSegments(ctx context.Context, req *dto.F
 	}
 
 	return formationID, segmentsIDS, nil
+}
+
+// оставлю в formations
+func (u *UziUseCase) InsertFormationsAndSegemetsSeparately(ctx context.Context, formations []dto.Formation, segments []dto.Segment) error {
+	for _, formation := range formations {
+		_, err := u.CreateDTOFormation(ctx, &formation)
+		if err != nil {
+			return fmt.Errorf("insert formation: %w", err)
+		}
+	}
+
+	_, err := u.CreateDTOSegments(ctx, segments)
+	if err != nil {
+		return fmt.Errorf("insert segments: %w", err)
+	}
+
+	return nil
 }
 
 func (u *UziUseCase) CreateFormationsWithSegments(ctx context.Context, req []dto.FormationWithSegments) ([]dto.FormationWithSegmentsIDs, error) {
