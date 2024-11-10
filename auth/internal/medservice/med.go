@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 	"fmt"
-	pb "service/all/api"
-	"service/auth/internal/entity"
+	pb "yir/all/api"
+	"yir/auth/internal/entity"
 
 	"google.golang.org/grpc"
 )

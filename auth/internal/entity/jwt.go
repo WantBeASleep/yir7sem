@@ -1,4 +1,4 @@
-package jwt
+package entity
 
 import (
 	"crypto/rsa"
@@ -6,21 +6,21 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"service/auth/internal/config"
-	"service/auth/internal/entity"
 	"time"
+	"yir/auth/internal/config"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
-type Service struct {
+type JWT struct {
 	accessLifeTime  time.Duration
 	refreshLifeTime time.Duration
 	privateKey      *rsa.PrivateKey
 	publicKey       *rsa.PublicKey
 }
 
-func NewService(cfg *config.Token) (*Service, error) {
+func NewService(cfg *config.Token) (*JWT, error) {
 	privateBlock, _ := pem.Decode([]byte(cfg.PrivateKey))
 	privateKey, err := x509.ParsePKCS8PrivateKey(privateBlock.Bytes)
 	if err != nil {
@@ -33,7 +33,7 @@ func NewService(cfg *config.Token) (*Service, error) {
 		return nil, fmt.Errorf("parse public key: %w", err)
 	}
 
-	return &Service{
+	return &JWT{
 		accessLifeTime:  cfg.AccessLifeTime,
 		refreshLifeTime: cfg.RefreshLifeTime,
 		privateKey:      privateKey.(*rsa.PrivateKey),
@@ -42,7 +42,7 @@ func NewService(cfg *config.Token) (*Service, error) {
 }
 
 // Add refresh word as "rtw" key.
-func (s *Service) GeneratePair(claims map[string]any, refreshWord string) (*entity.TokensPair, error) {
+func (s *JWT) GeneratePair(claims map[string]any, refreshWord string) (*TokensPair, error) {
 	var token *jwt.Token
 
 	accessClaims := jwt.MapClaims{}
@@ -70,13 +70,14 @@ func (s *Service) GeneratePair(claims map[string]any, refreshWord string) (*enti
 		return nil, fmt.Errorf("refresh token signed: %w", err)
 	}
 
-	return &entity.TokensPair{
+	return &TokensPair{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
 }
 
-func (s *Service) ParseUserData(refreshToken string) (*entity.UserTokenVerify, error) {
+// парсит user id, и refresh token
+func (s *JWT) ParseUserIDAndRW(refreshToken string) (uuid.UUID, string, error) {
 	claims := jwt.MapClaims{}
 	_, err := jwt.ParseWithClaims(
 		refreshToken,
@@ -86,51 +87,53 @@ func (s *Service) ParseUserData(refreshToken string) (*entity.UserTokenVerify, e
 	)
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenExpired) {
-			return nil, entity.ErrTokenExpired
+			return uuid.Nil, "", ErrTokenExpired
 		}
-		return nil, err
+		return uuid.Nil, "", err
 	}
 
 	rtw, err := s.parseRTW(claims)
 	if err != nil {
-		return nil, entity.ErrInvalidToken
+		return uuid.Nil, "", ErrInvalidToken
 	}
 
-	ID, err := s.parseID(claims)
+	id, err := s.parseID(claims)
 	if err != nil {
-		return nil, entity.ErrInvalidToken
+		return uuid.Nil, "", ErrInvalidToken
 	}
 
-	return &entity.UserTokenVerify{
-		UserID:           ID,
-		RefreshTokenWord: rtw,
-	}, nil
+	return id, rtw, nil
 }
 
-func (s *Service) parseRTW(claims jwt.MapClaims) (string, error) {
+func (s *JWT) parseRTW(claims jwt.MapClaims) (string, error) {
 	rtwInterface, ok := claims["rtw"]
 	if !ok {
-		return "", entity.ErrInvalidToken
+		return "", ErrInvalidToken
 	}
 
 	tokenWord, ok := rtwInterface.(string)
 	if !ok {
-		return "", entity.ErrInvalidToken
+		return "", ErrInvalidToken
 	}
 
 	return tokenWord, nil
 }
 
-func (s *Service) parseID(claims jwt.MapClaims) (int, error) {
-	IDInterface, ok := claims["id"]
+func (s *JWT) parseID(claims jwt.MapClaims) (uuid.UUID, error) {
+	idInterface, ok := claims["id"]
 	if !ok {
-		return 0, entity.ErrInvalidToken
+		return uuid.Nil, ErrInvalidToken
 	}
 
-	ID, ok := IDInterface.(float64)
+	idStr, ok := idInterface.(string)
 	if !ok {
-		return 0, entity.ErrInvalidToken
+		return uuid.Nil, ErrInvalidToken
 	}
 
-	return int(ID), nil
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		return uuid.Nil, ErrInvalidToken
+	}
+
+	return id, nil
 }

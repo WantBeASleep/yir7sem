@@ -50,3 +50,14 @@ func MustLoad(cfgPath string) *Config {
 
 	return &cfg
 }
+
+func (d *DB) GetDSN() string {
+	return fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s",
+		d.Host,
+		d.User,
+		d.Password,
+		d.Name,
+		d.Port,
+	)
+}

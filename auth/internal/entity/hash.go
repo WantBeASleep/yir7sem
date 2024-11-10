@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 
@@ -23,12 +22,4 @@ func HashByScrypt(password string, salt string) (string, error) {
 
 	hash := hex.EncodeToString(hexHash)
 	return string(hash), nil
-}
-
-// Deprecated: В бд соль пишем после пароля, по фиксированному 64 в длинну паролю.
-// Получается пароль(64 символа) + соль
-// Этот вернет пароль 32 длинной, использовать, если понимаете что делаете
-func HashBySHA256(password string, salt string) (string, error) {
-	hash := sha256.Sum256([]byte(password + salt))
-	return string(hash[:]), nil
 }
