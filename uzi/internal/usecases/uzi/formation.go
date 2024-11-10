@@ -83,7 +83,7 @@ func (u *UziUseCase) UpdateFormation(ctx context.Context, id uuid.UUID, req *dto
 		return nil, fmt.Errorf("create tirads: %w", err)
 	}
 	u.logger.Debug("[Response] Created tirads", zap.Int("id", tiradsID))
-	
+
 	formation := mappers.MustTransformObj[dto.Formation, entity.Formation](req)
 	formation.TiradsID = tiradsID
 

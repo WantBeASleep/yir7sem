@@ -24,7 +24,7 @@ func (c *Client) Upload(ctx context.Context, path string, file *imagesplitter.Fi
 	reader := bytes.NewBuffer(file.FileBin)
 
 	if err := c.client.Upload(ctx, &client.FileMeta{
-		Path: path,
+		Path:        path,
 		ContentType: file.FileMeta.ContentType,
 	}, reader); err != nil {
 		return fmt.Errorf("load file to S3: %w", err)

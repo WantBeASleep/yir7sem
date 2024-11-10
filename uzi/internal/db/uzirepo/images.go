@@ -21,7 +21,7 @@ func (r *UziRepo) CreateImages(ctx context.Context, images []entity.Image) (uuid
 
 		resp = append(resp, img.Id)
 	}
-	
+
 	return resp, nil
 }
 

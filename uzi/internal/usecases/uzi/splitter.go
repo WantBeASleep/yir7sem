@@ -39,7 +39,7 @@ func (u *UziUseCase) SplitLoadSaveUzi(ctx context.Context, uziID uuid.UUID) (uui
 	u.logger.Info("[Request] Upload pages to S3", zap.Int("pages count", len(splitted)))
 	for i, split := range splitted {
 		id, _ := uuid.NewRandom()
-		imagesIDs = append(imagesIDs, id)		
+		imagesIDs = append(imagesIDs, id)
 		url := filepath.Join(uziID.String(), id.String(), id.String())
 
 		if err := u.s3Repo.Upload(ctx, url, &split); err != nil {

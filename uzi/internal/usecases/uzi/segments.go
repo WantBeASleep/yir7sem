@@ -48,7 +48,7 @@ func (u *UziUseCase) GetDTOSegment(ctx context.Context, segment *entity.Segment)
 
 	dtoSegment := mappers.MustTransformObj[entity.Segment, dto.Segment](segment)
 	dtoSegment.Tirads = tirads
-	
+
 	return dtoSegment, nil
 }
 

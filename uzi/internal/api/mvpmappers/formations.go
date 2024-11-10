@@ -48,6 +48,6 @@ func PBCreateFormationWithSegmentsReqToDTOFormationWithSegments(formationWithSeg
 func DTOFormationWithSegmentsToPBFormationWithSegments(formationWithSegments *dto.FormationWithSegments) *pb.FormationWithSegments {
 	return &pb.FormationWithSegments{
 		Formation: DTOFormationToPBFormationResp(formationWithSegments.Formation),
-		Segments: DTOSegmentsToPBSegmentsResp(formationWithSegments.Segments),
+		Segments:  DTOSegmentsToPBSegmentsResp(formationWithSegments.Segments),
 	}
 }

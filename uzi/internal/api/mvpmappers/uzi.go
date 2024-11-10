@@ -19,10 +19,10 @@ func UziToPBUziResp(uzi *entity.Uzi) *pb.UziReponse {
 
 func PBUziReqToUzi(uzi *pb.UziRequest) *entity.Uzi {
 	return &entity.Uzi{
-		Url: uzi.Url,
+		Url:        uzi.Url,
 		Projection: uzi.Projection,
-		PatientID: uuid.MustParse(uzi.PatientId),
-		DeviceID: int(uzi.DeviceId),
+		PatientID:  uuid.MustParse(uzi.PatientId),
+		DeviceID:   int(uzi.DeviceId),
 	}
 }
 
