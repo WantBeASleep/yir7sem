@@ -175,7 +175,7 @@ service MedPatient{
     string appointment_time = 2 [json_name = "appointment_time"];
     bool has_nodules = 3 [json_name = "has_nodules"]; 
     string diagnosis = 4 [json_name = "diagnosis"];
-    uint64 med_worker_id = 5;
+    string med_worker_id = 5;
     Patient patient = 6;
   }
   

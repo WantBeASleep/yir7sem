@@ -6,6 +6,7 @@ import (
 	"yir/med/internal/entity"
 	"yir/med/internal/repository"
 
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -107,10 +108,15 @@ func (m *MedWorkerUseCase) AddMedWorker(ctx context.Context, createData *entity.
 		m.logger.Error("Failed to add new medical worker", zap.Error(err))
 		return nil, fmt.Errorf("failed to add medical worker: %w", err)
 	}
+	idStr, err := uuid.Parse(id)
+	if err != nil {
+		m.logger.Error("Failed to parse ID to uuid.UUID", zap.Error(err))
+		return nil, fmt.Errorf("failed to parse ID to uuid.UUID: %w", err)
+	}
 
 	// Присваиваем ID новому медработнику
-	medworker.ID = string(id)
-	m.logger.Info("Successfully added new medical worker", zap.Any("ID", id))
+	medworker.ID = idStr
+	m.logger.Info("Successfully added new medical worker", zap.Any("ID", idStr))
 
 	// Возвращаем объект MedicalWorker и ошибку
 	return medworker, nil

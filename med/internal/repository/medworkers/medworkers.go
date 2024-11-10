@@ -66,7 +66,7 @@ func (r *MedicalWorkerRepo) AddMedicalWorker(ctx context.Context, medworker *ent
 		Error; err != nil {
 		return "", err
 	}
-	return medworker.ID, nil
+	return medworker.ID.String(), nil
 }
 
 func (r *MedicalWorkerRepo) UpdateMedicalWorker(ctx context.Context, medworker *entity.MedicalWorker) error {

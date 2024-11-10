@@ -175,7 +175,7 @@ func (s *Server) GetPatientsByMedWorker(ctx context.Context, request *pb.GetPati
 	}
 
 	response := &pb.GetPatientsByMedWorkerResponse{
-		MedWorkerId: medWorkerID.String(),
+		MedWorkerId: string(medWorkerID),
 		Cards:       []*pb.Card{},
 	}
 

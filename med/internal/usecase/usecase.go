@@ -25,5 +25,5 @@ type MedicalWorker interface {
 	GetMedWorkerByID(ctx context.Context, ID string) (*entity.MedicalWorker, error)
 	UpdateMedWorker(ctx context.Context, ID string, updateData *entity.MedicalWorkerUpdateRequest) (*entity.MedicalWorker, error)
 	AddMedWorker(ctx context.Context, createData *entity.AddMedicalWorkerRequest) (*entity.MedicalWorker, error)
-	GetPatientsByMedWorker(ctx context.Context, medWorkerID string) ([]*entity.PatientCard, uint64, error)
+	GetPatientsByMedWorker(ctx context.Context, medWorkerID string) ([]*entity.PatientCard, string, error)
 }

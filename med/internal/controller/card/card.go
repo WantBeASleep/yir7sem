@@ -7,6 +7,7 @@ import (
 	"yir/med/internal/entity"
 	"yir/med/internal/usecase"
 
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -67,9 +68,11 @@ func (s *Server) GetCards(ctx context.Context, request *pb.GetCardsRequest) (*pb
 }
 
 func (s *Server) PostCard(ctx context.Context, request *pb.PostCardRequest) (*pb.PostCardResponse, error) {
+	uuid1, _ := uuid.Parse(request.Patient.Id)
+	uuid2, _ := uuid.Parse(request.MedworkerId)
 	cardInfo := &entity.PatientInformation{
 		Patient: &entity.Patient{
-			ID:            request.Patient.Id.String(),
+			ID:            uuid1,
 			FirstName:     request.Patient.FirstName,
 			LastName:      request.Patient.LastName,
 			FatherName:    request.Patient.FatherName,
@@ -80,8 +83,8 @@ func (s *Server) PostCard(ctx context.Context, request *pb.PostCardRequest) (*pb
 		Card: &entity.PatientCard{
 			HasNodules:  request.HasNodules,
 			Diagnosis:   request.Diagnosis,
-			PatientID:   request.Patient.Id.String(),
-			MedWorkerID: request.MedworkerId.String(),
+			PatientID:   uuid1,
+			MedWorkerID: uuid2,
 		},
 	}
 	err := s.cardUseCase.PostCard(ctx, cardInfo)
@@ -126,12 +129,15 @@ func (s *Server) GetCardByID(ctx context.Context, request *pb.GetCardByIDRequest
 }
 
 func (s *Server) PutCard(ctx context.Context, request *pb.PutCardRequest) (*pb.PutCardResponse, error) {
+	uuid1, _ := uuid.Parse(request.Id)
+	uuid2, _ := uuid.Parse(request.PatientId)
+	uuid3, _ := uuid.Parse(request.MedworkerId)
 	Card := &entity.PatientCard{
-		ID:          request.Id.String(),
+		ID:          uuid1,
 		HasNodules:  request.HasNodules,
 		Diagnosis:   request.Diagnosis,
-		PatientID:   request.PatientId,
-		MedWorkerID: request.MedworkerId,
+		PatientID:   uuid2,
+		MedWorkerID: uuid3,
 	}
 	err := s.cardUseCase.PutCard(ctx, Card)
 	if err != nil {

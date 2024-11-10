@@ -107,7 +107,7 @@ func (p *PatientRepo) GetPatientInfoByID(ctx context.Context, ID string) (*entit
 	// 	return nil, fmt.Errorf("failed to get patient: %w", err)
 	// }
 
-	if err := tx.Model(&models.Patient{}).Where("id = ?", ID).First(&respPatient).Error; err != nil {
+	if err := tx.Model(&models.PatientInfo{}).Where("id = ?", ID).First(&respPatient).Error; err != nil {
 		tx.Rollback()
 		return nil, fmt.Errorf("failed to get patient card: %w", err)
 	}
