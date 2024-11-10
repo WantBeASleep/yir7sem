@@ -166,6 +166,18 @@ message SegmentRequest {
   Tirads tirads = 500 [ (buf.validate.field).required = true ];
 }
 
+message SegmentNestedRequest {
+  string image_id = 100 [
+    json_name = "image_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+
+  string contor_url = 200
+      [ json_name = "contor_url", (buf.validate.field).required = true ];
+  Tirads tirads = 300 [ (buf.validate.field).required = true ];
+}
+
 message SegmentResponse {
   string id = 100;
   string formation_id = 200;
@@ -176,6 +188,12 @@ message SegmentResponse {
 }
 
 message FormationRequest {
+  Tirads tirads = 200 [ (buf.validate.field).required = true ];
+  bool ai = 300;
+}
+
+message FormationWithNestedSegmentsRequest {
+  repeated SegmentNestedRequest segments = 100 [ (buf.validate.field).required = true ];
   Tirads tirads = 200 [ (buf.validate.field).required = true ];
   bool ai = 300;
 }
@@ -263,9 +281,7 @@ message CreateFormationWithSegmentsRequest {
     (buf.validate.field).string.uuid = true,
     (buf.validate.field).required = true
   ];
-  FormationRequest formation = 300
-      [ (buf.validate.field).required = true ];
-  repeated SegmentRequest segments = 200
+  FormationWithNestedSegmentsRequest formation = 300
       [ (buf.validate.field).required = true ];
 }
 
