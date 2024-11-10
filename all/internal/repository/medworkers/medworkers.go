@@ -34,7 +34,7 @@ func NewRepository(cfg *config.DB) (*MedicalWorkerRepo, error) {
 	}, nil
 }
 
-func (r *MedicalWorkerRepo) GetMedicalWorkerByID(ctx context.Context, ID int) (*entity.MedicalWorker, error) {
+func (r *MedicalWorkerRepo) GetMedicalWorkerByID(ctx context.Context, ID string) (*entity.MedicalWorker, error) {
 	var worker models.MedWorkerInfo
 
 	query := r.db.WithContext(ctx).
@@ -54,19 +54,19 @@ func (r *MedicalWorkerRepo) GetMedicalWorkerByID(ctx context.Context, ID int) (*
 	return medworker, nil
 }
 
-func (r *MedicalWorkerRepo) AddMedicalWorker(ctx context.Context, medworker *entity.MedicalWorker) (int, error) {
+func (r *MedicalWorkerRepo) AddMedicalWorker(ctx context.Context, medworker *entity.MedicalWorker) (string, error) {
 	worker, err := mapper.ToMedWorkerModel(medworker)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	if err := r.db.WithContext(ctx).
 		Model(&models.MedWorkerInfo{}).
 		Create(&worker).
 		Error; err != nil {
-		return 0, err
+		return "", err
 	}
-	return int(medworker.ID), nil
+	return medworker.ID, nil
 }
 
 func (r *MedicalWorkerRepo) UpdateMedicalWorker(ctx context.Context, medworker *entity.MedicalWorker) error {
@@ -138,7 +138,7 @@ func (r *MedicalWorkerRepo) ListMedicalWorkers(ctx context.Context, limit, offse
 	return entities, int(total), nil
 }
 
-func (r *MedicalWorkerRepo) DeleteMedicalWorker(ctx context.Context, ID int) error {
+func (r *MedicalWorkerRepo) DeleteMedicalWorker(ctx context.Context, ID string) error {
 	query := r.db.WithContext(ctx).
 		Model(&models.MedWorkerInfo{}).
 		Where("id = ?", ID).
@@ -154,7 +154,7 @@ func (r *MedicalWorkerRepo) DeleteMedicalWorker(ctx context.Context, ID int) err
 	return nil
 }
 
-func (r *MedicalWorkerRepo) GetPatientsByMedWorker(ctx context.Context, medWorkerID uint64) ([]*entity.PatientCard, error) {
+func (r *MedicalWorkerRepo) GetPatientsByMedWorker(ctx context.Context, medWorkerID string) ([]*entity.PatientCard, error) {
 	var cards []models.PatientCardInfo
 	if err := r.db.WithContext(ctx).
 		Where("med_worker_id = ?", medWorkerID).

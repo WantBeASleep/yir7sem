@@ -1,7 +1,9 @@
 package models
 
+import "github.com/google/uuid"
+
 type PatientInfo struct {
-	ID            uint64 `gorm:"primaryKey"`
+	ID            uuid.UUID `gorm:"primaryKey"`
 	FirstName     string
 	LastName      string
 	FatherName    string

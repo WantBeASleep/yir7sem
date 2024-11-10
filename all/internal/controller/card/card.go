@@ -45,12 +45,12 @@ func (s *Server) GetCards(ctx context.Context, request *pb.GetCardsRequest) (*pb
 	}
 	for _, cardInfo := range cardList.Cards {
 		cardResponse := &pb.Card{
-			Id:              uint64(cardInfo.Card.ID),
+			Id:              cardInfo.Card.ID.String(),
 			AppointmentTime: cardInfo.Card.AppointmentTime,
 			HasNodules:      cardInfo.Card.HasNodules,
 			Diagnosis:       cardInfo.Card.Diagnosis,
 			Patient: &pb.Patient{
-				Id:            cardInfo.Patient.ID,
+				Id:            cardInfo.Patient.ID.String(),
 				FirstName:     cardInfo.Patient.FirstName,
 				LastName:      cardInfo.Patient.LastName,
 				FatherName:    cardInfo.Patient.FatherName,
@@ -58,7 +58,7 @@ func (s *Server) GetCards(ctx context.Context, request *pb.GetCardsRequest) (*pb
 				Email:         cardInfo.Patient.Email,
 				IsActive:      cardInfo.Patient.IsActive,
 			},
-			MedWorkerId: cardInfo.Card.MedWorkerID,
+			MedWorkerId: cardInfo.Card.MedWorkerID.String(),
 		}
 		response.Results = append(response.Results, cardResponse)
 	}
@@ -69,7 +69,7 @@ func (s *Server) GetCards(ctx context.Context, request *pb.GetCardsRequest) (*pb
 func (s *Server) PostCard(ctx context.Context, request *pb.PostCardRequest) (*pb.PostCardResponse, error) {
 	cardInfo := &entity.PatientInformation{
 		Patient: &entity.Patient{
-			ID:            request.Patient.Id,
+			ID:            request.Patient.Id.String(),
 			FirstName:     request.Patient.FirstName,
 			LastName:      request.Patient.LastName,
 			FatherName:    request.Patient.FatherName,
@@ -80,8 +80,8 @@ func (s *Server) PostCard(ctx context.Context, request *pb.PostCardRequest) (*pb
 		Card: &entity.PatientCard{
 			HasNodules:  request.HasNodules,
 			Diagnosis:   request.Diagnosis,
-			PatientID:   request.Patient.Id,
-			MedWorkerID: request.MedworkerId,
+			PatientID:   request.Patient.Id.String(),
+			MedWorkerID: request.MedworkerId.String(),
 		},
 	}
 	err := s.cardUseCase.PostCard(ctx, cardInfo)
@@ -94,7 +94,7 @@ func (s *Server) PostCard(ctx context.Context, request *pb.PostCardRequest) (*pb
 }
 
 func (s *Server) GetCardByID(ctx context.Context, request *pb.GetCardByIDRequest) (*pb.GetCardByIDResponse, error) {
-	CardInfo, err := s.cardUseCase.GetCardByID(ctx, uint64(request.Id))
+	CardInfo, err := s.cardUseCase.GetCardByID(ctx, request.Id)
 	if err != nil {
 		switch {
 		case errors.Is(err, entity.ErrNotFound):
@@ -105,12 +105,12 @@ func (s *Server) GetCardByID(ctx context.Context, request *pb.GetCardByIDRequest
 	}
 	response := &pb.GetCardByIDResponse{
 		Postcard: &pb.Card{
-			Id:              uint64(CardInfo.Card.ID),
+			Id:              CardInfo.Card.ID.String(),
 			AppointmentTime: CardInfo.Card.AppointmentTime,
 			HasNodules:      CardInfo.Card.HasNodules,
 			Diagnosis:       CardInfo.Card.Diagnosis,
 			Patient: &pb.Patient{
-				Id:            CardInfo.Patient.ID,
+				Id:            CardInfo.Patient.ID.String(),
 				FirstName:     CardInfo.Patient.FirstName,
 				LastName:      CardInfo.Patient.LastName,
 				FatherName:    CardInfo.Patient.FatherName,
@@ -118,7 +118,7 @@ func (s *Server) GetCardByID(ctx context.Context, request *pb.GetCardByIDRequest
 				Email:         CardInfo.Patient.Email,
 				IsActive:      CardInfo.Patient.IsActive,
 			},
-			MedWorkerId: CardInfo.Card.MedWorkerID,
+			MedWorkerId: CardInfo.Card.MedWorkerID.String(),
 		},
 	}
 	return response, nil
@@ -127,7 +127,7 @@ func (s *Server) GetCardByID(ctx context.Context, request *pb.GetCardByIDRequest
 
 func (s *Server) PutCard(ctx context.Context, request *pb.PutCardRequest) (*pb.PutCardResponse, error) {
 	Card := &entity.PatientCard{
-		ID:          request.Id,
+		ID:          request.Id.String(),
 		HasNodules:  request.HasNodules,
 		Diagnosis:   request.Diagnosis,
 		PatientID:   request.PatientId,

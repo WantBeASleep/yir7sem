@@ -1,16 +1,18 @@
 package entity
 
+import "github.com/google/uuid"
+
 type PatientCard struct {
-	ID              uint64
+	ID              uuid.UUID
 	AppointmentTime string
 	HasNodules      bool
 	Diagnosis       string
-	MedWorkerID     uint64
-	PatientID       uint64
+	MedWorkerID     uuid.UUID
+	PatientID       uuid.UUID
 }
 
 type MedicalWorker struct {
-	ID              uint64
+	ID              uuid.UUID
 	FirstName       string
 	MiddleName      string
 	LastName        string
@@ -21,7 +23,7 @@ type MedicalWorker struct {
 }
 
 type Patient struct {
-	ID            uint64
+	ID            uuid.UUID
 	FirstName     string
 	LastName      string
 	FatherName    string

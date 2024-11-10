@@ -1,12 +1,14 @@
 package models
 
+import "github.com/google/uuid"
+
 type PatientCardInfo struct {
-	ID              uint64 `gorm:"primaryKey"`
+	ID              uuid.UUID `gorm:"primaryKey"`
 	AppointmentTime string
 	HasNodules      bool
 	Diagnosis       string
-	MedWorkerID     uint64 `gorm:"foreignKey:MedWorkerID"`
-	PatientID       uint64 `gorm:"foreignKey:PatientID"`
+	MedWorkerID     uuid.UUID `gorm:"foreignKey:MedWorkerID"`
+	PatientID       uuid.UUID `gorm:"foreignKey:PatientID"`
 }
 
 func (PatientCardInfo) TableName() string {

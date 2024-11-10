@@ -126,7 +126,7 @@ func (c *CardRepo) CreateCard(ctx context.Context, Card *entity.PatientInformati
 
 }
 
-func (c *CardRepo) CardByID(ctx context.Context, ID uint64) (*entity.PatientInformation, error) {
+func (c *CardRepo) CardByID(ctx context.Context, ID string) (*entity.PatientInformation, error) {
 	var respCard models.PatientCardInfo
 	if err := c.db.WithContext(ctx).First(&respCard, ID).Error; err != nil {
 		return nil, fmt.Errorf("failed to get patient card by id: %w", err)
@@ -180,7 +180,7 @@ func (c *CardRepo) PatchCardInfo(ctx context.Context, Card *entity.PatientCard) 
 	return nil
 }
 
-func (c *CardRepo) DeleteCardInfo(ctx context.Context, ID int) error {
+func (c *CardRepo) DeleteCardInfo(ctx context.Context, ID string) error {
 	query := c.db.WithContext(ctx).
 		Model(&models.PatientCardInfo{}).
 		Where("id = ?", ID).

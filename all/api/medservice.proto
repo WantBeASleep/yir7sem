@@ -161,7 +161,7 @@ service MedPatient{
   }
 
   message Patient{
-    uint64 id = 1 [json_name = "id"];
+    string id = 1 [json_name = "id"];
     string first_name = 2 [json_name = "first_name"];
     string last_name = 3 [json_name = "last_name"];
     string father_name = 4 [json_name = "father_name"];
@@ -171,7 +171,7 @@ service MedPatient{
   }
   
   message Card{
-    uint64 id = 1;
+    string id = 1;
     string appointment_time = 2 [json_name = "appointment_time"];
     bool has_nodules = 3 [json_name = "has_nodules"]; 
     string diagnosis = 4 [json_name = "diagnosis"];
@@ -189,7 +189,7 @@ service MedPatient{
   }
   
   message PatientInfoRequest{
-    uint64 id = 1;
+    string id = 1;
   }
   
   message PatientInfoResponse{
@@ -207,7 +207,7 @@ service MedPatient{
   */
 
   message MedWorker { 
-    uint64 id = 1;
+    string id = 1;
     string last_name = 2;
     string first_name = 3;
     string middle_name = 4;
@@ -218,7 +218,7 @@ service MedPatient{
 }
 
 message GetMedworkerRequest {
-    uint64 id = 1;
+    string id = 1;
     string first_name = 2;
     string middle_name =3;
     string last_name = 4;
@@ -236,7 +236,7 @@ message GetMedworkerListResponse {
 }
 
 message UpdateMedWorkerRequest {
-    uint64 id = 1;
+    string id = 1;
     string first_name = 2;
     string middle_name = 3;
     string last_name = 4;
@@ -251,7 +251,7 @@ message UpdateMedWorkerResponse {
 }
 
 message GetMedMedWorkerByIDRequest {
-    uint64 id = 1;
+    string id = 1;
 }
 
 message GetMedWorkerByIDResponse {
@@ -259,7 +259,7 @@ message GetMedWorkerByIDResponse {
 }
 
 message PatchMedWorkerRequest {
-    uint64 id = 1;
+    string id = 1;
     string first_name = 2;
     string middle_name = 3;
     string last_name = 4;
@@ -284,12 +284,12 @@ message AddMedWorkerResponse {
 }
 
 message GetPatientsByMedWorkerRequest {
-    uint64 medWorkerId = 1;
+    string medWorkerId = 1;
 }
 
 message GetPatientsByMedWorkerResponse {
     repeated Card cards = 1;
-    uint64 med_worker_id = 2 [json_name = "med_worker_id"];
+    string med_worker_id = 2 [json_name = "med_worker_id"];
 }
 
 
@@ -315,7 +315,7 @@ message PostCardRequest {
     bool has_nodules = 1;
     string diagnosis = 2;
     Patient patient =3;
-    uint64 medworker_id = 4;
+    string medworker_id = 4;
 }
 
 message PostCardResponse {
@@ -323,7 +323,7 @@ message PostCardResponse {
 }
 
 message GetCardByIDRequest {
-    uint64 id = 1;
+    string id = 1;
 }
 
 message GetCardByIDResponse {
@@ -331,11 +331,11 @@ message GetCardByIDResponse {
 }
 
 message PutCardRequest {
-    uint64 id = 1;
+    string id = 1;
     bool has_nodules = 2;
     string diagnosis = 3;
-    uint64 patient_id = 4;
-    uint64 medworker_id = 5;
+    string patient_id = 4;
+    string medworker_id = 5;
 }
 
 message PutCardResponse {
@@ -343,11 +343,11 @@ message PutCardResponse {
 }
 
 message PatchCardRequest {
-    uint64 id = 1;
+    string id = 1;
     bool has_nodules = 2;
     string diagnosis = 3;
     Patient patient = 4;
-    uint64 medworker_id = 5;
+    string medworker_id = 5;
 }
 
 message PatchCardResponse {
@@ -355,7 +355,7 @@ message PatchCardResponse {
 }
 
 message DeleteCardRequest {
-    uint64 id = 1;
+    string id = 1;
 }
 
 message DeleteCardResponse {

@@ -25,7 +25,7 @@ func NewRepository(cfg *config.DB) (*PatientRepo, error) {
 
 	db.AutoMigrate(
 		&models.PatientInfo{},
-		&models.PatientCardInfo{},
+		//&models.PatientCardInfo{},
 	)
 
 	return &PatientRepo{
@@ -48,14 +48,14 @@ func (p *PatientRepo) CreatePatient(ctx context.Context, PatientInfo *entity.Pat
 		return fmt.Errorf("failed to create patient info: %w", err)
 	}
 
-	CardDB := mapper.PatientCardToModels(PatientInfo.Card)
-	if err := tx.
-		Model(&models.PatientCardInfo{}).
-		Create(&CardDB).
-		Error; err != nil {
-		tx.Rollback()
-		return fmt.Errorf("failed to create patient card: %w", err)
-	}
+	// CardDB := mapper.PatientCardToModels(PatientInfo.Card)
+	// if err := tx.
+	// 	Model(&models.PatientCardInfo{}).
+	// 	Create(&CardDB).
+	// 	Error; err != nil {
+	// 	tx.Rollback()
+	// 	return fmt.Errorf("failed to create patient card: %w", err)
+	// }
 
 	return tx.Commit().Error
 
@@ -73,11 +73,11 @@ func (p *PatientRepo) UpdatePatient(ctx context.Context, PatientInfo *entity.Pat
 		return fmt.Errorf("failed to update patient info: %w", err)
 	}
 
-	CardDB := mapper.PatientCardToModels(PatientInfo.Card)
-	if err := tx.Model(&models.PatientCardInfo{}).Where("id = ?", CardDB.ID).Updates(&CardDB).Error; err != nil {
-		tx.Rollback()
-		return fmt.Errorf("failed to update patient card: %w", err)
-	}
+	// CardDB := mapper.PatientCardToModels(PatientInfo.Card)
+	// if err := tx.Model(&models.PatientCardInfo{}).Where("id = ?", CardDB.ID).Updates(&CardDB).Error; err != nil {
+	// 	tx.Rollback()
+	// 	return fmt.Errorf("failed to update patient card: %w", err)
+	// }
 
 	return tx.Commit().Error
 }
@@ -98,25 +98,26 @@ func (p *PatientRepo) GetListPatient(ctx context.Context) ([]*entity.Patient, er
 	return patients, nil
 }
 
-func (p *PatientRepo) GetPatientInfoByID(ctx context.Context, ID uint64) (*entity.PatientInformation, error) {
+func (p *PatientRepo) GetPatientInfoByID(ctx context.Context, ID string) (*entity.PatientInformation, error) {
 	var respPatient *models.PatientInfo
-	var respCard *models.PatientCardInfo
+	//var respCard *models.PatientCardInfo
 
 	tx := p.db.WithContext(ctx)
-	if err := tx.First(&respPatient, ID).Error; err != nil {
-		return nil, fmt.Errorf("failed to get patient: %w", err)
-	}
+	// if err := tx.First(&respPatient, ID).Error; err != nil {
+	// 	return nil, fmt.Errorf("failed to get patient: %w", err)
+	// }
 
-	if err := tx.Model(&models.PatientCardInfo{}).Where("patient_id = ?", ID).First(&respCard).Error; err != nil {
+	if err := tx.Model(&models.Patient{}).Where("id = ?", ID).First(&respPatient).Error; err != nil {
+		tx.Rollback()
 		return nil, fmt.Errorf("failed to get patient card: %w", err)
 	}
-	cardEntity, err := mapper.PatientCardToEntity(respCard)
-	if err != nil {
-		return nil, fmt.Errorf("failed to map patient card: %w", err)
-	}
+	// cardEntity, err := mapper.PatientCardToEntity(respCard)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to map patient card: %w", err)
+	// }
 	PatientInfo := &entity.PatientInformation{
 		Patient: mapper.PatientToEntity(respPatient),
-		Card:    cardEntity,
+		//Card:    cardEntity,
 	}
 
 	return PatientInfo, nil

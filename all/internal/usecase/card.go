@@ -57,18 +57,18 @@ func (c *CardUseCase) GetCards(ctx context.Context, limit, offset int) (*entity.
 	return cardList, nil
 }
 
-func (c *CardUseCase) GetCardByID(ctx context.Context, ID uint64) (*entity.PatientInformation, error) {
-	c.logger.Debug("Starting GetCardByID usecase", zap.Uint64("card_id", ID))
-	c.logger.Info("Fetching card by id", zap.Uint64("card_id", ID))
+func (c *CardUseCase) GetCardByID(ctx context.Context, ID string) (*entity.PatientInformation, error) {
+	c.logger.Debug("Starting GetCardByID usecase", zap.Any("card_id", ID))
+	c.logger.Info("Fetching card by id", zap.Any("card_id", ID))
 
 	cardInfo, err := c.CardRepo.CardByID(ctx, ID)
 	if err != nil {
-		c.logger.Error("Failed to fetch card by id", zap.Error(err), zap.Uint64("card_id", ID))
+		c.logger.Error("Failed to fetch card by id", zap.Error(err), zap.Any("card_id", ID))
 		return nil, fmt.Errorf("get card by id: %w", err)
 	}
 
-	c.logger.Info("Successfully fetched card information", zap.Uint64("card_id", ID))
-	c.logger.Debug("GetCardByID usecase complete", zap.Uint64("card_id", ID))
+	c.logger.Info("Successfully fetched card information", zap.Any("card_id", ID))
+	c.logger.Debug("GetCardByID usecase complete", zap.Any("card_id", ID))
 	return cardInfo, nil
 }
 func (c *CardUseCase) PutCard(ctx context.Context, Card *entity.PatientCard) error {
@@ -85,17 +85,17 @@ func (c *CardUseCase) PutCard(ctx context.Context, Card *entity.PatientCard) err
 	return nil
 }
 
-func (c *CardUseCase) DeleteCard(ctx context.Context, ID uint64) error {
-	c.logger.Debug("Starting DeleteCard usecase", zap.Uint64("card_id", ID))
-	c.logger.Info("Deleting card by id", zap.Uint64("card_id", ID))
+func (c *CardUseCase) DeleteCard(ctx context.Context, ID string) error {
+	c.logger.Debug("Starting DeleteCard usecase", zap.Any("card_id", ID))
+	c.logger.Info("Deleting card by id", zap.Any("card_id", ID))
 
-	err := c.CardRepo.DeleteCardInfo(ctx, int(ID))
+	err := c.CardRepo.DeleteCardInfo(ctx, string(ID))
 	if err != nil {
-		c.logger.Error("Failed to delete card", zap.Error(err), zap.Uint64("card_id", ID))
+		c.logger.Error("Failed to delete card", zap.Error(err), zap.Any("card_id", ID))
 		return fmt.Errorf("delete card: %w", err)
 	}
 
-	c.logger.Info("Successfully deleted card", zap.Uint64("card_id", ID))
-	c.logger.Debug("DeleteCard usecase complete", zap.Uint64("card_id", ID))
+	c.logger.Info("Successfully deleted card", zap.Any("card_id", ID))
+	c.logger.Debug("DeleteCard usecase complete", zap.Any("card_id", ID))
 	return nil
 }

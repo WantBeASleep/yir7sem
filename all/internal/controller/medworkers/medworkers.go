@@ -44,7 +44,7 @@ func (s *Server) GetMedWorkers(ctx context.Context, request *pb.GetMedworkerRequ
 	}
 	for _, worker := range medWorkerList.Workers {
 		workerResponse := &pb.MedWorker{
-			Id:              uint64(worker.ID),
+			Id:              worker.ID.String(),
 			FirstName:       worker.FirstName,
 			MiddleName:      worker.MiddleName,
 			LastName:        worker.LastName,
@@ -60,11 +60,11 @@ func (s *Server) GetMedWorkers(ctx context.Context, request *pb.GetMedworkerRequ
 }
 
 func (s *Server) GetMedWorkerByID(ctx context.Context, request *pb.GetMedMedWorkerByIDRequest) (*pb.GetMedWorkerByIDResponse, error) {
-	s.logger.Info("Получен запрос GetMedWorkerByID", zap.Uint64("ID", request.Id))
-	worker, err := s.MedWorkerUseCase.GetMedWorkerByID(ctx, int(request.Id))
+	s.logger.Info("Получен запрос GetMedWorkerByID", zap.Any("ID", request.Id))
+	worker, err := s.MedWorkerUseCase.GetMedWorkerByID(ctx, request.Id)
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
-			s.logger.Warn("Медицинский работник не найден", zap.Uint64("ID", request.Id))
+			s.logger.Warn("Медицинский работник не найден", zap.Any("ID", request.Id))
 			return nil, status.Error(codes.NotFound, "Медицинский работник не найден")
 		}
 		s.logger.Error("Не получилось достать информацию о медицинском работнике", zap.Error(err))
@@ -73,7 +73,7 @@ func (s *Server) GetMedWorkerByID(ctx context.Context, request *pb.GetMedMedWork
 
 	response := &pb.GetMedWorkerByIDResponse{
 		Worker: &pb.MedWorker{
-			Id:              uint64(worker.ID),
+			Id:              worker.ID.String(),
 			FirstName:       worker.FirstName,
 			MiddleName:      worker.MiddleName,
 			LastName:        worker.LastName,
@@ -88,7 +88,7 @@ func (s *Server) GetMedWorkerByID(ctx context.Context, request *pb.GetMedMedWork
 }
 
 func (s *Server) UpdateMedWorker(ctx context.Context, request *pb.UpdateMedWorkerRequest) (*pb.UpdateMedWorkerResponse, error) {
-	s.logger.Info("Получен запрос UpdateMedWorker", zap.Uint64("ID", request.Id))
+	s.logger.Info("Получен запрос UpdateMedWorker", zap.Any("ID", request.Id))
 
 	updateData := &entity.MedicalWorkerUpdateRequest{
 		FirstName:       request.FirstName,
@@ -100,10 +100,10 @@ func (s *Server) UpdateMedWorker(ctx context.Context, request *pb.UpdateMedWorke
 		ExpertDetails:   request.ExpertDetails,
 	}
 
-	updatedWorker, err := s.MedWorkerUseCase.UpdateMedWorker(ctx, int(request.Id), updateData)
+	updatedWorker, err := s.MedWorkerUseCase.UpdateMedWorker(ctx, request.Id, updateData)
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
-			s.logger.Warn("Медицинский работник не найден для обновления", zap.Uint64("ID", request.Id))
+			s.logger.Warn("Медицинский работник не найден для обновления", zap.Any("ID", request.Id))
 			return nil, status.Error(codes.NotFound, "медицинский работник не найден")
 		}
 		s.logger.Error("Не получилось обновить информацию о медицинском работнике", zap.Error(err))
@@ -112,7 +112,7 @@ func (s *Server) UpdateMedWorker(ctx context.Context, request *pb.UpdateMedWorke
 
 	response := &pb.UpdateMedWorkerResponse{
 		Worker: &pb.MedWorker{
-			Id:              uint64(updatedWorker.ID),
+			Id:              updatedWorker.ID.String(),
 			FirstName:       updatedWorker.FirstName,
 			MiddleName:      updatedWorker.MiddleName,
 			LastName:        updatedWorker.LastName,
@@ -147,7 +147,7 @@ func (s *Server) AddMedWorker(ctx context.Context, request *pb.AddMedWorkerReque
 
 	response := &pb.AddMedWorkerResponse{
 		Worker: &pb.MedWorker{
-			Id:              uint64(medworker.ID),
+			Id:              medworker.ID.String(),
 			FirstName:       medworker.FirstName,
 			MiddleName:      medworker.MiddleName,
 			LastName:        medworker.LastName,
@@ -175,19 +175,19 @@ func (s *Server) GetPatientsByMedWorker(ctx context.Context, request *pb.GetPati
 	}
 
 	response := &pb.GetPatientsByMedWorkerResponse{
-		MedWorkerId: uint64(medWorkerID),
+		MedWorkerId: medWorkerID.String(),
 		Cards:       []*pb.Card{},
 	}
 
 	for _, card := range cards {
 		cardResponse := &pb.Card{
-			Id:              uint64(card.ID),
+			Id:              card.ID.String(),
 			AppointmentTime: card.AppointmentTime,
 			HasNodules:      card.HasNodules,
 			Diagnosis:       card.Diagnosis,
-			MedWorkerId:     card.MedWorkerID,
+			MedWorkerId:     card.MedWorkerID.String(),
 			Patient: &pb.Patient{
-				Id: card.PatientID,
+				Id: card.PatientID.String(),
 				// FirstName:     card.Patient.FirstName,  //эт подумать - оставлять полностью или только айдишник
 				// LastName:      card.Patient.LastName,
 				// FatherName:    card.Patient.FatherName,

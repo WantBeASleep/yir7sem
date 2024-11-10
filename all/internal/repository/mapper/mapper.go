@@ -18,7 +18,7 @@ func PatientCardToEntity(pc *models.PatientCardInfo) (*entity.PatientCard, error
 
 func PatientCardToModels(pc *entity.PatientCard) *models.PatientCardInfo {
 	return &models.PatientCardInfo{
-		ID:              uint64(pc.ID),
+		ID:              pc.ID,
 		AppointmentTime: pc.AppointmentTime,
 		HasNodules:      pc.HasNodules,
 		Diagnosis:       pc.Diagnosis,
@@ -78,7 +78,7 @@ func PatientToModels(p *entity.Patient) *models.PatientInfo {
 //	}
 func ToMedWorkerModel(e *entity.MedicalWorker) (*models.MedWorkerInfo, error) {
 	return &models.MedWorkerInfo{
-		ID:              uint64(e.ID),
+		ID:              e.ID,
 		FirstName:       e.FirstName,
 		MiddleName:      e.MiddleName,
 		LastName:        e.LastName,
@@ -91,7 +91,7 @@ func ToMedWorkerModel(e *entity.MedicalWorker) (*models.MedWorkerInfo, error) {
 
 func ToMedWorkerEntity(m *models.MedWorkerInfo) (*entity.MedicalWorker, error) {
 	return &entity.MedicalWorker{
-		ID:              uint64(m.ID),
+		ID:              m.ID,
 		FirstName:       m.FirstName,
 		MiddleName:      m.MiddleName,
 		LastName:        m.LastName,

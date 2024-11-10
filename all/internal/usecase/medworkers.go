@@ -41,14 +41,14 @@ func (m *MedWorkerUseCase) GetMedWorkers(ctx context.Context, limit, offset int)
 	return medicalWorkerList, nil
 }
 
-func (m *MedWorkerUseCase) GetMedWorkerByID(ctx context.Context, ID int) (*entity.MedicalWorker, error) {
-	m.logger.Info("Fetching medical worker by ID", zap.Int("ID", ID))
+func (m *MedWorkerUseCase) GetMedWorkerByID(ctx context.Context, ID string) (*entity.MedicalWorker, error) {
+	m.logger.Info("Fetching medical worker by ID", zap.Any("ID", ID))
 
 	// Используем репозиторий для получения медработника по ID
 	worker, err := m.MedWorkerRepo.GetMedicalWorkerByID(ctx, ID)
 	if err != nil {
 		if err == entity.ErrNotFound {
-			m.logger.Warn("Медицинский работник не найден", zap.Int("ID", ID))
+			m.logger.Warn("Медицинский работник не найден", zap.Any("ID", ID))
 			return nil, fmt.Errorf("Медицинский работник с %d не был найден: %w", ID, err)
 		}
 		m.logger.Error("Failed to fetch medical worker by ID", zap.Error(err))
@@ -58,13 +58,13 @@ func (m *MedWorkerUseCase) GetMedWorkerByID(ctx context.Context, ID int) (*entit
 	return worker, nil
 }
 
-func (m *MedWorkerUseCase) UpdateMedWorker(ctx context.Context, ID int, updateData *entity.MedicalWorkerUpdateRequest) (*entity.MedicalWorker, error) {
-	m.logger.Info("Updating medical worker", zap.Int("ID", ID))
+func (m *MedWorkerUseCase) UpdateMedWorker(ctx context.Context, ID string, updateData *entity.MedicalWorkerUpdateRequest) (*entity.MedicalWorker, error) {
+	m.logger.Info("Updating medical worker", zap.Any("ID", ID))
 	// Сначала находим медработника по ID
 	worker, err := m.MedWorkerRepo.GetMedicalWorkerByID(ctx, ID)
 	if err != nil {
 		if err == entity.ErrNotFound {
-			m.logger.Warn("Работник не был найден для изменения данных", zap.Int("ID", ID))
+			m.logger.Warn("Работник не был найден для изменения данных", zap.Any("ID", ID))
 			return nil, fmt.Errorf("Медицинский работник с ID %d не был найден: %w", ID, err)
 		}
 		m.logger.Error("Failed to fetch medical worker for update", zap.Error(err))
@@ -109,19 +109,19 @@ func (m *MedWorkerUseCase) AddMedWorker(ctx context.Context, createData *entity.
 	}
 
 	// Присваиваем ID новому медработнику
-	medworker.ID = uint64(id)
-	m.logger.Info("Successfully added new medical worker", zap.Int("ID", id))
+	medworker.ID = string(id)
+	m.logger.Info("Successfully added new medical worker", zap.Any("ID", id))
 
 	// Возвращаем объект MedicalWorker и ошибку
 	return medworker, nil
 }
 
-func (m *MedWorkerUseCase) GetPatientsByMedWorker(ctx context.Context, medWorkerID uint64) ([]*entity.PatientCard, uint64, error) {
-	m.logger.Info("Fetching patients by med worker ID", zap.Uint64("medWorkerID", medWorkerID))
+func (m *MedWorkerUseCase) GetPatientsByMedWorker(ctx context.Context, medWorkerID string) ([]*entity.PatientCard, string, error) {
+	m.logger.Info("Fetching patients by med worker ID", zap.Any("medWorkerID", medWorkerID))
 	cards, err := m.MedWorkerRepo.GetPatientsByMedWorker(ctx, medWorkerID)
 	if err != nil {
 		m.logger.Error("Failed to fetch patients by med worker", zap.Error(err))
-		return nil, 0, fmt.Errorf("failed to fetch patients by med worker: %w", err)
+		return nil, "", fmt.Errorf("failed to fetch patients by med worker: %w", err)
 	}
 
 	return cards, medWorkerID, nil

@@ -7,6 +7,7 @@ import (
 	"service/all/internal/entity"
 	"service/all/internal/usecase"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -24,9 +25,10 @@ func NewServer(patientUseCase usecase.Patient) *Server {
 }
 
 func (s *Server) AddPatient(ctx context.Context, request *pb.CreatePatientRequest) (*emptypb.Empty, error) {
+	uuid, _ := uuid.Parse(request.Patient.Id)
 	PatientInfo := &entity.PatientInformation{
 		Patient: &entity.Patient{
-			ID:            uint64(request.Patient.Id),
+			ID:            uuid,
 			FirstName:     request.Patient.FirstName,
 			LastName:      request.Patient.LastName,
 			FatherName:    request.Patient.FatherName,
@@ -34,14 +36,14 @@ func (s *Server) AddPatient(ctx context.Context, request *pb.CreatePatientReques
 			Email:         request.Patient.Email,
 			IsActive:      request.Patient.IsActive,
 		},
-		Card: &entity.PatientCard{
-			ID:              uint64(request.PatientCard.Id),
-			AppointmentTime: request.PatientCard.AppointmentTime,
-			HasNodules:      request.PatientCard.HasNodules,
-			Diagnosis:       request.PatientCard.Diagnosis,
-			MedWorkerID:     request.PatientCard.MedWorkerId,
-			PatientID:       request.PatientCard.Patient.Id,
-		},
+		// Card: &entity.PatientCard{
+		// 	ID:              uint64(request.PatientCard.Id),
+		// 	AppointmentTime: request.PatientCard.AppointmentTime,
+		// 	HasNodules:      request.PatientCard.HasNodules,
+		// 	Diagnosis:       request.PatientCard.Diagnosis,
+		// 	MedWorkerID:     request.PatientCard.MedWorkerId,
+		// 	PatientID:       request.PatientCard.Patient.Id,
+		// },
 	}
 
 	err := s.patientUseCase.AddPatient(ctx, PatientInfo)
@@ -55,9 +57,10 @@ func (s *Server) AddPatient(ctx context.Context, request *pb.CreatePatientReques
 }
 
 func (s *Server) UpdatePatient(ctx context.Context, request *pb.PatientUpdateRequest) (*emptypb.Empty, error) {
+	uuid, _ := uuid.Parse(request.Patient.Id)
 	PatientInfo := &entity.PatientInformation{
 		Patient: &entity.Patient{
-			ID:            uint64(request.Patient.Id),
+			ID:            uuid,
 			FirstName:     request.Patient.FirstName,
 			LastName:      request.Patient.LastName,
 			FatherName:    request.Patient.FatherName,
@@ -65,14 +68,14 @@ func (s *Server) UpdatePatient(ctx context.Context, request *pb.PatientUpdateReq
 			Email:         request.Patient.Email,
 			IsActive:      request.Patient.IsActive,
 		},
-		Card: &entity.PatientCard{
-			ID:              uint64(request.PatientCard.Id),
-			AppointmentTime: request.PatientCard.AppointmentTime,
-			HasNodules:      request.PatientCard.HasNodules,
-			Diagnosis:       request.PatientCard.Diagnosis,
-			MedWorkerID:     request.PatientCard.MedWorkerId,
-			PatientID:       request.PatientCard.Patient.Id,
-		},
+		// Card: &entity.PatientCard{
+		// 	ID:              uint64(request.PatientCard.Id),
+		// 	AppointmentTime: request.PatientCard.AppointmentTime,
+		// 	HasNodules:      request.PatientCard.HasNodules,
+		// 	Diagnosis:       request.PatientCard.Diagnosis,
+		// 	MedWorkerID:     request.PatientCard.MedWorkerId,
+		// 	PatientID:       request.PatientCard.Patient.Id,
+		// },
 	}
 
 	err := s.patientUseCase.UpdatePatient(ctx, PatientInfo)
@@ -97,7 +100,7 @@ func (s *Server) GetPatientList(ctx context.Context, empty *emptypb.Empty) (*pb.
 	patients := make([]*pb.Patient, len(PatientList))
 	for i := range PatientList {
 		patients[i] = &pb.Patient{
-			Id:            PatientList[i].ID,
+			Id:            PatientList[i].ID.String(),
 			FirstName:     PatientList[i].FirstName,
 			LastName:      PatientList[i].LastName,
 			FatherName:    PatientList[i].FatherName,
@@ -113,7 +116,7 @@ func (s *Server) GetPatientList(ctx context.Context, empty *emptypb.Empty) (*pb.
 }
 
 func (s *Server) GetPatientInfoByID(ctx context.Context, request *pb.PatientInfoRequest) (*pb.PatientInfoResponse, error) {
-	PatientInfo, err := s.patientUseCase.GetPatientInfoByID(ctx, uint64(request.Id))
+	PatientInfo, err := s.patientUseCase.GetPatientInfoByID(ctx, request.Id)
 	if err != nil {
 		switch {
 		case errors.Is(err, entity.ErrNotFound):
@@ -124,7 +127,7 @@ func (s *Server) GetPatientInfoByID(ctx context.Context, request *pb.PatientInfo
 	}
 	return &pb.PatientInfoResponse{
 		Patient: &pb.Patient{
-			Id:            PatientInfo.Patient.ID,
+			Id:            PatientInfo.Patient.ID.String(),
 			FirstName:     PatientInfo.Patient.FirstName,
 			LastName:      PatientInfo.Patient.LastName,
 			FatherName:    PatientInfo.Patient.FatherName,
@@ -132,21 +135,21 @@ func (s *Server) GetPatientInfoByID(ctx context.Context, request *pb.PatientInfo
 			Email:         PatientInfo.Patient.Email,
 			IsActive:      PatientInfo.Patient.IsActive,
 		},
-		PatientCard: &pb.Card{
-			Id:              uint64(PatientInfo.Card.ID),
-			AppointmentTime: PatientInfo.Card.AppointmentTime,
-			HasNodules:      PatientInfo.Card.HasNodules,
-			Diagnosis:       PatientInfo.Card.Diagnosis,
-			MedWorkerId:     PatientInfo.Card.MedWorkerID, // Используем ID медработника
-			Patient: &pb.Patient{
-				Id:            PatientInfo.Card.PatientID,
-				FirstName:     PatientInfo.Patient.FirstName,
-				LastName:      PatientInfo.Patient.LastName,
-				FatherName:    PatientInfo.Patient.FatherName,
-				MedicalPolicy: PatientInfo.Patient.MedicalPolicy,
-				Email:         PatientInfo.Patient.Email,
-				IsActive:      PatientInfo.Patient.IsActive,
-			},
-		},
+		// PatientCard: &pb.Card{
+		// 	Id:              PatientInfo.Card.ID),
+		// 	AppointmentTime: PatientInfo.Card.AppointmentTime,
+		// 	HasNodules:      PatientInfo.Card.HasNodules,
+		// 	Diagnosis:       PatientInfo.Card.Diagnosis,
+		// 	MedWorkerId:     PatientInfo.Card.MedWorkerID, // Используем ID медработника
+		// 	Patient: &pb.Patient{
+		// 		Id:            PatientInfo.Card.PatientID,
+		// 		FirstName:     PatientInfo.Patient.FirstName,
+		// 		LastName:      PatientInfo.Patient.LastName,
+		// 		FatherName:    PatientInfo.Patient.FatherName,
+		// 		MedicalPolicy: PatientInfo.Patient.MedicalPolicy,
+		// 		Email:         PatientInfo.Patient.Email,
+		// 		IsActive:      PatientInfo.Patient.IsActive,
+		// 	},
+		// },
 	}, nil
 }
