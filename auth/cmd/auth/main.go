@@ -3,16 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	"service/auth/internal/apps"
-	"service/auth/internal/config"
-	authApi "service/auth/internal/controller/auth"
-	"service/auth/internal/core/jwt"
-	dbRepos "service/auth/internal/repositories/db/repositories"
-	serviceRepos "service/auth/internal/repositories/services"
-	authUsecases "service/auth/internal/usecases/auth"
-	"service/pkg_log/log"
+	"net"
+	authApi "yir/auth/internal/api/auth"
+	"yir/auth/internal/config"
+	pb "yir/auth/api/auth"
+	dbRepos "yir/auth/internal/db/repositories"
+	"yir/auth/internal/entity"
+	serviceRepos "yir/auth/internal/medservice"
+	authUsecases "yir/auth/internal/usecases/auth"
+	"yir/pkg_log/log"
 
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -42,7 +44,7 @@ func main() {
 	}
 	logger.Info("CFG && logger load")
 
-	jwtService, err := jwt.NewService(&cfg.Token)
+	jwtService, err := entity.NewService(&cfg.Token)
 	if err != nil {
 		panic(fmt.Errorf("jwt service create: %w", err))
 	}
@@ -62,40 +64,33 @@ func main() {
 
 	usecases := authUsecases.NewAuthUseCase(authRepo, medRepo, jwtService, logger)
 
-	authGRPCController := authApi.NewServer(usecases)
-
-	app := apps.New(authGRPCController, logger)
-
-	if err := app.Run(&cfg.App); err != nil {
-		logger.Error("Application error", zap.Error(err))
+	authGRPCController, err := authApi.NewServer(usecases)
+	if err != nil {
+		panic(fmt.Errorf("work grepc controller: %w", err))
 	}
+
+	s := grpc.NewServer()
+	pb.RegisterAuthServer(s, authGRPCController)
+
+	GRPCLis, err := net.Listen("tcp", cfg.App.Host+":"+cfg.App.GRPCPort)
+	if err != nil {
+		panic(fmt.Errorf("lister grpc host:port: %w", err))
+	}
+
+	if err := s.Serve(GRPCLis); err != nil {
+		logger.Error("GRPC server serve error", zap.Error(err))
+	}
+
 }
 
 /*
-s := grpc.NewServer()
-	pb.RegisterAuthServer(s, a.controller)
+
+	
 
 	mux := runtime.NewServeMux()
 	if err := pb.RegisterAuthHandlerFromEndpoint(context.TODO(), mux, cfg.Host+":"+cfg.GRPCPort, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
 		return fmt.Errorf("register http handlers: %w", err)
 	}
-
-	GRPCLis, err := net.Listen("tcp", cfg.Host+":"+cfg.GRPCPort)
-	if err != nil {
-		return fmt.Errorf("lister grpc host:port: %w", err)
-	}
-
-	var wg sync.WaitGroup
-	errFeedBack := make(chan error, 2)
-
-	wg.Add(1)
-	go func() {
-		if err := s.Serve(GRPCLis); err != nil {
-			a.logger.Error("GRPC server serve error", zap.Error(err))
-			errFeedBack <- err
-		}
-		wg.Done()
-	}()
 
 	go func() {
 		if err := http.ListenAndServe(":"+cfg.HTTPPort, mux); err != nil {
@@ -104,17 +99,4 @@ s := grpc.NewServer()
 		}
 		wg.Done()
 	}()
-
-	a.logger.Info("GRPC and HTTP servers start serve")
-	wg.Wait()
-	s.Stop()
-	a.logger.Info("GRPC and HTTP servers end serve")
-
-	select {
-	case err := <-errFeedBack:
-		return err
-
-	default:
-		return nil
-	}
 */

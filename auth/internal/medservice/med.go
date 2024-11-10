@@ -6,6 +6,7 @@ import (
 	pb "yir/all/api"
 	"yir/auth/internal/entity"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 )
 
@@ -22,7 +23,7 @@ func NewService(medServiceAddress string) (*Service, error) {
 	return &Service{medClient: medClient}, nil
 }
 
-func (s *Service) AddMed(ctx context.Context, createData *entity.RequestRegister) (int, error) {
+func (s *Service) AddMed(ctx context.Context, createData *entity.RequestRegister) (uuid.UUID, error) {
 	req := &pb.AddMedWorkerRequest{
 		FirstName:       createData.FirstName,
 		LastName:        createData.LastName,
@@ -31,8 +32,8 @@ func (s *Service) AddMed(ctx context.Context, createData *entity.RequestRegister
 	}
 	resp, err := s.medClient.AddMedWorker(ctx, req)
 	if err != nil {
-		return 0, fmt.Errorf("call med service: %w", err)
+		return uuid.Nil, fmt.Errorf("call med service: %w", err)
 	}
 
-	return int(resp.Worker.Id), nil
+	return uuid.MustParse(resp.Worker.Id), nil
 }
