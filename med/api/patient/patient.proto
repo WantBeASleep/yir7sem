@@ -54,7 +54,7 @@ service MedPatient{
 }
 
 message Patient{
-  uint64 id = 1 [json_name = "id"];
+  string uuid = 1 [json_name = "id"];
   string first_name = 2 [json_name = "first_name"];
   string last_name = 3 [json_name = "last_name"];
   string father_name = 4 [json_name = "father_name"];
@@ -63,18 +63,18 @@ message Patient{
   bool is_active = 7 [json_name = "is_active"];
 }
 
-message PatientCard{
-  uint64 id = 1;
-  string appointment_time = 2 [json_name = "appointment_time"];
-  bool has_nodules = 3 [json_name = "has_nodules"]; 
-  string diagnosis = 4 [json_name = "diagnosis"];
-  uint64 med_worker_id = 5 [json_name = "med_worker_id"];
-  uint64 patient_id = 6 [json_name = "patient_id"];
-}
+// message PatientCard{
+//   uint64 id = 1;
+//   string appointment_time = 2 [json_name = "appointment_time"];
+//   bool has_nodules = 3 [json_name = "has_nodules"]; 
+//   string diagnosis = 4 [json_name = "diagnosis"];
+//   uint64 med_worker_id = 5 [json_name = "med_worker_id"];
+//   uint64 patient_id = 6 [json_name = "patient_id"];
+// }
 
 message CreatePatientRequest{
   Patient patient = 1;
-  PatientCard patient_card = 2 [json_name = "patient_card"];
+  // PatientCard patient_card = 2 [json_name = "patient_card"];
 }
 
 message PatientListResponse{
@@ -82,17 +82,17 @@ message PatientListResponse{
 }
 
 message PatientInfoRequest{
-  uint64 id = 1;
+  string uuid = 1;
 }
 
 message PatientInfoResponse{
   Patient patient = 1;
-  PatientCard patient_card = 2 [json_name = "patient_card"];
+  // PatientCard patient_card = 2 [json_name = "patient_card"];
 }
 
 message PatientUpdateRequest{
   Patient patient = 1;
-  PatientCard patient_card = 2 [json_name = "patient_card"];
+  // PatientCard patient_card = 2 [json_name = "patient_card"];
 }
 
 /* TODO: Сделать работу со снимками после того как разберемся с ними в узи

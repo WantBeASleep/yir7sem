@@ -1,7 +1,8 @@
 package models
 
 type Patient struct {
-	ID            uint64 `gorm:"primaryKey"`
+	// ID            uint64 `gorm:"primaryKey"`
+	UUID          string `gorm:"unique"`
 	FirstName     string
 	LastName      string
 	FatherName    string

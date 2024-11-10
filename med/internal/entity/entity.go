@@ -1,7 +1,9 @@
 package entity
 
+import "github.com/google/uuid"
+
 type Patient struct {
-	ID            uint64
+	UUID          uuid.UUID
 	FirstName     string
 	LastName      string
 	FatherName    string
@@ -10,16 +12,16 @@ type Patient struct {
 	IsActive      bool
 }
 
-type PatientCard struct {
-	ID              uint64
-	AppointmentTime string
-	HasNodules      bool
-	Diagnosis       string
-	MedWorkerID     uint64
-	PatientID       uint64
-}
+// type PatientCard struct {
+// 	ID              uint64
+// 	AppointmentTime string
+// 	HasNodules      bool
+// 	Diagnosis       string
+// 	MedWorkerID     uint64
+// 	PatientID       uint64
+// }
 
 type PatientInformation struct {
 	Patient *Patient
-	Card    *PatientCard
+	// Card    *PatientCard
 }

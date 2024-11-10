@@ -72,11 +72,10 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "uuid",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           }
         ],
         "tags": [
@@ -149,10 +148,8 @@
       "type": "object",
       "properties": {
         "patient": {
-          "$ref": "#/definitions/medPatient"
-        },
-        "patient_card": {
-          "$ref": "#/definitions/medPatientCard"
+          "$ref": "#/definitions/medPatient",
+          "title": "PatientCard patient_card = 2 [json_name = \"patient_card\"];"
         }
       }
     },
@@ -160,8 +157,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string",
-          "format": "uint64"
+          "type": "string"
         },
         "first_name": {
           "type": "string"
@@ -183,40 +179,12 @@
         }
       }
     },
-    "medPatientCard": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "appointment_time": {
-          "type": "string"
-        },
-        "has_nodules": {
-          "type": "boolean"
-        },
-        "diagnosis": {
-          "type": "string"
-        },
-        "med_worker_id": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "patient_id": {
-          "type": "string",
-          "format": "uint64"
-        }
-      }
-    },
     "medPatientInfoResponse": {
       "type": "object",
       "properties": {
         "patient": {
-          "$ref": "#/definitions/medPatient"
-        },
-        "patient_card": {
-          "$ref": "#/definitions/medPatientCard"
+          "$ref": "#/definitions/medPatient",
+          "title": "PatientCard patient_card = 2 [json_name = \"patient_card\"];"
         }
       }
     },
@@ -236,10 +204,8 @@
       "type": "object",
       "properties": {
         "patient": {
-          "$ref": "#/definitions/medPatient"
-        },
-        "patient_card": {
-          "$ref": "#/definitions/medPatientCard"
+          "$ref": "#/definitions/medPatient",
+          "title": "PatientCard patient_card = 2 [json_name = \"patient_card\"];"
         }
       }
     },

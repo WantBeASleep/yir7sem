@@ -7,6 +7,7 @@ import (
 	pb "yir/med/internal/pb/patient"
 	"yir/med/internal/usecase"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -24,9 +25,10 @@ func NewServer(patientUseCase usecase.Patient) *Server {
 }
 
 func (s *Server) AddPatient(ctx context.Context, request *pb.CreatePatientRequest) (*emptypb.Empty, error) {
+	uuid, _ := uuid.Parse(request.Patient.Uuid)
 	PatientInfo := &entity.PatientInformation{
 		Patient: &entity.Patient{
-			ID:            uint64(request.Patient.Id),
+			UUID:          uuid,
 			FirstName:     request.Patient.FirstName,
 			LastName:      request.Patient.LastName,
 			FatherName:    request.Patient.FatherName,
@@ -34,14 +36,14 @@ func (s *Server) AddPatient(ctx context.Context, request *pb.CreatePatientReques
 			Email:         request.Patient.Email,
 			IsActive:      request.Patient.IsActive,
 		},
-		Card: &entity.PatientCard{
-			ID:              uint64(request.PatientCard.Id),
-			AppointmentTime: request.PatientCard.AppointmentTime,
-			HasNodules:      request.PatientCard.HasNodules,
-			Diagnosis:       request.PatientCard.Diagnosis,
-			MedWorkerID:     request.PatientCard.MedWorkerId,
-			PatientID:       request.PatientCard.PatientId,
-		},
+		// Card: &entity.PatientCard{
+		// 	ID:              uint64(request.PatientCard.Id),
+		// 	AppointmentTime: request.PatientCard.AppointmentTime,
+		// 	HasNodules:      request.PatientCard.HasNodules,
+		// 	Diagnosis:       request.PatientCard.Diagnosis,
+		// 	MedWorkerID:     request.PatientCard.MedWorkerId,
+		// 	PatientID:       request.PatientCard.PatientId,
+		// },
 	}
 
 	err := s.patientUseCase.AddPatient(ctx, PatientInfo)
@@ -55,9 +57,10 @@ func (s *Server) AddPatient(ctx context.Context, request *pb.CreatePatientReques
 }
 
 func (s *Server) UpdatePatient(ctx context.Context, request *pb.PatientUpdateRequest) (*emptypb.Empty, error) {
+	uuid, _ := uuid.Parse(request.Patient.Uuid)
 	PatientInfo := &entity.PatientInformation{
 		Patient: &entity.Patient{
-			ID:            uint64(request.Patient.Id),
+			UUID:          uuid,
 			FirstName:     request.Patient.FirstName,
 			LastName:      request.Patient.LastName,
 			FatherName:    request.Patient.FatherName,
@@ -65,14 +68,14 @@ func (s *Server) UpdatePatient(ctx context.Context, request *pb.PatientUpdateReq
 			Email:         request.Patient.Email,
 			IsActive:      request.Patient.IsActive,
 		},
-		Card: &entity.PatientCard{
-			ID:              uint64(request.PatientCard.Id),
-			AppointmentTime: request.PatientCard.AppointmentTime,
-			HasNodules:      request.PatientCard.HasNodules,
-			Diagnosis:       request.PatientCard.Diagnosis,
-			MedWorkerID:     request.PatientCard.MedWorkerId,
-			PatientID:       request.PatientCard.PatientId,
-		},
+		// Card: &entity.PatientCard{
+		// 	ID:              uint64(request.PatientCard.Id),
+		// 	AppointmentTime: request.PatientCard.AppointmentTime,
+		// 	HasNodules:      request.PatientCard.HasNodules,
+		// 	Diagnosis:       request.PatientCard.Diagnosis,
+		// 	MedWorkerID:     request.PatientCard.MedWorkerId,
+		// 	PatientID:       request.PatientCard.PatientId,
+		// },
 	}
 
 	err := s.patientUseCase.UpdatePatient(ctx, PatientInfo)
@@ -97,7 +100,7 @@ func (s *Server) GetPatientList(ctx context.Context, empty *emptypb.Empty) (*pb.
 	patients := make([]*pb.Patient, len(PatientList))
 	for i := range PatientList {
 		patients[i] = &pb.Patient{
-			Id:            PatientList[i].ID,
+			Uuid:          PatientList[i].UUID.String(),
 			FirstName:     PatientList[i].FirstName,
 			LastName:      PatientList[i].LastName,
 			FatherName:    PatientList[i].FatherName,
@@ -112,8 +115,9 @@ func (s *Server) GetPatientList(ctx context.Context, empty *emptypb.Empty) (*pb.
 	return resp, nil
 }
 
+// FIXME: Заахаааар
 func (s *Server) GetPatientInfoByID(ctx context.Context, request *pb.PatientInfoRequest) (*pb.PatientInfoResponse, error) {
-	PatientInfo, err := s.patientUseCase.GetPatientInfoByID(ctx, uint64(request.Id))
+	PatientInfo, err := s.patientUseCase.GetPatientInfoByID(ctx, request.Uuid)
 	if err != nil {
 		switch {
 		case errors.Is(err, entity.ErrNotFound):
@@ -124,7 +128,7 @@ func (s *Server) GetPatientInfoByID(ctx context.Context, request *pb.PatientInfo
 	}
 	return &pb.PatientInfoResponse{
 		Patient: &pb.Patient{
-			Id:            PatientInfo.Patient.ID,
+			Uuid:          PatientInfo.Patient.UUID.String(),
 			FirstName:     PatientInfo.Patient.FirstName,
 			LastName:      PatientInfo.Patient.LastName,
 			FatherName:    PatientInfo.Patient.FatherName,
@@ -132,13 +136,13 @@ func (s *Server) GetPatientInfoByID(ctx context.Context, request *pb.PatientInfo
 			Email:         PatientInfo.Patient.Email,
 			IsActive:      PatientInfo.Patient.IsActive,
 		},
-		PatientCard: &pb.PatientCard{
-			Id:              PatientInfo.Card.ID,
-			AppointmentTime: PatientInfo.Card.AppointmentTime,
-			HasNodules:      PatientInfo.Card.HasNodules,
-			Diagnosis:       PatientInfo.Card.Diagnosis,
-			MedWorkerId:     PatientInfo.Card.MedWorkerID,
-			PatientId:       PatientInfo.Card.PatientID,
-		},
+		// PatientCard: &pb.PatientCard{
+		// 	Id:              PatientInfo.Card.ID,
+		// 	AppointmentTime: PatientInfo.Card.AppointmentTime,
+		// 	HasNodules:      PatientInfo.Card.HasNodules,
+		// 	Diagnosis:       PatientInfo.Card.Diagnosis,
+		// 	MedWorkerId:     PatientInfo.Card.MedWorkerID,
+		// 	PatientId:       PatientInfo.Card.PatientID,
+		// },
 	}, nil
 }
