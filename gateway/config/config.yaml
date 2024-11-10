@@ -1,0 +1,33 @@
+gateway:
+  env: DEV
+  host: localhost
+  http: 8080
+  timeout: 5m
+  idle_timeout: 5m 
+
+auth:
+  env: DEV
+  host: localhost
+  grpc: 50055
+  http: 8081
+
+med:
+  env: DEV
+  host: localhost
+  grpc: 50056
+  http: 8082
+
+uzi:
+  env: DEV
+  host: localhost
+  grpc: 50057
+  http: 8083
+  
+s3:
+  env: DEV
+  host: localhost
+  grpc: 50058
+
+kafka:
+  host: localhost
+  port: 9092

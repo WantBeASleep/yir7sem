@@ -1,0 +1,107 @@
+version: '3'
+
+vars:
+  proto_libs_path: '{{.proto_libs | default "../vendor.protogen/"}}'
+  swagger_out: '{{.swagger_out | default "../docs/"}}'
+
+  # Пути к proto файлам и директориям для их вывода
+  proto_auth: 'api/auth/auth.proto'
+  proto_auth_out: 'internal/pb/authpb'
+  
+  proto_med: 'api/med/med.proto'
+  proto_med_out: 'internal/pb/medpb'
+  
+  proto_s3: 'api/s3/s3upload.proto'
+  proto_s3_out: 'internal/pb/s3pb'
+  
+  proto_uzi: 'api/uzi/uzi.proto'
+  proto_uzi_out: 'internal/pb/uzipb'
+
+env:
+  TOKEN_PUBLIC_KEY: 1 
+    #sh: cat 'public.key'
+
+tasks:
+  generate:
+    vars:
+      LIBS_DIRS:
+        sh: find {{.proto_libs_path}} -mindepth 1 -maxdepth 1 -type d | xargs echo
+    cmds:
+      # Генерация для auth.proto
+      - >
+        protoc
+        -I {{dir .proto_auth}}
+        {{range $proto_lib := splitList " " .LIBS_DIRS}} -I {{$proto_lib}} {{end}}
+        --go_out {{.proto_auth_out}} --go_opt paths=source_relative
+        --go-grpc_out {{.proto_auth_out}} --go-grpc_opt paths=source_relative
+        --grpc-gateway_out {{.proto_auth_out}} --grpc-gateway_opt logtostderr=true,paths=source_relative
+        --openapiv2_out {{.proto_auth_out}} --openapiv2_opt logtostderr=true,allow_merge=true,merge_file_name={{trimSuffix (ext (base .proto_auth)) (base .proto_auth)}}
+        {{.proto_auth}}
+      
+      # Генерация для patient.proto
+      - >
+        protoc
+        -I {{dir .proto_med}}
+        {{range $proto_lib := splitList " " .LIBS_DIRS}} -I {{$proto_lib}} {{end}}
+        --go_out {{.proto_med_out}} --go_opt paths=source_relative
+        --go-grpc_out {{.proto_med_out}} --go-grpc_opt paths=source_relative
+        --grpc-gateway_out {{.proto_med_out}} --grpc-gateway_opt logtostderr=true,paths=source_relative
+        --openapiv2_out {{.proto_med_out}} --openapiv2_opt logtostderr=true,allow_merge=true,merge_file_name={{trimSuffix (ext (base .proto_med)) (base .proto_med)}}
+        {{.proto_med}}
+
+      # Генерация для s3upload.proto
+      - >
+        protoc
+        -I {{dir .proto_s3}}
+        {{range $proto_lib := splitList " " .LIBS_DIRS}} -I {{$proto_lib}} {{end}}
+        --go_out {{.proto_s3_out}} --go_opt paths=source_relative
+        --go-grpc_out {{.proto_s3_out}} --go-grpc_opt paths=source_relative
+        --grpc-gateway_out {{.proto_s3_out}} --grpc-gateway_opt logtostderr=true,paths=source_relative
+        --openapiv2_out {{.proto_s3_out}} --openapiv2_opt logtostderr=true,allow_merge=true,merge_file_name={{trimSuffix (ext (base .proto_s3)) (base .proto_s3)}}
+        {{.proto_s3}}
+
+      # Генерация для uzi.proto
+      - >
+        protoc
+        -I {{dir .proto_uzi}}
+        {{range $proto_lib := splitList " " .LIBS_DIRS}} -I {{$proto_lib}} {{end}}
+        --go_out {{.proto_uzi_out}} --go_opt paths=source_relative
+        --go-grpc_out {{.proto_uzi_out}} --go-grpc_opt paths=source_relative
+        --grpc-gateway_out {{.proto_uzi_out}} --grpc-gateway_opt logtostderr=true,paths=source_relative
+        --openapiv2_out {{.proto_uzi_out}} --openapiv2_opt logtostderr=true,allow_merge=true,merge_file_name={{trimSuffix (ext (base .proto_uzi)) (base .proto_uzi)}}
+        {{.proto_uzi}}
+
+    sources:
+      - '{{.proto_auth}}'
+      - '{{.proto_med}}'
+      - '{{.proto_s3}}'
+      - '{{.proto_uzi}}'
+
+    generates:
+      - '{{.proto_auth_out}}/*.pb.go'
+      - '{{.proto_med_out}}/*.pb.go'
+      - '{{.proto_s3_out}}/*.pb.go'
+      - '{{.proto_uzi_out}}/*.pb.go'
+
+  clean:
+    desc: "Удалить сгенерированные файлы"
+    cmds:
+      - rm -rf {{.proto_auth_out}}/*
+      - rm -rf {{.proto_med_out}}/*
+      - rm -rf {{.proto_s3_out}}/*
+      - rm -rf {{.proto_uzi_out}}/*
+      
+  build:
+    cmds:
+      - go fmt ./...
+      - goimports -w .
+      - go build -v -o bin/api-gateway cmd/main.go
+
+  run:
+      deps: [build]
+      cmds:
+        - ./bin/api-gateway
+
+  default:
+    cmds:
+      - task: generate
