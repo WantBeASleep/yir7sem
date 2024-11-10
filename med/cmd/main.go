@@ -3,19 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	apps "service/all/internal/apps"
-	cardController "service/all/internal/controller/card"
-	workerController "service/all/internal/controller/medworkers"
+	apps "yir/med/internal/apps"
+	cardController "yir/med/internal/controller/card"
+	workerController "yir/med/internal/controller/medworkers"
 
-	patientController "service/all/internal/controller/patient"
+	patientController "yir/med/internal/controller/patient"
 
-	//patientcontroller "service/all/internal/controller/patient"
-	patientRep "service/all/internal/repository"
-	cardRep "service/all/internal/repository/card"
-	"service/all/internal/repository/config"
-	medworkerRep "service/all/internal/repository/medworkers"
-	"service/all/internal/usecase"
-	"service/pkg_log/log"
+	patientRep "yir/med/internal/repository"
+	cardRep "yir/med/internal/repository/card"
+	"yir/med/internal/repository/config"
+	medworkerRep "yir/med/internal/repository/medworkers"
+	"yir/med/internal/usecase"
+	"yir/pkg_log/log"
 
 	"go.uber.org/zap"
 )

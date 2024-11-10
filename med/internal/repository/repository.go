@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"service/all/internal/entity"
+	"yir/med/internal/entity"
 )
 
 type Card interface {

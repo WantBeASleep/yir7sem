@@ -3,9 +3,9 @@ package controller
 import (
 	"context"
 	"errors"
-	pb "service/all/api"
-	"service/all/internal/entity"
-	"service/all/internal/usecase"
+	pb "yir/med/api"
+	"yir/med/internal/entity"
+	"yir/med/internal/usecase"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"

@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"service/all/internal/entity"
-	"service/all/internal/repository"
+	"yir/med/internal/entity"
+	"yir/med/internal/repository"
 
 	"go.uber.org/zap"
 )

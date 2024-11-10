@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"service/all/internal/repository/config"
+	"yir/med/internal/repository/config"
 )
 
 func GetDSN(db *config.DB) string {

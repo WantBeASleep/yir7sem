@@ -1,0 +1,19 @@
+version: '3'
+
+includes:
+  root_tasks: ../Taskfile.yml
+
+tasks:
+  build:
+    - task: root_tasks:build
+
+  run:
+    deps: [build]
+    # env:
+    #   DB_PASS: 1234
+
+    cmds:
+      - ./bin/server
+
+  default:
+    - task: root_tasks:build

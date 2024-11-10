@@ -3,11 +3,11 @@ package repository
 import (
 	"context"
 	"fmt"
-	"service/all/internal/entity"
-	"service/all/internal/repository/config"
-	"service/all/internal/repository/mapper"
-	"service/all/internal/repository/models"
-	"service/all/internal/repository/utils"
+	"yir/med/internal/entity"
+	"yir/med/internal/repository/config"
+	"yir/med/internal/repository/mapper"
+	"yir/med/internal/repository/models"
+	"yir/med/internal/repository/utils"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

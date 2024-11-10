@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"service/all/internal/entity"
-	"service/all/internal/repository/models"
+	"yir/med/internal/entity"
+	"yir/med/internal/repository/models"
 )
 
 func PatientCardToEntity(pc *models.PatientCardInfo) (*entity.PatientCard, error) {
