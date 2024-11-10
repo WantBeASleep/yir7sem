@@ -18,8 +18,8 @@ vars:
   proto_uzi_out: 'internal/pb/uzipb'
 
 env:
-  TOKEN_PUBLIC_KEY: 1 
-    #sh: cat 'public.key'
+  TOKEN_PUBLIC_KEY:
+    sh: cat '/home/zkryaev/med-git/public.key'
 
 tasks:
   generate:

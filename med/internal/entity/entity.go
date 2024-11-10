@@ -14,7 +14,7 @@ type PatientCard struct {
 type MedicalWorker struct {
 	ID              uuid.UUID
 	FirstName       string
-	MiddleName      string
+	FathersName     string
 	LastName        string
 	MedOrganization string
 	Job             string
@@ -45,7 +45,7 @@ type PatientCardList struct {
 type MedicalWorkerUpdateRequest struct {
 	FirstName       string
 	LastName        string
-	MiddleName      string
+	FathersName     string
 	MedOrganization string
 	Job             string
 	IsRemoteWorker  bool
@@ -56,7 +56,7 @@ type MedicalWorkerUpdateRequest struct {
 type MedicalWorkerPartialUpdateRequest struct {
 	FirstName       *string
 	LastName        *string
-	MiddleName      *string
+	FathersName     *string
 	MedOrganization *string
 	Job             *string
 	IsRemoteWorker  *bool
@@ -65,7 +65,7 @@ type MedicalWorkerPartialUpdateRequest struct {
 
 type AddMedicalWorkerRequest struct {
 	FirstName       string
-	MiddleName      string
+	FathersName     string
 	LastName        string
 	MedOrganization string
 	Job             string

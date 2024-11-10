@@ -15,7 +15,7 @@ type Gateway struct {
 func New(cfg config.Gateway, r *mux.Router) *Gateway {
 	return &Gateway{
 		httpServer: &http.Server{
-			Addr:         cfg.Host + cfg.Port,
+			Addr:         cfg.Host + ":" + cfg.Port,
 			Handler:      r,
 			ReadTimeout:  cfg.Timeout,
 			WriteTimeout: cfg.Timeout,

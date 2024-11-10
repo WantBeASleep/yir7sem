@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 	"yir/gateway/internal/custom"
 	"yir/gateway/internal/entity"
 	"yir/gateway/internal/pb/authpb"
@@ -46,9 +47,15 @@ func (a *AuthService) Register(ctx context.Context, RequestRegister *entity.Requ
 		Email:           RequestRegister.Email,
 		LastName:        RequestRegister.LastName,
 		FirstName:       RequestRegister.FirstName,
+		FathersName:     RequestRegister.FathersName,
 		MedOrganization: RequestRegister.MedOrg,
 		Password:        RequestRegister.Password,
 	}
+
+	log.Println(
+		"register service:",
+		RegisterRequest,
+	)
 
 	RegisterResponse, err := a.Client.Register(ctx, RegisterRequest)
 	if err != nil {

@@ -8,7 +8,7 @@ gateway:
 auth:
   env: DEV
   host: localhost
-  grpc: 50055
+  grpc: 50053
   http: 8081
 
 med:

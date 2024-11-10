@@ -101,7 +101,7 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *AuthController) TokenRefresh(w http.ResponseWriter, r *http.Request) {
-	
+
 	var TokenData entity.TokensPair
 	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
