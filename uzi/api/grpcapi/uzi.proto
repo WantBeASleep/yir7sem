@@ -135,15 +135,15 @@ message Device {
 }
 
 message Tirads {
-  double tirads_23 = 3 [
+  double tirads_23 = 1 [
     (buf.validate.field).double.gte = 0.0,
     (buf.validate.field).double.lte = 100.0
   ];
-  double tirads_4 = 4 [
+  double tirads_4 = 2 [
     (buf.validate.field).double.gte = 0.0,
     (buf.validate.field).double.lte = 100.0
   ];
-  double tirads_5 = 5 [
+  double tirads_5 = 3 [
     (buf.validate.field).double.gte = 0.0,
     (buf.validate.field).double.lte = 100.0
   ];
