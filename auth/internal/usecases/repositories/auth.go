@@ -8,9 +8,10 @@ import (
 )
 
 type Auth interface {
-	GetUserByID(ctx context.Context, ID int) (*entity.UserCreditals, error)
-	GetUserByUUID(ctx context.Context, UUID uuid.UUID) (*entity.UserCreditals, error)
-	GetUserByLogin(ctx context.Context, login string) (*entity.UserCreditals, error)
-	CreateUser(ctx context.Context, user *entity.UserCreditals) (int, error)
-	UpdateRefreshTokenByID(ctx context.Context, ID int, refreshTokenWord string) error
+	GetUserByMail(ctx context.Context, mail string) (*entity.User, error)
+	GetUserByID(ctx context.Context, id uuid.UUID) (*entity.User, error)
+
+	CreateUser(ctx context.Context, user *entity.User) (uuid.UUID, error)
+
+	UpdateRefreshTokenByUserID(ctx context.Context, id uuid.UUID, refreshTokenWord string) error
 }

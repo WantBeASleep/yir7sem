@@ -8,16 +8,17 @@ import (
 )
 
 type Config struct {
-	App   App   `yaml:"app"`
-	DB    DB    `yaml:"db"`
-	Token Token `yaml:"token"`
+	App        App        `yaml:"app"`
+	DB         DB         `yaml:"db"`
+	Token      Token      `yaml:"token"`
+	MedService MedService `yaml:"medservice"`
 }
 
 type App struct {
 	Env      string `yaml:"env" env:"ENV" env-default:"PROD"`
 	Host     string `yaml:"host" env:"HOST" env-default:"localhost"`
-	GRPCPort string `yaml:"grpc" env:"GRPC_PORT" env-default:"50055"`
-	HTTPPort string `yaml:"http" env:"HTTP_PORT" env-default:"8080"`
+	GRPCPort string `yaml:"grpc" env:"GRPC_PORT" env-default:"50053"`
+	HTTPPort string `yaml:"http" env:"HTTP_PORT" env-default:"8081"`
 }
 
 type DB struct {
@@ -35,6 +36,11 @@ type Token struct {
 	PublicKey       string        `env:"TOKEN_PUBLIC_KEY" env-required:"true"`
 }
 
+type MedService struct {
+	Host     string `yaml:"host" env:"MEDSERVICE_HOST" env-required:"true"`
+	GRPCPort string `yaml:"grpc" env:"MEDSERVICE_GRPC_PORT" env-default:"50054"`
+}
+
 func MustLoad(cfgPath string) *Config {
 	var cfg Config
 	err := cleanenv.ReadConfig(cfgPath, &cfg)
@@ -43,4 +49,15 @@ func MustLoad(cfgPath string) *Config {
 	}
 
 	return &cfg
+}
+
+func (d *DB) GetDSN() string {
+	return fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s",
+		d.Host,
+		d.User,
+		d.Password,
+		d.Name,
+		d.Port,
+	)
 }

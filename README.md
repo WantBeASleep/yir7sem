@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
 #### 🌈MED-ML BACKEND
 
 ## Ощметки документации будут тут
@@ -6,6 +8,12 @@
 ## Архитектура
 ~[arch](img/arch.png)~ *не актуально*
 
+=======
+#### 🌈MED-ML BACKEND
+
+## Архитектура
+![arch](img/arch.png)
+>>>>>>> 86069c3 (updated readme)
 
 + Основа любого сервиса - *слоистая архитектура*. Везде где можно следуем *clean architecrute*, с некоторыми исключениями. [^1]
 + Для БД везде используется [gorm](https://gorm.io/)
@@ -20,7 +28,10 @@
 + postgres
 + protoc-gen-go: `go install google.golang.org/protobuf/cmd/protoc-gen-go@latest`
 + protoc-gen-go-grpc: `go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest`
+<<<<<<< HEAD
 + protoc-gen-grpc-gateway `go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest`
+=======
+>>>>>>> 86069c3 (updated readme)
 + googleapis proto: `git clone https://github.com/googleapis/googleapis.git`
 + grpc-gateway: `https://github.com/grpc-ecosystem/grpc-gateway.git`
 + taskfile: `go install github.com/go-task/task/v3/cmd/task@latest`
@@ -62,8 +73,11 @@ service Auth {
 
 Для документации `swagger`'а пишим комметарии в `.proto`. Верхний комментарий будет принят как **summary***(краткое описание)*, нижний как **description***(полное)*.
 
+<<<<<<< HEAD
 При явном указании, документация swagger будет правильная.
 
+=======
+>>>>>>> 86069c3 (updated readme)
 ```
 ...
     // Получение JWT AS + RT. <--- это summary
@@ -74,6 +88,7 @@ service Auth {
 ...
 ```
 
+<<<<<<< HEAD
 Указывайте имена полей json тегами `[json_name = "device_id"]`; в ином случае поля из протой пойдут как `camelCase`, вместо `snake_case`
 ```
 message CreateGroupMetaDataRequest {
@@ -83,6 +98,8 @@ message CreateGroupMetaDataRequest {
 }
 ```
 
+=======
+>>>>>>> 86069c3 (updated readme)
 package в `.proto`: `option go_package = "yir/auth/api/v0/auth;auth";`
 
 Здесь:
@@ -99,6 +116,7 @@ package в `.proto`: `option go_package = "yir/auth/api/v0/auth;auth";`
 + Если логируете приватные данные, делать это только через **Debug**.
 + Логировать в едином стиле:
     + Запросы в `repository` слой через *Request/Reponse*: *log.Info("[Requset] Do smt...", zap.(...) ...Fields.)*
+<<<<<<< HEAD
     + *Будет дополняться*
 
 
@@ -120,3 +138,9 @@ package в `.proto`: `option go_package = "yir/auth/api/v0/auth;auth";`
 
 Все общение синхронное между микриками, надо будет переделать на ивенты некоторую часть, но пока что имеем что имеем
 
+=======
+# medworkers
+>>>>>>> dac836a (added 3 medservices)
+=======
+    + *Будет дополняться*
+>>>>>>> 86069c3 (updated readme)

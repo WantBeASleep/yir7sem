@@ -9,6 +9,7 @@ trash*
 *__pycache__
 *.pkl
 *.pth
+.DS_Store
 
 # gRPC + Proto
 *.pb.go

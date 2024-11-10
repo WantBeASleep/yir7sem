@@ -3,16 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	"yir/auth/internal/apps"
+	"net"
+	pb "yir/auth/api/auth"
+	authApi "yir/auth/internal/api/auth"
 	"yir/auth/internal/config"
-	authApi "yir/auth/internal/controller/auth"
-	"yir/auth/internal/core/jwt"
-	dbRepos "yir/auth/internal/repositories/db/repositories"
-	serviceRepos "yir/auth/internal/repositories/services"
+	dbRepos "yir/auth/internal/db/repositories"
+	"yir/auth/internal/entity"
+	serviceRepos "yir/auth/internal/medservice"
 	authUsecases "yir/auth/internal/usecases/auth"
 	"yir/pkg/log"
 
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -42,7 +44,7 @@ func main() {
 	}
 	logger.Info("CFG && logger load")
 
-	jwtService, err := jwt.NewService(&cfg.Token)
+	jwtService, err := entity.NewService(&cfg.Token)
 	if err != nil {
 		panic(fmt.Errorf("jwt service create: %w", err))
 	}
@@ -53,15 +55,48 @@ func main() {
 	}
 	logger.Info("DB load")
 
-	medRepo := serviceRepos.NewService()
+	// medRepo := serviceRepos.NewService()
+	medServiceAddress := fmt.Sprintf("%s:%s", cfg.MedService.Host, cfg.MedService.GRPCPort)
+	medRepo, err := serviceRepos.NewService(medServiceAddress)
+	if err != nil {
+		panic(fmt.Errorf("failed to create med service client: %w", err))
+	}
 
 	usecases := authUsecases.NewAuthUseCase(authRepo, medRepo, jwtService, logger)
 
-	authGRPCController := authApi.NewServer(usecases)
-
-	app := apps.New(authGRPCController, logger)
-
-	if err := app.Run(&cfg.App); err != nil {
-		logger.Error("Application error", zap.Error(err))
+	authGRPCController, err := authApi.NewServer(usecases)
+	if err != nil {
+		panic(fmt.Errorf("work grepc controller: %w", err))
 	}
+
+	s := grpc.NewServer()
+	pb.RegisterAuthServer(s, authGRPCController)
+
+	GRPCLis, err := net.Listen("tcp", cfg.App.Host+":"+cfg.App.GRPCPort)
+	if err != nil {
+		panic(fmt.Errorf("lister grpc host:port: %w", err))
+	}
+
+	if err := s.Serve(GRPCLis); err != nil {
+		logger.Error("GRPC server serve error", zap.Error(err))
+	}
+
 }
+
+/*
+
+
+
+	mux := runtime.NewServeMux()
+	if err := pb.RegisterAuthHandlerFromEndpoint(context.TODO(), mux, cfg.Host+":"+cfg.GRPCPort, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
+		return fmt.Errorf("register http handlers: %w", err)
+	}
+
+	go func() {
+		if err := http.ListenAndServe(":"+cfg.HTTPPort, mux); err != nil {
+			a.logger.Error("HTTP server serve error", zap.Error(err))
+			errFeedBack <- err
+		}
+		wg.Done()
+	}()
+*/
