@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"net"
+	pb "yir/auth/api/auth"
 	authApi "yir/auth/internal/api/auth"
 	"yir/auth/internal/config"
-	pb "yir/auth/api/auth"
 	dbRepos "yir/auth/internal/db/repositories"
 	"yir/auth/internal/entity"
 	serviceRepos "yir/auth/internal/medservice"
@@ -85,7 +85,7 @@ func main() {
 
 /*
 
-	
+
 
 	mux := runtime.NewServeMux()
 	if err := pb.RegisterAuthHandlerFromEndpoint(context.TODO(), mux, cfg.Host+":"+cfg.GRPCPort, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {

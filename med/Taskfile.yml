@@ -9,11 +9,11 @@ tasks:
 
   run:
     deps: [build]
-    # env:
-    #   DB_PASS: 1234
+    env:
+      DB_PASS: 1234
 
     cmds:
-      - ./bin/server
+      - ./bin/cmd
 
   default:
     - task: root_tasks:build

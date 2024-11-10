@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	defaultCfgPath = "all/config/config.yml"
+	defaultCfgPath = "config/config.yml"
 	shorthand      = " (shorthand)"
 )
 

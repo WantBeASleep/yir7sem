@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 	"fmt"
-	pb "yir/all/api"
 	"yir/auth/internal/entity"
+	pb "yir/med/api"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
