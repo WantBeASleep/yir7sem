@@ -14,7 +14,7 @@ var Logger *zap.Logger
 func Init() error {
 	cfg := zap.Config{
 		Level:       zap.NewAtomicLevelAt(zap.InfoLevel), // Уровень логирования
-		Encoding:    "json",                              // Формат вывода (json)
+		Encoding:    "console",                           // Формат вывода (json)
 		OutputPaths: []string{"stdout", "logs/logs.txt"}, // Путь к файлу и стандартный вывод
 		// ErrorOutputPaths: []string{"stderr"},                   // Вывод ошибок
 		EncoderConfig: zapcore.EncoderConfig{

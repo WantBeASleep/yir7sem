@@ -75,7 +75,7 @@ func (m *MedWorkerUseCase) UpdateMedWorker(ctx context.Context, ID string, updat
 	// Обновляем поля медработника на основе данных из updateData
 	worker.FirstName = updateData.FirstName
 	worker.LastName = updateData.LastName
-	worker.MiddleName = updateData.MiddleName
+	worker.FathersName = updateData.FathersName
 	worker.MedOrganization = updateData.MedOrganization
 	worker.Job = updateData.Job
 	worker.IsRemoteWorker = updateData.IsRemoteWorker
@@ -94,7 +94,7 @@ func (m *MedWorkerUseCase) AddMedWorker(ctx context.Context, createData *entity.
 	// Создаем объект MedicalWorker на основе данных из запроса
 	medworker := &entity.MedicalWorker{
 		FirstName:       createData.FirstName,
-		MiddleName:      createData.MiddleName,
+		FathersName:     createData.FathersName,
 		LastName:        createData.LastName,
 		MedOrganization: createData.MedOrganization,
 		Job:             createData.Job,

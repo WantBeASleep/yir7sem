@@ -9,13 +9,13 @@ import (
 )
 
 func LoadPublicKey() (*rsa.PublicKey, error) {
-	publicKeyEnv := os.Getenv("PUBLIC_KEY")
+	publicKeyEnv := os.Getenv("TOKEN_PUBLIC_KEY")
 	if publicKeyEnv == "" {
-		return nil, fmt.Errorf("PUBLIC_KEY environment variable is not set")
+		return nil, fmt.Errorf("TOKEN_PUBLIC_KEY environment variable is not set")
 	}
 
 	block, _ := pem.Decode([]byte(publicKeyEnv))
-	if block == nil || block.Type != "PUBLIC KEY" {
+	if block == nil {
 		return nil, fmt.Errorf("failed to decode PEM block containing public key")
 	}
 

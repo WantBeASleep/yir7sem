@@ -17,6 +17,7 @@ import (
 	"yir/gateway/internal/service/medservice"
 	"yir/gateway/internal/usecase/secret"
 	"yir/gateway/repository"
+	pbs3 "yir/s3upload/api"
 	"yir/s3upload/pkg/client"
 
 	"go.uber.org/zap"
@@ -40,7 +41,7 @@ func main() {
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	// 1. Подключенеи к Auth
-	authConn, err := grpc.NewClient(cfg.Auth.Host+cfg.Auth.GRPCport, opts...)
+	authConn, err := grpc.NewClient(cfg.Auth.Host+":"+cfg.Auth.GRPCport, opts...)
 	if err != nil {
 		custom.Logger.Fatal("failed connect to Auth",
 			zap.Error(err),
@@ -56,7 +57,7 @@ func main() {
 	custom.Logger.Info("Successfully connected to Auth")
 
 	// 2. Подключение к Med
-	medConn, err := grpc.NewClient(cfg.Med.Host+cfg.Med.GRPCport, opts...)
+	medConn, err := grpc.NewClient(cfg.Med.Host+":"+cfg.Med.GRPCport, opts...)
 	if err != nil {
 		custom.Logger.Fatal("failed connect to Med",
 			zap.Error(err),
@@ -74,7 +75,7 @@ func main() {
 	custom.Logger.Info("Successfully connected to Med")
 
 	// 3. Подключение к Uzi
-	uziConn, err := grpc.NewClient(cfg.Uzi.Host+cfg.Uzi.GRPCport, opts...)
+	uziConn, err := grpc.NewClient(cfg.Uzi.Host+":"+cfg.Uzi.GRPCport, opts...)
 	if err != nil {
 		custom.Logger.Fatal("failed connect to Uzi")
 	}
@@ -88,7 +89,7 @@ func main() {
 	custom.Logger.Info("Successfully connected to Uzi")
 
 	// 4. Подключение к S3
-	s3Conn, err := grpc.NewClient(cfg.Gateway.Host+cfg.S3.GRPCport, opts...)
+	s3Conn, err := grpc.NewClient(cfg.Gateway.Host+":"+cfg.S3.GRPCport, opts...)
 	if err != nil {
 		custom.Logger.Fatal("failed connect to S3",
 			zap.Error(err),
@@ -98,13 +99,14 @@ func main() {
 		custom.Logger.Info("Closed connection with service: S3)")
 		s3Conn.Close()
 	}()
+
 	s3Client := &repository.S3Repo{
-		S3: client.NewS3Client(s3Conn),
+		S3: client.NewS3Client(pbs3.NewS3Client(s3Conn)),
 	}
 	custom.Logger.Info("Successfully connected to S3")
 
 	// Конфиг для кафки сгружаем
-	Producer := repository.New([]string{cfg.Kafka.Host + cfg.Kafka.Port}, "uzi_upload")
+	Producer := repository.New([]string{cfg.Kafka.Host + ":" + cfg.Kafka.Port}, "uzi_upload")
 
 	key, err := secret.LoadPublicKey()
 	if err != nil {
@@ -118,12 +120,20 @@ func main() {
 	}
 	// Gateway: Init Routes, Run app
 	s := app.New(cfg.Gateway, controller.InitRouter(authService, medService, uziService, s3Client, authMiddleware, Producer))
-	go s.Run()
+	go func() {
+		err := s.Run()
+		if err != nil {
+			custom.Logger.Error(
+				"failed to run gateway",
+				zap.Error(err),
+			)
+		}
+	}()
+
 	custom.Logger.Info("Gateway is starting",
 		zap.String("host", cfg.Gateway.Host),
 		zap.String("port", cfg.Gateway.Port),
 	)
-
 	// Gracefull Shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)

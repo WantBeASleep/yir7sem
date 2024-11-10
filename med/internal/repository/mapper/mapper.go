@@ -55,7 +55,7 @@ func PatientToModels(p *entity.Patient) *models.PatientInfo {
 // 	return &entity.MedicalWorker{
 // 		ID:              m.ID,
 // 		FirstName:       m.FirstName,
-// 		MiddleName:      m.MiddleName,
+// 		FathersName:      m.FathersName,
 // 		LastName:        m.LastName,
 // 		MedOrganization: m.MedOrganization,
 // 		Job:             m.Job,
@@ -68,7 +68,7 @@ func PatientToModels(p *entity.Patient) *models.PatientInfo {
 //		return &models.MedWorkerInfo{
 //			ID:              m.ID,
 //			FirstName:       m.FirstName,
-//			MiddleName:      m.MiddleName,
+//			FathersName:      m.FathersName,
 //			LastName:        m.LastName,
 //			MedOrganization: m.MedOrganization,
 //			Job:             m.Job,
@@ -80,7 +80,7 @@ func ToMedWorkerModel(e *entity.MedicalWorker) (*models.MedWorkerInfo, error) {
 	return &models.MedWorkerInfo{
 		ID:              e.ID,
 		FirstName:       e.FirstName,
-		MiddleName:      e.MiddleName,
+		FathersName:     e.FathersName,
 		LastName:        e.LastName,
 		MedOrganization: e.MedOrganization,
 		Job:             e.Job,
@@ -93,7 +93,7 @@ func ToMedWorkerEntity(m *models.MedWorkerInfo) (*entity.MedicalWorker, error) {
 	return &entity.MedicalWorker{
 		ID:              m.ID,
 		FirstName:       m.FirstName,
-		MiddleName:      m.MiddleName,
+		FathersName:     m.FathersName,
 		LastName:        m.LastName,
 		MedOrganization: m.MedOrganization,
 		Job:             m.Job,

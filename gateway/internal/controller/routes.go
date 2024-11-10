@@ -27,12 +27,12 @@ const (
 	cardUpdate = "/update"
 	cardDelete = "/delete/{id}"
 
-	uziPrefix                       =  "/uzi"
+	uziPrefix                       = "/uzi"
 	uziDeviceList                   = "/device/list"                       //GET
 	uziFormationSegmentsFormationID = "/formation/segments/{formation_id}" // GET
 	uziFormationSegmentsPostByUziID = "/formation/segments/{uzi_id}"       // POST
 	uziFormationID                  = "/uzi/formation/{formation_id}"      // PUT/PATCH
-	uziImageSegmentsID              = "/uzi/image/segments/{image_id}"    // GET
+	uziImageSegmentsID              = "/uzi/image/segments/{image_id}"     // GET
 	uziInfo                         = "/uzi/info"                          // POST
 	uziInfoID                       = "/uzi/info/{uzi_id}"                 // GET, PUT/PATCH
 	uziPost                         = "/uzi/add"                           // POST
