@@ -19,3 +19,9 @@ trash*
 *_pb2.py
 
 *.pyi
+
+# Temporary
+.data/
+docker-compose.yaml
+include/
+*.lock
