@@ -3,8 +3,8 @@ import numpy as np
 
 # Веса модели
 settings = {
-    'classification': {'all': '/home/wantbeasleep/yir/ml_service/internal/ml_model/models/all/efficientnet.pth', 'cross': '/home/wantbeasleep/yir/ml_service/internal/ml_model/models/cross/efficientnet.pth', 'long': '/home/wantbeasleep/yir/ml_service/internal/ml_model/models/long/efficientnet.pth'},
-    'segmentation': {'all': '/home/wantbeasleep/yir/ml_service/internal/ml_model/models/all/deeplabv3plus.pkl', 'cross': '/home/wantbeasleep/yir/ml_service/internal/ml_model/models/cross/deeplabv3plus.pkl', 'long': '/home/wantbeasleep/yir/ml_service/internal/ml_model/models/long/deeplabv3plus.pkl'},
+    'classification': {'all': '/home/danila/uzzi/ml_service/internal/ml_model/models/all/efficientnet.pth', 'cross': '/home/danila/uzzi/ml_service/internal/ml_model/models/cross/efficientnet.pth', 'long': '/home/danila/uzzi/ml_service/internal/ml_model/models/long/efficientnet.pth'},
+    'segmentation': {'all': '/home/danila/uzzi/ml_service/internal/ml_model/models/all/deeplabv3plus.pkl', 'cross': '/home/danila/uzzi/ml_service/internal/ml_model/models/cross/deeplabv3plus.pkl', 'long': '/home/danila/uzzi/ml_service/internal/ml_model/models/long/deeplabv3plus.pkl'},
     'tracking': 'models/tracking_model.pkl',
 }
 

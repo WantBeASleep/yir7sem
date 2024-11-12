@@ -5,25 +5,25 @@ import time
 from concurrent import futures
 import grpc
 import sys
-sys.path.append("/home/wantbeasleep/yir/ml_service")
-sys.path.append("/home/wantbeasleep/yir/ml_service/api")
+sys.path.append("/home/danila/uzzi/ml_service")
+sys.path.append("/home/danila/uzzi/ml_service/api")
 import ml_service.api.ml_api_pb2 as pb
 import ml_service.api.ml_api_pb2_grpc as pb_grpc
 
 
 
-sys.path.append("/home/wantbeasleep/yir/ml_service/internal/s3go")
-sys.path.append("/home/wantbeasleep/yir/ml_service/internal/events")
+sys.path.append("/home/danila/uzzi/ml_service/internal/s3go")
+sys.path.append("/home/danila/uzzi/ml_service/internal/events")
 import ml_service.internal.events.events as kafkaevents
 
 
-sys.path.append("/home/wantbeasleep/yir/ml_service/internal/s3")
+sys.path.append("/home/danila/uzzi/ml_service/internal/s3")
 import ml_service.internal.s3.s3 as mys3
-sys.path.append("/home/wantbeasleep/yir/ml_service/internal/ml_model")
+sys.path.append("/home/danila/uzzi/ml_service/internal/ml_model")
 import ml_service.internal.ml_model.segmentation as seg
 import ml_service.internal.ml_model.classification_efficientnet as cla
-sys.path.append("/home/wantbeasleep/yir/ml_service/internal/usecases/uzi")
-sys.path.append("/home/wantbeasleep/yir/ml_service/internal/utils")
+sys.path.append("/home/danila/uzzi/ml_service/internal/usecases/uzi")
+sys.path.append("/home/danila/uzzi/ml_service/internal/utils")
 import ml_service.internal.usecases.uzi.uzi as usecaseuzi
 import ml_service.internal.api.ml_controller as ctrl
 
