@@ -11,6 +11,17 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
+// PostCard godoc
+// @Summary      Add Patient Card
+// @Description  Creates a new patient card with information about the patient, card details, and the medical worker.
+// @Tags         cards
+// @Accept       json
+// @Produce      json
+// @Param        body  body  cardmodel.PatientInformation  true  "Patient Information"
+// @Success      200   {string}   string  "Card created successfully"
+// @Failure      400   {string}   string  "Invalid request payload"
+// @Failure      502   {string}   string  "Failed to add card"
+// @Router       /med/card/add [post]
 func (c *MedController) PostCard(w http.ResponseWriter, r *http.Request) {
 	patientInfo := cardmodel.PatientInformation{}
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
@@ -31,6 +42,17 @@ func (c *MedController) PostCard(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// PutCard godoc
+// @Summary      Update Patient Card
+// @Description  Updates information of an existing patient card.
+// @Tags         cards
+// @Accept       json
+// @Produce      json
+// @Param        body  body  cardmodel.PatientCard  true  "Patient Card Data"
+// @Success      200   {object}   cardmodel.PatientCard  "Updated card information"
+// @Failure      400   {string}   string  "Invalid request payload"
+// @Failure      502   {string}   string  "Failed to update card"
+// @Router       /med/card/update [put]
 func (c *MedController) PutCard(w http.ResponseWriter, r *http.Request) {
 	card := cardmodel.PatientCard{}
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
@@ -56,6 +78,17 @@ func (c *MedController) PutCard(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// GetCards godoc
+// @Summary      Get Patient Cards
+// @Description  Retrieves a list of patient cards with pagination options.
+// @Tags         cards
+// @Accept       json
+// @Produce      json
+// @Param        limit   query  int  false  "Limit"  default(10)
+// @Param        offset  query  int  false  "Offset"  default(0)
+// @Success      200   {object}   cardmodel.PatientCardList  "List of patient cards"
+// @Failure      502   {string}   string  "Failed to get cards"
+// @Router       /med/card/list [get]
 func (c *MedController) GetCards(w http.ResponseWriter, r *http.Request) {
 	var limit, offset uint64 = 0, 0 // по идее jsonка должна быть
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
@@ -72,6 +105,17 @@ func (c *MedController) GetCards(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// GetCardByID godoc
+// @Summary      Get Patient Card by ID
+// @Description  Retrieves details of a specific patient card by its ID.
+// @Tags         cards
+// @Accept       json
+// @Produce      json
+// @Param        id   path   int  true  "Card ID"
+// @Success      200   {object}   cardmodel.PatientCard  "Patient card details"
+// @Failure      400   {string}   string  "Invalid ID format"
+// @Failure      502   {string}   string  "Failed to get card by ID"
+// @Router       /med/card/{id} [get]
 func (c *MedController) GetCardByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idString := vars["id"]
@@ -95,6 +139,17 @@ func (c *MedController) GetCardByID(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// DeleteCard godoc
+// @Summary      Delete Patient Card
+// @Description  Deletes a specific patient card by its ID.
+// @Tags         cards
+// @Accept       json
+// @Produce      json
+// @Param        id   path   int  true  "Card ID"
+// @Success      200   {string}   string  "Card deleted successfully"
+// @Failure      400   {string}   string  "Invalid ID format"
+// @Failure      502   {string}   string  "Failed to delete card"
+// @Router       /med/cards/delete/{id} [delete]
 func (c *MedController) DeleteCard(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idString := vars["id"]

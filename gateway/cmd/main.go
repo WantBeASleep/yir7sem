@@ -20,6 +20,7 @@ import (
 	pbs3 "yir/s3upload/api"
 	"yir/s3upload/pkg/client"
 
+	_ "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -29,6 +30,9 @@ var (
 	cfg_defaultPath = "config/config.yaml"
 )
 
+// @title API-Gateway
+// @version 1.0
+// @schemes http
 func main() {
 	custom.Init()
 	defer custom.Logger.Sync()

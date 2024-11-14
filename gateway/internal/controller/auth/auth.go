@@ -29,6 +29,17 @@ func New(s AuthService) *AuthController {
 	}
 }
 
+// Login godoc
+// @Summary      User Login
+// @Description  Authenticates a user and returns a token pair.
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body  entity.RequestLogin  true  "User Login Data"
+// @Success      200   {object}   entity.TokensPair
+// @Failure      400   {string}   string  "Invalid request payload"
+// @Failure      502   {string}   string  "Failed to authenticate user"
+// @Router       /auth/login [post]
 func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 	// перегонка в структуру
 	var LoginData entity.RequestLogin
@@ -65,6 +76,17 @@ func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// Register godoc
+// @Summary      User Registration
+// @Description  Registers a new user and returns a response with a UUID.
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body  entity.RequestRegister  true  "User Registration Data"
+// @Success      200   {object}   entity.ResponseRegister
+// @Failure      400   {string}   string  "Invalid request payload"
+// @Failure      502   {string}   string  "Failed to register user"
+// @Router       /auth/register [post]
 func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 	var RegisterData entity.RequestRegister
 	var json = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -100,6 +122,17 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// TokenRefresh godoc
+// @Summary      Token Refresh
+// @Description  Refreshes an expired access token using a refresh token.
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body  entity.TokensPair  true  "Token Data"
+// @Success      200   {object}   entity.TokensPair
+// @Failure      400   {string}   string  "Invalid request payload"
+// @Failure      502   {string}   string  "Failed to refresh token"
+// @Router       /auth/token/refresh [post]
 func (c *AuthController) TokenRefresh(w http.ResponseWriter, r *http.Request) {
 
 	var TokenData entity.TokensPair
