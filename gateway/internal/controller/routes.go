@@ -1,33 +1,40 @@
 package controller
 
 const (
-	authPrefix       = "/auth"
+	authPrefix = "/auth"
+	//
 	authLogin        = "/login"
 	authRegister     = "/register"
 	authTokenRefresh = "/token/refresh"
 
-	medPrefix     = "/med"
+	medPrefix = "/med"
+	//
 	patientPrefix = "/patient"
+	//
 	patientCreate = "/create"
 	patientInfo   = "/info/{id}"
 	patientList   = "/list"
-	patientShots  = "/shots"
-	patientUpdate = "/update"
+	patientShots  = "/shots/{id}"
+	patientUpdate = "/update/{id}"
 
-	workerPrefix   = "/medworkers" // надо бы вовану сказать чтобы переделал пути под worker
+	workerPrefix = "/medworkers" // надо бы вовану сказать чтобы переделал пути под worker
+	//
 	workerAdd      = "/add"
-	workerID       = "/id/{id}"
+	workerID       = "/{id}"
 	workerList     = "/list"
 	workerPatients = "/patients/{medWorkerId}"
-	workerUpdate   = "/update" // есть методы PUT и PATCH, но пока у нас только PUT
+	workerUpdate   = "/update/{id}" // есть методы PUT и PATCH, но пока у нас только PUT
 
 	cardPrefix = "/card"
-	cardID     = "/{id}"
+	//
+	cardByID     = "/{id}"
+	cardAdd    = "/add"
 	cardList   = "/list"
 	cardUpdate = "/update"
 	cardDelete = "/delete/{id}"
 
-	uziPrefix                       = "/uzi"
+	uziPrefix = "/uzi"
+	//
 	uziDeviceList                   = "/device/list"                       //GET
 	uziFormationSegmentsFormationID = "/formation/segments/{formation_id}" // GET
 	uziFormationSegmentsPostByUziID = "/formation/segments/{uzi_id}"       // POST

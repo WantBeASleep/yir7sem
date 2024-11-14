@@ -27,6 +27,7 @@ tasks:
       LIBS_DIRS:
         sh: find {{.proto_libs_path}} -mindepth 1 -maxdepth 1 -type d | xargs echo
     cmds:
+      - swag init -g ./cmd/main.go ./docs/swagger
       # Генерация для auth.proto
       - >
         protoc

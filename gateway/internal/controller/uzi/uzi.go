@@ -33,8 +33,18 @@ type UziController struct {
 	Kafka   *repository.Producer
 }
 
-// отдаем метаданные узи в uziService + отдаем S3 картинку
-// в кафку пишем uziID(из того вернул uziService), возвращаем клиенту 200
+// PostUzi добавляет метаданные УЗИ и изображение в S3, отправляет uziID в Kafka.
+// @Summary Добавить УЗИ
+// @Description Создает запись УЗИ, загружает изображение в S3 и отправляет uziID в Kafka.
+// @Tags Uzi
+// @Accept json
+// @Produce json
+// @Param image formData file true "Изображение УЗИ"
+// @Param uzi body uzimodel.Uzi true "Метаданные УЗИ"
+// @Success 200 {string} string "Успешное выполнение"
+// @Failure 400 {string} string "Некорректный запрос"
+// @Failure 502 {string} string "Ошибка обработки на сервере"
+// @Router /uzi/add [post]
 func (c *UziController) PostUzi(w http.ResponseWriter, r *http.Request) {
 	req := &uzimodel.Uzi{}
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
@@ -98,6 +108,17 @@ func (c *UziController) PostUzi(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// UpdateUzi обновляет информацию УЗИ.
+// @Summary Обновить УЗИ
+// @Description Обновляет существующую запись УЗИ по переданным данным.
+// @Tags Uzi
+// @Accept json
+// @Produce json
+// @Param uzi body uzimodel.Uzi true "Метаданные УЗИ"
+// @Success 200 {string} string "Успешное выполнение"
+// @Failure 400 {string} string "Некорректный запрос"
+// @Failure 502 {string} string "Ошибка обработки на сервере"
+// @Router /uzi/{uzi_id} [put]
 func (c *UziController) UpdateUzi(w http.ResponseWriter, r *http.Request) {
 	req := &uzimodel.Uzi{}
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
@@ -122,6 +143,18 @@ func (c *UziController) UpdateUzi(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// PostFormationWithSegments добавляет формацию с сегментами для УЗИ.
+// @Summary Добавить формацию с сегментами
+// @Description Создает формацию с сегментами, привязанную к указанному uziID.
+// @Tags Uzi
+// @Accept json
+// @Produce json
+// @Param uzi_id path string true "ID УЗИ"
+// @Param formation body uzidto.FormationWithSegments true "Формация с сегментами"
+// @Success 200 {string} string "Успешное выполнение"
+// @Failure 400 {string} string "Некорректный запрос"
+// @Failure 502 {string} string "Ошибка обработки на сервере"
+// @Router /formation/segments/{uzi_id} [post]
 func (c *UziController) PostFormationWithSegments(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	uziID := vars["uzi_id"]
@@ -153,6 +186,19 @@ func (c *UziController) PostFormationWithSegments(w http.ResponseWriter, r *http
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+// UpdateFormation обновляет информацию о формации.
+// @Summary Обновить формацию
+// @Description Обновляет существующую формацию по переданному ID.
+// @Tags Uzi
+// @Accept json
+// @Produce json
+// @Param formation_id path string true "ID формации"
+// @Param formation body uzidto.Formation true "Данные формации"
+// @Success 200 {string} string "Успешное выполнение"
+// @Failure 400 {string} string "Некорректный запрос"
+// @Failure 502 {string} string "Ошибка обработки на сервере"
+// @Router /uzi/formation/{formation_id} [put]
 func (c *UziController) UpdateFormation(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	// проверка что передали норм idшник вообще
@@ -184,6 +230,16 @@ func (c *UziController) UpdateFormation(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusOK)
 }
 
+// GetUziByID возвращает метаданные УЗИ по ID.
+// @Summary Получить УЗИ по ID
+// @Description Возвращает информацию о УЗИ по указанному ID.
+// @Tags Uzi
+// @Produce json
+// @Param uzi_id path string true "ID УЗИ"
+// @Success 200 {object} uzimodel.Uzi "Данные УЗИ"
+// @Failure 400 {string} string "Некорректный запрос"
+// @Failure 502 {string} string "Ошибка обработки на сервере"
+// @Router /uzi/{uzi_id} [get]
 func (c *UziController) GetUziByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	req := vars["uzi_id"]
@@ -220,7 +276,16 @@ func (c *UziController) GetUziByID(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// Картинку не возвращать!
+// GetUziInfo возвращает информацию об УЗИ без изображения.
+// @Summary Получить информацию УЗИ
+// @Description Возвращает данные УЗИ по ID, без изображения.
+// @Tags Uzi
+// @Produce json
+// @Param uzi_id path string true "ID УЗИ"
+// @Success 200 {object} uzidto.Report "Информация об УЗИ"
+// @Failure 400 {string} string "Некорректный запрос"
+// @Failure 502 {string} string "Ошибка обработки на сервере"
+// @Router /uzi/info/{uzi_id} [get]
 func (c *UziController) GetUziInfo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	req := vars["uzi_id"]
@@ -256,6 +321,17 @@ func (c *UziController) GetUziInfo(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+// GetFormationWithSegments возвращает формацию с сегментами по ID.
+// @Summary Получить формацию с сегментами
+// @Description Возвращает формацию с сегментами по указанному ID формации.
+// @Tags Uzi
+// @Produce json
+// @Param formation_id path string true "ID формации"
+// @Success 200 {object} uzidto.FormationWithSegments "Данные формации с сегментами"
+// @Failure 400 {string} string "Некорректный запрос"
+// @Failure 502 {string} string "Ошибка обработки на сервере"
+// @Router /formation/segments/{formation_id} [get]
 func (c *UziController) GetFormationWithSegments(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	req := vars["formation_id"]
@@ -291,6 +367,17 @@ func (c *UziController) GetFormationWithSegments(w http.ResponseWriter, r *http.
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+// GetUziImageWithSegments возвращает изображение УЗИ с сегментами по ID.
+// @Summary Получить изображение УЗИ с сегментами
+// @Description Возвращает изображение УЗИ и информацию о сегментах по указанному ID изображения.
+// @Tags Uzi
+// @Produce image/png, image/tiff
+// @Param image_id path string true "ID изображения"
+// @Success 200 {string} string "Изображение с сегментами"
+// @Failure 400 {string} string "Некорректный запрос"
+// @Failure 502 {string} string "Ошибка обработки на сервере"
+// @Router /uzi/image/segments/{image_id} [get]
 func (c *UziController) GetUziImageWithSegments(w http.ResponseWriter, r *http.Request) {
 	// Извлекаем image_id из URL
 	vars := mux.Vars(r)
@@ -345,6 +432,15 @@ func getExtension(format string) string {
 		return "bin"
 	}
 }
+
+// GetDeviceList возвращает список доступных устройств.
+// @Summary Получить список устройств
+// @Description Возвращает список доступных устройств для УЗИ.
+// @Tags Uzi
+// @Produce json
+// @Success 200 {array} uzimodel.Device "Список устройств"
+// @Failure 502 {string} string "Ошибка обработки на сервере"
+// @Router /uzi/device/list [get]
 func (c *UziController) GetDeviceList(w http.ResponseWriter, r *http.Request) {
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
 	ctx := context.Background()

@@ -45,6 +45,7 @@ func InitRouter(
 	medSubR := MainRouter.PathPrefix(medPrefix).Subrouter()
 	medSubR.Use(ac.Middleware.VerifyToken)
 	patientSubR := medSubR.PathPrefix(patientPrefix).Subrouter()
+	patientSubR.HandleFunc(patientUpdate, mc.PutPatient).Methods("PUT")
 	patientSubR.HandleFunc(patientCreate, mc.PostPatient).Methods("POST")
 	patientSubR.HandleFunc(patientInfo, mc.GetPatientInfo).Methods("GET")
 	patientSubR.HandleFunc(patientList, mc.GetPatientList).Methods("GET")
@@ -61,11 +62,11 @@ func InitRouter(
 	workerSubR.HandleFunc(workerUpdate, mc.PutWorker).Methods("PUT")
 
 	cardSubR := medSubR.PathPrefix(cardPrefix).Subrouter()
-	cardSubR.HandleFunc(cardPrefix, mc.GetCards).Methods("GET")
-	cardSubR.HandleFunc(cardID, mc.PostCard).Methods("POST")
-	cardSubR.HandleFunc(cardID, mc.GetCardByID).Methods("GET")
+	cardSubR.HandleFunc(cardAdd, mc.PostCard).Methods("POST")
+	cardSubR.HandleFunc(cardList, mc.GetCards).Methods("GET")
+	cardSubR.HandleFunc(cardByID, mc.GetCardByID).Methods("GET")
 	cardSubR.HandleFunc(cardDelete, mc.DeleteCard).Methods("DELETE")
-	cardSubR.HandleFunc(cardID, mc.PutCard).Methods("PUT")
+	cardSubR.HandleFunc(cardByID, mc.PutCard).Methods("PUT")
 
 	uziSubR := MainRouter.PathPrefix("/uzi").Subrouter()
 	uziSubR.Use(ac.Middleware.VerifyToken)
