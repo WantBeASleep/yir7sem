@@ -45,50 +45,7 @@ definitions:
       refresh_token:
         type: string
     type: object
-  uzi.Device:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
-  uzi.Formation:
-    properties:
-      ai:
-        type: boolean
-      id:
-        type: string
-      tirads:
-        $ref: '#/definitions/uzi.Tirads'
-    type: object
-  uzi.FormationNestedSegmentReq:
-    properties:
-      ai:
-        type: boolean
-      segments:
-        items:
-          $ref: '#/definitions/uzi.SegmentNestedToFormation'
-        type: array
-      tirads:
-        $ref: '#/definitions/uzi.Tirads'
-    type: object
-  uzi.FormationReq:
-    properties:
-      ai:
-        type: boolean
-      tirads:
-        $ref: '#/definitions/uzi.Tirads'
-    type: object
-  uzi.FormationWithSegments:
-    properties:
-      formation:
-        $ref: '#/definitions/uzi.Formation'
-      segments:
-        items:
-          $ref: '#/definitions/uzi.Segment'
-        type: array
-    type: object
-  uzi.FormationWithSegmentsIDs:
+  grpcapi.CreateFormationWithSegmentsResponse:
     properties:
       formation_id:
         type: string
@@ -97,7 +54,50 @@ definitions:
           type: string
         type: array
     type: object
-  uzi.Image:
+  grpcapi.Device:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  grpcapi.FormationRequest:
+    properties:
+      ai:
+        type: boolean
+      tirads:
+        $ref: '#/definitions/grpcapi.Tirads'
+    type: object
+  grpcapi.FormationResponse:
+    properties:
+      ai:
+        type: boolean
+      id:
+        type: string
+      tirads:
+        $ref: '#/definitions/grpcapi.Tirads'
+    type: object
+  grpcapi.FormationWithNestedSegmentsRequest:
+    properties:
+      ai:
+        type: boolean
+      segments:
+        items:
+          $ref: '#/definitions/grpcapi.SegmentNestedRequest'
+        type: array
+      tirads:
+        $ref: '#/definitions/grpcapi.Tirads'
+    type: object
+  grpcapi.FormationWithSegments:
+    properties:
+      formation:
+        $ref: '#/definitions/grpcapi.FormationResponse'
+      segments:
+        items:
+          $ref: '#/definitions/grpcapi.SegmentResponse'
+        type: array
+    type: object
+  grpcapi.ImageResponse:
     properties:
       id:
         type: string
@@ -106,48 +106,72 @@ definitions:
       url:
         type: string
     type: object
-  uzi.ImageWithSegmentsFormations:
+  grpcapi.ImageWithFormationsSegments:
     properties:
       formations:
         items:
-          $ref: '#/definitions/uzi.Formation'
+          $ref: '#/definitions/grpcapi.FormationResponse'
         type: array
       image:
-        $ref: '#/definitions/uzi.Image'
+        $ref: '#/definitions/grpcapi.ImageResponse'
       segments:
         items:
-          $ref: '#/definitions/uzi.Segment'
+          $ref: '#/definitions/grpcapi.SegmentResponse'
         type: array
     type: object
-  uzi.Point:
+  grpcapi.Point:
     properties:
-      x:
+      X:
         type: integer
-      "y":
+      "Y":
         type: integer
     type: object
-  uzi.Report:
+  grpcapi.Report:
     properties:
       formations:
         items:
-          $ref: '#/definitions/uzi.Formation'
+          $ref: '#/definitions/grpcapi.FormationResponse'
         type: array
       images:
         items:
-          $ref: '#/definitions/uzi.Image'
+          $ref: '#/definitions/grpcapi.ImageResponse'
         type: array
       segments:
         items:
-          $ref: '#/definitions/uzi.Segment'
+          $ref: '#/definitions/grpcapi.SegmentResponse'
         type: array
       uzi:
-        $ref: '#/definitions/uzi.Uzi'
+        $ref: '#/definitions/grpcapi.UziReponse'
     type: object
-  uzi.Segment:
+  grpcapi.SegmentNestedRequest:
     properties:
       contor:
         items:
-          $ref: '#/definitions/uzi.Point'
+          $ref: '#/definitions/grpcapi.Point'
+        type: array
+      image_id:
+        type: string
+      tirads:
+        $ref: '#/definitions/grpcapi.Tirads'
+    type: object
+  grpcapi.SegmentRequest:
+    properties:
+      contor:
+        items:
+          $ref: '#/definitions/grpcapi.Point'
+        type: array
+      formation_id:
+        type: string
+      image_id:
+        type: string
+      tirads:
+        $ref: '#/definitions/grpcapi.Tirads'
+    type: object
+  grpcapi.SegmentResponse:
+    properties:
+      contor:
+        items:
+          $ref: '#/definitions/grpcapi.Point'
         type: array
       formation_id:
         type: string
@@ -156,34 +180,25 @@ definitions:
       image_id:
         type: string
       tirads:
-        $ref: '#/definitions/uzi.Tirads'
+        $ref: '#/definitions/grpcapi.Tirads'
     type: object
-  uzi.SegmentNestedToFormation:
+  grpcapi.Tirads:
     properties:
-      contor:
-        items:
-          $ref: '#/definitions/uzi.Point'
-        type: array
-      image_id:
+      tirads_4:
+        type: number
+      tirads_5:
+        type: number
+      tirads_23:
+        type: number
+    type: object
+  grpcapi.UpdateUziRequest:
+    properties:
+      id:
         type: string
-      tirads:
-        $ref: '#/definitions/uzi.Tirads'
+      uzi:
+        $ref: '#/definitions/grpcapi.UziUpdateRequest'
     type: object
-  uzi.SegmentUpdate:
-    properties:
-      tirads:
-        $ref: '#/definitions/uzi.Tirads'
-    type: object
-  uzi.Tirads:
-    properties:
-      tirads4:
-        type: number
-      tirads5:
-        type: number
-      tirads23:
-        type: number
-    type: object
-  uzi.Uzi:
+  grpcapi.UziReponse:
     properties:
       device_id:
         type: integer
@@ -196,7 +211,7 @@ definitions:
       url:
         type: string
     type: object
-  uzi.UziReq:
+  grpcapi.UziUpdateRequest:
     properties:
       device_id:
         type: integer
@@ -303,7 +318,7 @@ paths:
         "200":
           description: Данные формации с сегментами
           schema:
-            $ref: '#/definitions/uzi.FormationWithSegments'
+            $ref: '#/definitions/grpcapi.FormationWithSegments'
         "500":
           description: Internal error
           schema:
@@ -327,14 +342,14 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/uzi.FormationNestedSegmentReq'
+          $ref: '#/definitions/grpcapi.FormationWithNestedSegmentsRequest'
       produces:
       - application/json
       responses:
         "200":
           description: ID элементов
           schema:
-            $ref: '#/definitions/uzi.FormationWithSegmentsIDs'
+            $ref: '#/definitions/grpcapi.CreateFormationWithSegmentsResponse'
         "500":
           description: Internal error
           schema:
@@ -357,7 +372,7 @@ paths:
         "200":
           description: Данные УЗИ
           schema:
-            $ref: '#/definitions/uzi.Report'
+            $ref: '#/definitions/grpcapi.Report'
         "500":
           description: Internal error
           schema:
@@ -380,7 +395,7 @@ paths:
         "200":
           description: Данные УЗИ
           schema:
-            $ref: '#/definitions/uzi.Uzi'
+            $ref: '#/definitions/grpcapi.UziReponse'
         "500":
           description: Internal error
           schema:
@@ -403,19 +418,32 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/uzi.UziReq'
+          $ref: '#/definitions/grpcapi.UpdateUziRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Успешное выполнение
           schema:
-            $ref: '#/definitions/uzi.Uzi'
+            $ref: '#/definitions/grpcapi.UziReponse'
         "500":
           description: Internal error
           schema:
             type: string
       summary: Обновить УЗИ
+      tags:
+      - Uzi
+  /uzi/create:
+    post:
+      description: Да пиздец.
+      produces:
+      - application/json
+      responses:
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: ЗагрузитьUzi
       tags:
       - Uzi
   /uzi/device/list:
@@ -428,7 +456,7 @@ paths:
           description: Список устройств
           schema:
             items:
-              $ref: '#/definitions/uzi.Device'
+              $ref: '#/definitions/grpcapi.Device'
             type: array
         "500":
           description: Internal error
@@ -453,14 +481,14 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/uzi.FormationReq'
+          $ref: '#/definitions/grpcapi.FormationRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Успешное выполнение
           schema:
-            $ref: '#/definitions/uzi.Formation'
+            $ref: '#/definitions/grpcapi.FormationResponse'
         "500":
           description: Internal error
           schema:
@@ -484,7 +512,7 @@ paths:
         "200":
           description: Изображение с сегментами
           schema:
-            $ref: '#/definitions/uzi.ImageWithSegmentsFormations'
+            $ref: '#/definitions/grpcapi.ImageWithFormationsSegments'
         "500":
           description: Internal error
           schema:
@@ -508,14 +536,14 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/uzi.SegmentUpdate'
+          $ref: '#/definitions/grpcapi.SegmentRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Успешное выполнение
           schema:
-            $ref: '#/definitions/uzi.Segment'
+            $ref: '#/definitions/grpcapi.SegmentResponse'
         "500":
           description: Internal error
           schema:

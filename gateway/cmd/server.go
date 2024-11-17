@@ -7,8 +7,12 @@ import (
 	"net/http"
 	"sync"
 	_ "yir/gateway/docs"
+
 	auth "yir/gateway/internal/auth"
 	authpb "yir/gateway/rpc/auth"
+
+	uzi "yir/gateway/internal/uzi"
+	uzipb "yir/gateway/rpc/uzi"
 
 	"flag"
 	"yir/gateway/internal/config"
@@ -51,6 +55,18 @@ func main() {
 	authCtrl := auth.NewCtrl(authpb.NewAuthClient(authConn))
 
 	authpb.RegisterAuthServer(s, authCtrl)
+	if err := authpb.RegisterAuthHandlerFromEndpoint(context.Background(), mux, cfg.Gateway.Host+":"+cfg.Gateway.GRPCport, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
+		panic(fmt.Errorf("register http auth: %w", err))
+	}
+
+	uziConn, err := grpc.Dial(cfg.Uzi.Url, grpc.WithInsecure())
+	if err != nil {
+		panic(fmt.Errorf("auth conn: %w", err))
+	}
+
+	uziCtrl := uzi.NewCtrl(uzipb.NewUziAPIClient(uziConn))
+
+	uzipb.RegisterUziAPIServer(s, uziCtrl)
 	if err := authpb.RegisterAuthHandlerFromEndpoint(context.Background(), mux, cfg.Gateway.Host+":"+cfg.Gateway.GRPCport, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
 		panic(fmt.Errorf("register http auth: %w", err))
 	}

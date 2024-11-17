@@ -158,7 +158,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Данные формации с сегментами",
                         "schema": {
-                            "$ref": "#/definitions/uzi.FormationWithSegments"
+                            "$ref": "#/definitions/grpcapi.FormationWithSegments"
                         }
                     },
                     "500": {
@@ -197,7 +197,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/uzi.FormationNestedSegmentReq"
+                            "$ref": "#/definitions/grpcapi.FormationWithNestedSegmentsRequest"
                         }
                     }
                 ],
@@ -205,7 +205,7 @@ const docTemplate = `{
                     "200": {
                         "description": "ID элементов",
                         "schema": {
-                            "$ref": "#/definitions/uzi.FormationWithSegmentsIDs"
+                            "$ref": "#/definitions/grpcapi.CreateFormationWithSegmentsResponse"
                         }
                     },
                     "500": {
@@ -240,9 +240,29 @@ const docTemplate = `{
                     "200": {
                         "description": "Данные УЗИ",
                         "schema": {
-                            "$ref": "#/definitions/uzi.Report"
+                            "$ref": "#/definitions/grpcapi.Report"
                         }
                     },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/uzi/create": {
+            "post": {
+                "description": "Да пиздец.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Uzi"
+                ],
+                "summary": "ЗагрузитьUzi",
+                "responses": {
                     "500": {
                         "description": "Internal error",
                         "schema": {
@@ -268,7 +288,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/uzi.Device"
+                                "$ref": "#/definitions/grpcapi.Device"
                             }
                         }
                     },
@@ -308,7 +328,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/uzi.FormationReq"
+                            "$ref": "#/definitions/grpcapi.FormationRequest"
                         }
                     }
                 ],
@@ -316,7 +336,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Успешное выполнение",
                         "schema": {
-                            "$ref": "#/definitions/uzi.Formation"
+                            "$ref": "#/definitions/grpcapi.FormationResponse"
                         }
                     },
                     "500": {
@@ -351,7 +371,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Изображение с сегментами",
                         "schema": {
-                            "$ref": "#/definitions/uzi.ImageWithSegmentsFormations"
+                            "$ref": "#/definitions/grpcapi.ImageWithFormationsSegments"
                         }
                     },
                     "500": {
@@ -390,7 +410,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/uzi.SegmentUpdate"
+                            "$ref": "#/definitions/grpcapi.SegmentRequest"
                         }
                     }
                 ],
@@ -398,7 +418,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Успешное выполнение",
                         "schema": {
-                            "$ref": "#/definitions/uzi.Segment"
+                            "$ref": "#/definitions/grpcapi.SegmentResponse"
                         }
                     },
                     "500": {
@@ -433,7 +453,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Данные УЗИ",
                         "schema": {
-                            "$ref": "#/definitions/uzi.Uzi"
+                            "$ref": "#/definitions/grpcapi.UziReponse"
                         }
                     },
                     "500": {
@@ -470,7 +490,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/uzi.UziReq"
+                            "$ref": "#/definitions/grpcapi.UpdateUziRequest"
                         }
                     }
                 ],
@@ -478,7 +498,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Успешное выполнение",
                         "schema": {
-                            "$ref": "#/definitions/uzi.Uzi"
+                            "$ref": "#/definitions/grpcapi.UziReponse"
                         }
                     },
                     "500": {
@@ -564,74 +584,7 @@ const docTemplate = `{
                 }
             }
         },
-        "uzi.Device": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "uzi.Formation": {
-            "type": "object",
-            "properties": {
-                "ai": {
-                    "type": "boolean"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "tirads": {
-                    "$ref": "#/definitions/uzi.Tirads"
-                }
-            }
-        },
-        "uzi.FormationNestedSegmentReq": {
-            "type": "object",
-            "properties": {
-                "ai": {
-                    "type": "boolean"
-                },
-                "segments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/uzi.SegmentNestedToFormation"
-                    }
-                },
-                "tirads": {
-                    "$ref": "#/definitions/uzi.Tirads"
-                }
-            }
-        },
-        "uzi.FormationReq": {
-            "type": "object",
-            "properties": {
-                "ai": {
-                    "type": "boolean"
-                },
-                "tirads": {
-                    "$ref": "#/definitions/uzi.Tirads"
-                }
-            }
-        },
-        "uzi.FormationWithSegments": {
-            "type": "object",
-            "properties": {
-                "formation": {
-                    "$ref": "#/definitions/uzi.Formation"
-                },
-                "segments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/uzi.Segment"
-                    }
-                }
-            }
-        },
-        "uzi.FormationWithSegmentsIDs": {
+        "grpcapi.CreateFormationWithSegmentsResponse": {
             "type": "object",
             "properties": {
                 "formation_id": {
@@ -645,7 +598,74 @@ const docTemplate = `{
                 }
             }
         },
-        "uzi.Image": {
+        "grpcapi.Device": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "grpcapi.FormationRequest": {
+            "type": "object",
+            "properties": {
+                "ai": {
+                    "type": "boolean"
+                },
+                "tirads": {
+                    "$ref": "#/definitions/grpcapi.Tirads"
+                }
+            }
+        },
+        "grpcapi.FormationResponse": {
+            "type": "object",
+            "properties": {
+                "ai": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "tirads": {
+                    "$ref": "#/definitions/grpcapi.Tirads"
+                }
+            }
+        },
+        "grpcapi.FormationWithNestedSegmentsRequest": {
+            "type": "object",
+            "properties": {
+                "ai": {
+                    "type": "boolean"
+                },
+                "segments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/grpcapi.SegmentNestedRequest"
+                    }
+                },
+                "tirads": {
+                    "$ref": "#/definitions/grpcapi.Tirads"
+                }
+            }
+        },
+        "grpcapi.FormationWithSegments": {
+            "type": "object",
+            "properties": {
+                "formation": {
+                    "$ref": "#/definitions/grpcapi.FormationResponse"
+                },
+                "segments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/grpcapi.SegmentResponse"
+                    }
+                }
+            }
+        },
+        "grpcapi.ImageResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -659,70 +679,107 @@ const docTemplate = `{
                 }
             }
         },
-        "uzi.ImageWithSegmentsFormations": {
+        "grpcapi.ImageWithFormationsSegments": {
             "type": "object",
             "properties": {
                 "formations": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/uzi.Formation"
+                        "$ref": "#/definitions/grpcapi.FormationResponse"
                     }
                 },
                 "image": {
-                    "$ref": "#/definitions/uzi.Image"
+                    "$ref": "#/definitions/grpcapi.ImageResponse"
                 },
                 "segments": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/uzi.Segment"
+                        "$ref": "#/definitions/grpcapi.SegmentResponse"
                     }
                 }
             }
         },
-        "uzi.Point": {
+        "grpcapi.Point": {
             "type": "object",
             "properties": {
-                "x": {
+                "X": {
                     "type": "integer"
                 },
-                "y": {
+                "Y": {
                     "type": "integer"
                 }
             }
         },
-        "uzi.Report": {
+        "grpcapi.Report": {
             "type": "object",
             "properties": {
                 "formations": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/uzi.Formation"
+                        "$ref": "#/definitions/grpcapi.FormationResponse"
                     }
                 },
                 "images": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/uzi.Image"
+                        "$ref": "#/definitions/grpcapi.ImageResponse"
                     }
                 },
                 "segments": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/uzi.Segment"
+                        "$ref": "#/definitions/grpcapi.SegmentResponse"
                     }
                 },
                 "uzi": {
-                    "$ref": "#/definitions/uzi.Uzi"
+                    "$ref": "#/definitions/grpcapi.UziReponse"
                 }
             }
         },
-        "uzi.Segment": {
+        "grpcapi.SegmentNestedRequest": {
             "type": "object",
             "properties": {
                 "contor": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/uzi.Point"
+                        "$ref": "#/definitions/grpcapi.Point"
+                    }
+                },
+                "image_id": {
+                    "type": "string"
+                },
+                "tirads": {
+                    "$ref": "#/definitions/grpcapi.Tirads"
+                }
+            }
+        },
+        "grpcapi.SegmentRequest": {
+            "type": "object",
+            "properties": {
+                "contor": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/grpcapi.Point"
+                    }
+                },
+                "formation_id": {
+                    "type": "string"
+                },
+                "image_id": {
+                    "type": "string"
+                },
+                "tirads": {
+                    "$ref": "#/definitions/grpcapi.Tirads"
+                }
+            }
+        },
+        "grpcapi.SegmentResponse": {
+            "type": "object",
+            "properties": {
+                "contor": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/grpcapi.Point"
                     }
                 },
                 "formation_id": {
@@ -735,50 +792,36 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tirads": {
-                    "$ref": "#/definitions/uzi.Tirads"
+                    "$ref": "#/definitions/grpcapi.Tirads"
                 }
             }
         },
-        "uzi.SegmentNestedToFormation": {
+        "grpcapi.Tirads": {
             "type": "object",
             "properties": {
-                "contor": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/uzi.Point"
-                    }
+                "tirads_23": {
+                    "type": "number"
                 },
-                "image_id": {
+                "tirads_4": {
+                    "type": "number"
+                },
+                "tirads_5": {
+                    "type": "number"
+                }
+            }
+        },
+        "grpcapi.UpdateUziRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
                     "type": "string"
                 },
-                "tirads": {
-                    "$ref": "#/definitions/uzi.Tirads"
+                "uzi": {
+                    "$ref": "#/definitions/grpcapi.UziUpdateRequest"
                 }
             }
         },
-        "uzi.SegmentUpdate": {
-            "type": "object",
-            "properties": {
-                "tirads": {
-                    "$ref": "#/definitions/uzi.Tirads"
-                }
-            }
-        },
-        "uzi.Tirads": {
-            "type": "object",
-            "properties": {
-                "tirads23": {
-                    "type": "number"
-                },
-                "tirads4": {
-                    "type": "number"
-                },
-                "tirads5": {
-                    "type": "number"
-                }
-            }
-        },
-        "uzi.Uzi": {
+        "grpcapi.UziReponse": {
             "type": "object",
             "properties": {
                 "device_id": {
@@ -798,7 +841,7 @@ const docTemplate = `{
                 }
             }
         },
-        "uzi.UziReq": {
+        "grpcapi.UziUpdateRequest": {
             "type": "object",
             "properties": {
                 "device_id": {

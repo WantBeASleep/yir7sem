@@ -33,15 +33,9 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   }
 };
 
-/*
-DEPRECATED:
-rpc InsertUzi(Uzi) returns (google.protobuf.Empty) - ручка ответственная за
-добавления REPORT. Более не требуется из-за декомпозиции этого процесса
-*/
-
 service UziAPI {
   // Создать uzi
-  rpc CreateUzi(CreateUziRequest) returns (Id) {
+  rpc CreateUzi(UziRequest) returns (Id) {
     option (google.api.http) = {
       post : "/uzi/create"
       body : "*"
@@ -51,21 +45,21 @@ service UziAPI {
   // Получить uzi
   rpc GetUzi(Id) returns (UziReponse) {
     option (google.api.http) = {
-      get : "/uzi/get/{id}"
+      get : "/uzi/{id}"
     };
   }
 
   // Получить report (файлы идут как ссылки в S3)
   rpc GetReport(Id) returns (Report) {
     option (google.api.http) = {
-      get : "/report/get/{id}"
+      get : "/report/{id}"
     };
   }
 
   rpc UpdateUzi(UpdateUziRequest) returns (UziReponse) {
     option (google.api.http) = {
-      patch : "/uzi/info/{id}"
-      body : "*"
+      patch : "/uzi/{id}"
+      body : "uzi"
     };
   }
 
@@ -74,7 +68,7 @@ service UziAPI {
   // Получить image с сегментами и узлами на нем
   rpc GetImageWithFormationsSegments(Id) returns (ImageWithFormationsSegments) {
     option (google.api.http) = {
-      get : "/image/info/{id}"
+      get : "/image/withsegments/{id}"
     };
   }
 
@@ -84,8 +78,8 @@ service UziAPI {
   rpc CreateFormationWithSegments(CreateFormationWithSegmentsRequest)
       returns (CreateFormationWithSegmentsResponse) {
     option (google.api.http) = {
-      post : "/formation/withsegments/{uzi_id}"
-      body : "*"
+      post : "/formation/withsegments/{id}"
+      body : "formation"
     };
   }
 
@@ -97,12 +91,10 @@ service UziAPI {
   }
 
   // Обновить formation
-  //
-  // **ID при обновлении будет игнорироваться**
   rpc UpdateFormation(UpdateFormationRequest) returns (FormationResponse) {
     option (google.api.http) = {
       patch : "/formation/{id}"
-      body : "*"
+      body : "formation"
     };
   }
 
@@ -111,7 +103,7 @@ service UziAPI {
   rpc UpdateSegment(UpdateSegmentRequest) returns (SegmentResponse) {
     option (google.api.http) = {
       patch : "/segment/{id}"
-      body : "*"
+      body : "tirads"
     };
   }
 
@@ -149,7 +141,6 @@ message Tirads {
   ];
 }
 
-// TODO: добавить в валидацию на узи + написть под это логику
 message Point {
   int64 X = 100 [(buf.validate.field).int64.gte = 0];
   int64 Y = 200 [(buf.validate.field).int64.gte = 0];
@@ -167,8 +158,8 @@ message SegmentRequest {
     (buf.validate.field).required = true
   ];
 
-  string contor_url = 400
-      [ json_name = "contor_url", (buf.validate.field).required = true ];
+  repeated Point contor = 400
+      [ (buf.validate.field).required = true ];
   Tirads tirads = 500 [ (buf.validate.field).required = true ];
 }
 
@@ -180,16 +171,16 @@ message SegmentNestedRequest {
   ];
 
   repeated Point contor = 200
-      [ json_name = "contor", (buf.validate.field).required = true ];
+      [ (buf.validate.field).required = true ];
   Tirads tirads = 300 [ (buf.validate.field).required = true ];
 }
 
 message SegmentResponse {
   string id = 100;
-  string formation_id = 200;
-  string image_id = 300;
+  string formation_id = 200[json_name = "formation_id"];
+  string image_id = 300[json_name = "image_id"];
 
-  string contor_url = 400;
+  repeated Point contor = 400;
   Tirads tirads = 500;
 }
 
@@ -202,7 +193,7 @@ message FormationWithNestedSegmentsRequest {
   repeated SegmentNestedRequest segments = 100 [ (buf.validate.field).required = true ];
   Tirads tirads = 200 [ (buf.validate.field).required = true ];
   bool ai = 300;
-}
+} 
 
 message FormationResponse {
   string id = 100;
@@ -230,13 +221,24 @@ message UziRequest {
       [ json_name = "device_id", (buf.validate.field).required = true ];
 }
 
+message UziUpdateRequest {
+  string projection = 300 [ (buf.validate.field).required = true ];
+  string patient_id = 400 [
+    json_name = "patient_id",
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  int64 device_id = 500
+      [ json_name = "device_id", (buf.validate.field).required = true ];
+}
+
 message UziReponse {
   string id = 100;
 
   string url = 200;
   string projection = 300;
-  string patient_id = 400;
-  int64 device_id = 500;
+  string patient_id = 400 [json_name = "patient_id"];
+  int64 device_id = 500[json_name = "device_id"];
 }
 
 message Report {
@@ -261,17 +263,13 @@ message FormationWithSegments {
   repeated SegmentResponse segments = 200;
 }
 
-message CreateUziRequest {
-  UziRequest uzi = 100 [ (buf.validate.field).required = true ];
-}
-
 message UpdateUziRequest {
   string id = 100 [
     json_name = "id",
     (buf.validate.field).string.uuid = true,
     (buf.validate.field).required = true
   ];
-  UziRequest uzi = 200
+  UziUpdateRequest uzi = 200
       [ json_name = "uzi", (buf.validate.field).required = true ];
 }
 
@@ -282,8 +280,8 @@ message ImageWithFormationsSegments {
 }
 
 message CreateFormationWithSegmentsRequest {
-  string uzi_id = 100 [
-    json_name = "uzi_id",
+  string id = 100 [
+    json_name = "id",
     (buf.validate.field).string.uuid = true,
     (buf.validate.field).required = true
   ];
@@ -311,7 +309,7 @@ message UpdateSegmentRequest {
     (buf.validate.field).string.uuid = true,
     (buf.validate.field).required = true
   ];
-  SegmentRequest segment = 200 [ (buf.validate.field).required = true ];
+  Tirads tirads = 200 [ (buf.validate.field).required = true ];
 }
 
 message GetDeviceListResponse { repeated Device devices = 100; }

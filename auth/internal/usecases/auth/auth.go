@@ -70,12 +70,7 @@ func (u *AuthUseCase) Login(ctx context.Context, mail string, password string) (
 }
 
 func (a *AuthUseCase) Register(ctx context.Context, req *entity.RequestRegister) (uuid.UUID, error) {
-	// medWorkerID, err := a.medRepo.AddMed(ctx, request)
-	// if err != nil {
-	// 	a.logger.Warn("Failed to register med worker via med service", zap.Error(err))
-	// 	return 0, fmt.Errorf("failed to add med worker: %w", err)
-	// }
-	// a.logger.Info("Med worker registered successfully", zap.Int("MedWorkerID", medWorkerID))
+	a.logger.Debug("req", zap.Any("req", req))
 	medWorkerID, _ := uuid.NewRandom()
 
 	salt := gofakeit.MinecraftBiome()
@@ -97,7 +92,7 @@ func (a *AuthUseCase) Register(ctx context.Context, req *entity.RequestRegister)
 		a.logger.Error("Create new user", zap.Error(err))
 		return uuid.Nil, fmt.Errorf("create new user: %w", err)
 	}
-	a.logger.Info("[Response] Added new user")
+	a.logger.Info("[Response] Added new user", zap.Any("ID", userID))
 
 	return userID, nil
 }

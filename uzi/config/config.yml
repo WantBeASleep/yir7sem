@@ -1,7 +1,7 @@
 app:
   env: DEV
   host: localhost
-  grpc: 50056
+  grpc: 50054
   http: 8081
 
 db:

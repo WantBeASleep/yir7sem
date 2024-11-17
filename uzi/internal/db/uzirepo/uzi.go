@@ -22,11 +22,13 @@ func (r *UziRepo) GetDevicesList(ctx context.Context) ([]entity.Device, error) {
 
 func (r *UziRepo) CreateUzi(ctx context.Context, uzi *entity.Uzi) (uuid.UUID, error) {
 	uziDB := mappers.MustTransformObj[entity.Uzi, models.Uzi](uzi)
+	uziID := uuid.New()
+	uziDB.Id = uziID
 	if err := db.CreateRecord[models.Uzi](ctx, r.db, uziDB); err != nil {
 		return uuid.Nil, err
 	}
 
-	return uziDB.Id, nil
+	return uziID, nil
 }
 
 func (r *UziRepo) GetUziByID(ctx context.Context, id uuid.UUID) (*entity.Uzi, error) {

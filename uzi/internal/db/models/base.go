@@ -59,9 +59,9 @@ type Segment struct {
 	FormationID uuid.UUID
 	Formation   Formation `gorm:"foreignKey:FormationID;references:Id;" copier:"-"`
 
-	ContorURL string
-	TiradsID  int
-	Tirads    Tirads `gorm:"foreignKey:TiradsID;references:Id;" copier:"-"`
+	Contor   string
+	TiradsID int
+	Tirads   Tirads `gorm:"foreignKey:TiradsID;references:Id;" copier:"-"`
 }
 
 func (Segment) TableName() string {

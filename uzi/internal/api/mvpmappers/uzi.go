@@ -26,11 +26,10 @@ func PBUziReqToUzi(uzi *pb.UziRequest) *entity.Uzi {
 	}
 }
 
-func PBCreateUziReqToUzi(uzi *pb.CreateUziRequest) *entity.Uzi {
+func PBUpdateUziReqToUzi(uzi *pb.UziUpdateRequest) *entity.Uzi {
 	return &entity.Uzi{
-		Url:        uzi.Uzi.Url,
-		Projection: uzi.Uzi.Projection,
-		PatientID:  uuid.MustParse(uzi.Uzi.PatientId),
-		DeviceID:   int(uzi.Uzi.DeviceId),
+		Projection: uzi.Projection,
+		PatientID:  uuid.MustParse(uzi.PatientId),
+		DeviceID:   int(uzi.DeviceId),
 	}
 }

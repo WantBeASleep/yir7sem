@@ -39,7 +39,6 @@ func NewServer(
 			&pb.FormationWithNestedSegmentsRequest{},
 			&pb.SegmentNestedRequest{},
 
-			&pb.CreateUziRequest{},
 			&pb.UpdateUziRequest{},
 			&pb.CreateFormationWithSegmentsRequest{},
 			&pb.UpdateFormationRequest{},
@@ -56,12 +55,12 @@ func NewServer(
 	}, nil
 }
 
-func (s *Server) CreateUzi(ctx context.Context, req *pb.CreateUziRequest) (*pb.Id, error) {
+func (s *Server) CreateUzi(ctx context.Context, req *pb.UziRequest) (*pb.Id, error) {
 	if err := s.validator.Validate(req); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %v", err))
 	}
 
-	id, err := s.uziUseCase.CreateUzi(ctx, mvpmappers.PBCreateUziReqToUzi(req))
+	id, err := s.uziUseCase.CreateUzi(ctx, mvpmappers.PBUziReqToUzi(req))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
 	}
@@ -105,7 +104,7 @@ func (s *Server) UpdateUzi(ctx context.Context, req *pb.UpdateUziRequest) (*pb.U
 	}
 
 	uziID := uuid.MustParse(req.Id)
-	uzi := mvpmappers.PBUziReqToUzi(req.Uzi)
+	uzi := mvpmappers.PBUpdateUziReqToUzi(req.Uzi)
 	updatedUzi, err := s.uziUseCase.UpdateUzi(ctx, uziID, uzi)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Что то пошло не так: %s", err.Error()))
@@ -181,7 +180,7 @@ func (s *Server) UpdateSegment(ctx context.Context, req *pb.UpdateSegmentRequest
 	}
 
 	segmentID := uuid.MustParse(req.Id)
-	segment := mvpmappers.PBSegmentReqToDTOSegment(req.Segment)
+	segment := mvpmappers.PBSegmentReqToDTOSegment(&pb.SegmentRequest{Tirads: req.Tirads})
 
 	updatedSegment, err := s.uziUseCase.UpdateSegment(ctx, segmentID, segment)
 	if err != nil {

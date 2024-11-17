@@ -1,6 +1,8 @@
 package mvpmappers
 
 import (
+	"encoding/json"
+	"yir/uzi/api/broker"
 	kafka "yir/uzi/api/broker"
 	pb "yir/uzi/api/grpcapi"
 	"yir/uzi/internal/usecases/dto"
@@ -8,11 +10,57 @@ import (
 	"github.com/google/uuid"
 )
 
+type Point struct {
+	X int
+	Y int
+}
+
+func PBPointsToString(contor []*pb.Point) string {
+	res := make([]Point, 0, len(contor))
+	for _, cn := range contor {
+		res = append(res, Point{
+			X: int(cn.X),
+			Y: int(cn.Y),
+		})
+	}
+
+	JSON, _ := json.Marshal(res)
+	return string(JSON)
+}
+
+func KafkaPointsToString(contor []*broker.Point) string {
+	res := make([]Point, 0, len(contor))
+	for _, cn := range contor {
+		res = append(res, Point{
+			X: int(cn.X),
+			Y: int(cn.Y),
+		})
+	}
+
+	JSON, _ := json.Marshal(res)
+	return string(JSON)
+}
+
+func StringToContor(contor string) []*pb.Point {
+	var contorJSON []Point
+	json.Unmarshal([]byte(contor), &contorJSON)
+
+	res := make([]*pb.Point, 0, len(contorJSON))
+	for _, cn := range contorJSON {
+		res = append(res, &pb.Point{
+			X: int64(cn.X),
+			Y: int64(cn.Y),
+		})
+	}
+
+	return res
+}
+
 func PBSegmentReqToDTOSegment(segment *pb.SegmentRequest) *dto.Segment {
 	return &dto.Segment{
 		ImageID:     uuid.MustParse(segment.ImageId),
 		FormationID: uuid.MustParse(segment.FormationId),
-		ContorURL:   segment.ContorUrl,
+		Contor:      PBPointsToString(segment.Contor),
 		Tirads:      PBTiradsToTirads(segment.Tirads),
 	}
 }
@@ -22,16 +70,16 @@ func KafkaSegmentReqToDTOSegment(segment *kafka.KafkaSegment) *dto.Segment {
 		Id:          uuid.MustParse(segment.Id),
 		ImageID:     uuid.MustParse(segment.ImageId),
 		FormationID: uuid.MustParse(segment.FormationId),
-		ContorURL:   segment.ContorUrl,
+		Contor:      KafkaPointsToString(segment.Contor),
 		Tirads:      KafkaTiradsToTirads(segment.Tirads),
 	}
 }
 
 func PBSegmentNestedReqToDTOSegment(segment *pb.SegmentNestedRequest) *dto.Segment {
 	return &dto.Segment{
-		ImageID:   uuid.MustParse(segment.ImageId),
-		ContorURL: segment.ContorUrl,
-		Tirads:    PBTiradsToTirads(segment.Tirads),
+		ImageID: uuid.MustParse(segment.ImageId),
+		Contor:  PBPointsToString(segment.Contor),
+		Tirads:  PBTiradsToTirads(segment.Tirads),
 	}
 }
 
@@ -68,8 +116,8 @@ func DTOSegmentToPBSegmentResp(segment dto.Segment) *pb.SegmentResponse {
 		FormationId: segment.FormationID.String(),
 		ImageId:     segment.ImageID.String(),
 
-		ContorUrl: segment.ContorURL,
-		Tirads:    TiradsToPBTirads(segment.Tirads),
+		Contor: StringToContor(segment.Contor),
+		Tirads: TiradsToPBTirads(segment.Tirads),
 	}
 }
 

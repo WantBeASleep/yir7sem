@@ -6,3 +6,7 @@ gateway:
 
 auth:
   url: localhost:50053
+
+uzi:
+  url: localhost:50054
+

@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Gateway Gateway `yaml:"gateway"`
 	Auth    Auth    `yaml:"auth"`
+	Uzi     Uzi     `yaml:"uzi"`
 }
 
 type Gateway struct {
@@ -22,6 +23,10 @@ type Gateway struct {
 }
 
 type Auth struct {
+	Url string `yaml:"url" env-default:"localhost:50055"`
+}
+
+type Uzi struct {
 	Url string `yaml:"url" env-default:"localhost:50055"`
 }
 

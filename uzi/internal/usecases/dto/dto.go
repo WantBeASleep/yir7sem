@@ -18,8 +18,8 @@ type Segment struct {
 	ImageID     uuid.UUID
 	FormationID uuid.UUID
 
-	ContorURL string
-	Tirads    *entity.Tirads
+	Contor string
+	Tirads *entity.Tirads
 }
 
 type Report struct {

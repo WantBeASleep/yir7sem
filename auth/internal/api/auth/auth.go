@@ -47,7 +47,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %v", err))
 	}
 
-	tokensPair, err := s.authUseCase.Login(ctx, req.Mail, req.Password)
+	tokensPair, err := s.authUseCase.Login(ctx, req.Email, req.Password)
 	if err != nil {
 		switch {
 		case errors.Is(err, entity.ErrNotFound):
@@ -71,7 +71,7 @@ func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Reg
 	}
 
 	domainRegister := entity.RequestRegister{
-		Mail:        req.Mail,
+		Mail:        req.Email,
 		LastName:    req.LastName,
 		FirstName:   req.FirstName,
 		FathersName: req.FathersName,
