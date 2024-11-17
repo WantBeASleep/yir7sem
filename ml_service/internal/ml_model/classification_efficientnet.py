@@ -8,9 +8,9 @@ from imgaug import augmenters as iaa
 # from model_template_class import ModelABC, settings
 from ml_service.internal.ml_model.neuro_class import ModelABC
 
-
+# relative 
 settings = settings = {
-    'classification': {'all': '/home/danila/uzzi/ml_service/internal/ml_model/models/all/efficientnet.pth', 'long': '/home/danila/uzzi/ml_service/internal/ml_model/models/long/efficientnet.pth', 'cross': '/home/danila/uzzi/ml_service/internal/ml_model/models/cross/efficientnet.pth'}
+    'classification': {'all': './internal/ml_model/models/all/efficientnet.pth', 'long': './internal/ml_model/models/long/efficientnet.pth', 'cross': './internal/ml_model/models/cross/efficientnet.pth'}
 }
 
 

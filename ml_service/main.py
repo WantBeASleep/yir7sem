@@ -51,12 +51,13 @@ def run_server():
     server.add_insecure_port('[::]:50057')
     server.start()  # Запускаем сервер
     print("Server started on port 50057")
+    server.wait_for_termination()
 
-    try:
-        while True:
-                time.sleep(86400)  # Сервер работает бесконечно
-    except KeyboardInterrupt:
-        server.stop(0)  # Остановка сервера при прерывании
+    # try:
+    #     while True:
+    #             time.sleep(86400)  # Сервер работает бесконечно
+    # except KeyboardInterrupt:
+    #     server.stop(0)  # Остановка сервера при прерывании
 
 
 if __name__ == "__main__":

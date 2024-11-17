@@ -2,10 +2,11 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 # Веса модели
+# relative 
 settings = {
-    'classification': {'all': '/home/danila/uzzi/ml_service/internal/ml_model/models/all/efficientnet.pth', 'cross': '/home/danila/uzzi/ml_service/internal/ml_model/models/cross/efficientnet.pth', 'long': '/home/danila/uzzi/ml_service/internal/ml_model/models/long/efficientnet.pth'},
-    'segmentation': {'all': '/home/danila/uzzi/ml_service/internal/ml_model/models/all/deeplabv3plus.pkl', 'cross': '/home/danila/uzzi/ml_service/internal/ml_model/models/cross/deeplabv3plus.pkl', 'long': '/home/danila/uzzi/ml_service/internal/ml_model/models/long/deeplabv3plus.pkl'},
-    'tracking': 'models/tracking_model.pkl',
+    'classification': {'all': './internal/ml_model/models/all/efficientnet.pth', 'cross': './internal/ml_model/models/cross/efficientnet.pth', 'long': './internal/ml_model/models/long/efficientnet.pth'},
+    'segmentation': {'all': './internal/ml_model/models/all/deeplabv3plus.pkl', 'cross': './internal/ml_model/models/cross/deeplabv3plus.pkl', 'long': './internal/ml_model/models/long/deeplabv3plus.pkl'},
+    'tracking': './models/tracking_model.pkl',
 }
 
 

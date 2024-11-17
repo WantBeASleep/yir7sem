@@ -159,7 +159,8 @@ def print_lengths_return_ndarray_list(data, level=0):
             print(f"{' ' * level}Item: {data} (type: {type(data)})")
     
 def save_result(arr: list, name):
-        path = "/home/danila/uzzi/trashlog/" + name + ".tiff"
+        # relative 
+        path = "../../../../trashlog/" + name + ".tiff"
         if len(arr) > 1:
             imageio.mimwrite(path, arr)
         elif len(arr) == 1:
