@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	_ "yir/gateway/docs"
 	auth "yir/gateway/internal/auth"
 	authpb "yir/gateway/rpc/auth"
 
@@ -13,6 +14,7 @@ import (
 	"yir/gateway/internal/config"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	httpswag "github.com/swaggo/http-swagger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -31,9 +33,9 @@ func init() {
 	flag.StringVar(&configPath, "c", defaultCfgPath, "set config path"+shorthand)
 }
 
-//	@title		API-Gateway
-//	@version	1.0
-//	@schemes	http
+// @title		API-Gateway
+// @version	1.0
+// @schemes	http
 func main() {
 	flag.Parse()
 	cfg := config.MustLoad(configPath)
@@ -57,6 +59,10 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("lister grpc host:port: %w", err))
 	}
+
+	mux.HandlePath("GET", "/docs/*", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+		httpswag.WrapHandler.ServeHTTP(w, r)
+	})
 
 	var wg sync.WaitGroup
 

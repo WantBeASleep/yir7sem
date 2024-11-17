@@ -4,6 +4,19 @@ vars:
   VENDOR_PROTOGEN: '../vendor.protogen'
 
 tasks:
+  source-mover:
+    cmds:
+      - cp ../auth/api/auth/auth.proto rpc/auth
+      - cp ../uzi/api/grpcapi/uzi.proto rpc/uzi
+
+  inject-tags:
+    vars:
+      SRC:
+        sh: find rpc -type f -name '*.pb.go' | xargs echo
+    cmds:
+      - for: { var: SRC }
+        cmd: protoc-go-inject-tag -input={{.ITEM}}
+
   generate-rpc:
     desc: "сгенерировать .proto"
     vars:
@@ -24,6 +37,9 @@ tasks:
           --grpc-gateway_out {{dir .ITEM}} --grpc-gateway_opt logtostderr=true,paths=source_relative
           --openapiv2_out {{dir .ITEM}} --openapiv2_opt=logtostderr=true
           {{.ITEM}}
+          
+      - task: inject-tags
+       
 
   clean:
     desc: "Удалить сгенерированные файлы"
@@ -40,10 +56,18 @@ tasks:
       - goimports -w .
 
   build:
-    deps: [generate-rpc, style]
     cmds:
+      - task: clean
+      - task: source-mover
+      - task: generate-rpc
+      - task: style
+      - swag init -g cmd/server.go
+      - swag fmt
       - go build -v -o bin/server cmd/server.go
 
   run:
     deps: [build]
     cmd: ./bin/server
+
+  default:
+    - task: run

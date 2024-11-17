@@ -1,0 +1,528 @@
+definitions:
+  auth.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  auth.RegisterRequest:
+    properties:
+      email:
+        type: string
+      fathers_name:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      med_organization:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.RegisterResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  auth.TokenRefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  auth.TokenRefreshResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  uzi.Device:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  uzi.Formation:
+    properties:
+      ai:
+        type: boolean
+      id:
+        type: string
+      tirads:
+        $ref: '#/definitions/uzi.Tirads'
+    type: object
+  uzi.FormationNestedSegmentReq:
+    properties:
+      ai:
+        type: boolean
+      segments:
+        items:
+          $ref: '#/definitions/uzi.SegmentNestedToFormation'
+        type: array
+      tirads:
+        $ref: '#/definitions/uzi.Tirads'
+    type: object
+  uzi.FormationReq:
+    properties:
+      ai:
+        type: boolean
+      tirads:
+        $ref: '#/definitions/uzi.Tirads'
+    type: object
+  uzi.FormationWithSegments:
+    properties:
+      formation:
+        $ref: '#/definitions/uzi.Formation'
+      segments:
+        items:
+          $ref: '#/definitions/uzi.Segment'
+        type: array
+    type: object
+  uzi.FormationWithSegmentsIDs:
+    properties:
+      formation_id:
+        type: string
+      segments_ids:
+        items:
+          type: string
+        type: array
+    type: object
+  uzi.Image:
+    properties:
+      id:
+        type: string
+      page:
+        type: integer
+      url:
+        type: string
+    type: object
+  uzi.ImageWithSegmentsFormations:
+    properties:
+      formations:
+        items:
+          $ref: '#/definitions/uzi.Formation'
+        type: array
+      image:
+        $ref: '#/definitions/uzi.Image'
+      segments:
+        items:
+          $ref: '#/definitions/uzi.Segment'
+        type: array
+    type: object
+  uzi.Point:
+    properties:
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  uzi.Report:
+    properties:
+      formations:
+        items:
+          $ref: '#/definitions/uzi.Formation'
+        type: array
+      images:
+        items:
+          $ref: '#/definitions/uzi.Image'
+        type: array
+      segments:
+        items:
+          $ref: '#/definitions/uzi.Segment'
+        type: array
+      uzi:
+        $ref: '#/definitions/uzi.Uzi'
+    type: object
+  uzi.Segment:
+    properties:
+      contor:
+        items:
+          $ref: '#/definitions/uzi.Point'
+        type: array
+      formation_id:
+        type: string
+      id:
+        type: string
+      image_id:
+        type: string
+      tirads:
+        $ref: '#/definitions/uzi.Tirads'
+    type: object
+  uzi.SegmentNestedToFormation:
+    properties:
+      contor:
+        items:
+          $ref: '#/definitions/uzi.Point'
+        type: array
+      image_id:
+        type: string
+      tirads:
+        $ref: '#/definitions/uzi.Tirads'
+    type: object
+  uzi.SegmentUpdate:
+    properties:
+      tirads:
+        $ref: '#/definitions/uzi.Tirads'
+    type: object
+  uzi.Tirads:
+    properties:
+      tirads4:
+        type: number
+      tirads5:
+        type: number
+      tirads23:
+        type: number
+    type: object
+  uzi.Uzi:
+    properties:
+      device_id:
+        type: integer
+      id:
+        type: string
+      patient_id:
+        type: string
+      projection:
+        type: string
+      url:
+        type: string
+    type: object
+  uzi.UziReq:
+    properties:
+      device_id:
+        type: integer
+      patient_id:
+        type: string
+      projection:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: API-Gateway
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a token pair.
+      parameters:
+      - description: User Login Data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LoginResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: User Login
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user and returns a response with a UUID.
+      parameters:
+      - description: User Registration Data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.RegisterResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: User Registration
+      tags:
+      - auth
+  /auth/token/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refreshes an expired access token using a refresh token.
+      parameters:
+      - description: Token Data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.TokenRefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.TokenRefreshResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Token Refresh
+      tags:
+      - auth
+  /formation/segments/{formation_id}:
+    get:
+      description: Возвращает формацию с сегментами по указанному ID формации.
+      parameters:
+      - description: ID формации
+        in: path
+        name: formation_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные формации с сегментами
+          schema:
+            $ref: '#/definitions/uzi.FormationWithSegments'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Получить формацию с сегментами
+      tags:
+      - Uzi
+  /formation/segments/{uzi_id}:
+    post:
+      consumes:
+      - application/json
+      description: Создает формацию с сегментами, привязанную к указанному uziID.
+      parameters:
+      - description: ID УЗИ
+        in: path
+        name: uzi_id
+        required: true
+        type: string
+      - description: Формация с сегментами
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/uzi.FormationNestedSegmentReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ID элементов
+          schema:
+            $ref: '#/definitions/uzi.FormationWithSegmentsIDs'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Добавить формацию с сегментами
+      tags:
+      - Uzi
+  /report/{uzi_id}:
+    get:
+      description: Возвращает информацию о Репорте по указанному ID.
+      parameters:
+      - description: ID УЗИ
+        in: path
+        name: uzi_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные УЗИ
+          schema:
+            $ref: '#/definitions/uzi.Report'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Получить Репорт по ID
+      tags:
+      - Uzi
+  /uzi/{uzi_id}:
+    get:
+      description: Возвращает информацию о УЗИ по указанному ID.
+      parameters:
+      - description: ID УЗИ
+        in: path
+        name: uzi_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные УЗИ
+          schema:
+            $ref: '#/definitions/uzi.Uzi'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Получить УЗИ по ID
+      tags:
+      - Uzi
+    patch:
+      consumes:
+      - application/json
+      description: Обновляет существующую запись УЗИ по переданным данным.
+      parameters:
+      - description: ID УЗИ
+        in: path
+        name: uzi_id
+        required: true
+        type: string
+      - description: Метаданные УЗИ
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/uzi.UziReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное выполнение
+          schema:
+            $ref: '#/definitions/uzi.Uzi'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Обновить УЗИ
+      tags:
+      - Uzi
+  /uzi/device/list:
+    get:
+      description: Возвращает список доступных устройств для УЗИ.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список устройств
+          schema:
+            items:
+              $ref: '#/definitions/uzi.Device'
+            type: array
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Получить список устройств
+      tags:
+      - Uzi
+  /uzi/formation/{formation_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Обновляет существующую формацию по переданному ID.
+      parameters:
+      - description: ID формации
+        in: path
+        name: formation_id
+        required: true
+        type: string
+      - description: Данные формации
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/uzi.FormationReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное выполнение
+          schema:
+            $ref: '#/definitions/uzi.Formation'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Обновить формацию
+      tags:
+      - Uzi
+  /uzi/image/segments/{image_id}:
+    get:
+      description: Возвращает изображение УЗИ и информацию о сегментах по указанному
+        ID изображения.
+      parameters:
+      - description: ID изображения
+        in: path
+        name: image_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Изображение с сегментами
+          schema:
+            $ref: '#/definitions/uzi.ImageWithSegmentsFormations'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Получить изображение УЗИ с сегментами
+      tags:
+      - Uzi
+  /uzi/segment/{segment_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Обновляет существующую сегмент по переданному ID.
+      parameters:
+      - description: ID формации
+        in: path
+        name: segment_id
+        required: true
+        type: string
+      - description: Данные формации
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/uzi.SegmentUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное выполнение
+          schema:
+            $ref: '#/definitions/uzi.Segment'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Обновить сегмент
+      tags:
+      - Uzi
+schemes:
+- http
+swagger: "2.0"

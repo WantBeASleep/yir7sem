@@ -91,8 +91,8 @@ type FormationWithSegments struct {
 }
 
 type FormationWithSegmentsIDs struct {
-	FormationID uuid.UUID  `json:"formation_id"`
-	SegmentsIDs uuid.UUIDs `json:"segments_ids"`
+	FormationID uuid.UUID   `json:"formation_id"`
+	SegmentsIDs []uuid.UUID `json:"segments_ids"`
 }
 
 type ImageWithSegmentsFormations struct {

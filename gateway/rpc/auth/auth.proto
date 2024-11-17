@@ -43,7 +43,7 @@ service Auth {
 }
 
 message LoginRequest {
-  string mail = 1 [
+  string email = 1 [
     (buf.validate.field).required = true,
     (buf.validate.field).string.email = true
   ];
@@ -56,7 +56,7 @@ message LoginResponse {
 }
 
 message RegisterRequest {
-  string mail = 1 [
+  string email = 1 [
     (buf.validate.field).required = true,
     (buf.validate.field).string.email = true
   ];

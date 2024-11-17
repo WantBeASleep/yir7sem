@@ -20,6 +20,7 @@ func (c *Ctrl) CreateUzi(ctx context.Context, req *pb.CreateUziRequest) (*pb.Id,
 }
 
 // GetUzi godoc
+//
 //	@Summary		Получить УЗИ по ID
 //	@Description	Возвращает информацию о УЗИ по указанному ID.
 //	@Tags			Uzi
@@ -33,6 +34,7 @@ func (c *Ctrl) GetUzi(ctx context.Context, req *pb.Id) (*pb.UziReponse, error) {
 }
 
 // GetReport godoc
+//
 //	@Summary		Получить Репорт по ID
 //	@Description	Возвращает информацию о Репорте по указанному ID.
 //	@Tags			Uzi
@@ -46,6 +48,7 @@ func (c *Ctrl) GetReport(ctx context.Context, req *pb.Id) (*pb.Report, error) {
 }
 
 // UpdateUzi godoc
+//
 //	@Summary		Обновить УЗИ
 //	@Description	Обновляет существующую запись УЗИ по переданным данным.
 //	@Tags			Uzi
@@ -61,6 +64,7 @@ func (c *Ctrl) UpdateUzi(ctx context.Context, req *pb.UpdateUziRequest) (*pb.Uzi
 }
 
 // GetUziImageWithSegments godoc
+//
 //	@Summary		Получить изображение УЗИ с сегментами
 //	@Description	Возвращает изображение УЗИ и информацию о сегментах по указанному ID изображения.
 //	@Tags			Uzi
@@ -75,6 +79,7 @@ func (c *Ctrl) GetImageWithFormationsSegments(ctx context.Context, req *pb.Id) (
 
 // TODO: узел и не тока здесь
 // CreateFormationWithSegments godoc
+//
 //	@Summary		Добавить формацию с сегментами
 //	@Description	Создает формацию с сегментами, привязанную к указанному uziID.
 //	@Tags			Uzi
@@ -90,6 +95,7 @@ func (c *Ctrl) CreateFormationWithSegments(ctx context.Context, req *pb.CreateFo
 }
 
 // GetFormationWithSegments godoc
+//
 //	@Summary		Получить формацию с сегментами
 //	@Description	Возвращает формацию с сегментами по указанному ID формации.
 //	@Tags			Uzi
@@ -104,6 +110,7 @@ func (c *Ctrl) GetFormationWithSegments(ctx context.Context, req *pb.Id) (*pb.Fo
 
 // TODO: это поменять, убрать grpc-gateway для узи
 // UpdateFormation godoc
+//
 //	@Summary		Обновить формацию
 //	@Description	Обновляет существующую формацию по переданному ID.
 //	@Tags			Uzi
@@ -119,6 +126,7 @@ func (c *Ctrl) UpdateFormation(ctx context.Context, req *pb.UpdateFormationReque
 }
 
 // UpdateSegment godoc
+//
 //	@Summary		Обновить сегмент
 //	@Description	Обновляет существующую сегмент по переданному ID.
 //	@Tags			Uzi
@@ -134,6 +142,7 @@ func (c *Ctrl) UpdateSegment(ctx context.Context, req *pb.UpdateSegmentRequest) 
 }
 
 // GetDeviceList godoc
+//
 //	@Summary		Получить список устройств
 //	@Description	Возвращает список доступных устройств для УЗИ.
 //	@Tags			Uzi
