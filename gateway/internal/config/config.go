@@ -18,18 +18,18 @@ type Config struct {
 }
 
 type Gateway struct {
-	Env         string        `yaml:"env" env:"ENV" env-default:"DEV"`
-	Host        string        `yaml:"host" env:"HOST" env-default:"localhost"`
-	Port        string        `yaml:"http" env:"HTTP_PORT" env-default:"8080"`
-	Timeout     time.Duration `yaml:"timeout" env-default:"5m"`
-	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"5m"`
+	Env            string        `yaml:"env" env-default:"DEV"`
+	Host           string        `yaml:"host" env-default:"localhost"`
+	Port           string        `yaml:"http" env-default:"8080"`
+	RequestTimeout time.Duration `yaml:"request_timeout" env-default:"5m"`
+	TcpTimeout     time.Duration `yaml:"tcp_timeout" env-default:"5m"`
 }
 
 type Auth struct {
-	Env      string `yaml:"env" env:"ENV" env-default:"DEV"`
-	Host     string `yaml:"host" env:"HOST" env-default:"localhost"`
-	GRPCport string `yaml:"grpc" env:"GRPC_PORT" env-default:"50055"`
-	HTTPport string `yaml:"http" env:"HTTP_PORT" env-default:"8081"`
+	Env      string `yaml:"env" env-default:"DEV"`
+	Host     string `yaml:"host" env-default:"localhost"`
+	GRPCport string `yaml:"grpc" env-default:"50055"`
+	HTTPport string `yaml:"http" env-default:"8081"`
 }
 
 type TokenValidation struct {
@@ -37,28 +37,28 @@ type TokenValidation struct {
 }
 
 type Med struct {
-	Env      string `yaml:"env" env:"ENV" env-default:"DEV"`
-	Host     string `yaml:"host" env:"HOST" env-default:"localhost"`
-	GRPCport string `yaml:"grpc" env:"GRPC_PORT" env-default:"50056"`
-	HTTPport string `yaml:"http" env:"HTTP_PORT" env-default:"8082"`
+	Env      string `yaml:"env" env-default:"DEV"`
+	Host     string `yaml:"host" env-default:"localhost"`
+	GRPCport string `yaml:"grpc" env-default:"50056"`
+	HTTPport string `yaml:"http" env-default:"8082"`
 }
 
 type Uzi struct {
-	Env      string `yaml:"env" env:"ENV" env-default:"DEV"`
-	Host     string `yaml:"host" env:"HOST" env-default:"localhost"`
-	GRPCport string `yaml:"grpc" env:"GRPC_PORT" env-default:"50057"`
-	HTTPport string `yaml:"http" env:"HTTP_PORT" env-default:"8083"`
+	Env      string `yaml:"env" env-default:"DEV"`
+	Host     string `yaml:"host" env-default:"localhost"`
+	GRPCport string `yaml:"grpc" env-default:"50057"`
+	HTTPport string `yaml:"http" env-default:"8083"`
 }
 
 type S3 struct {
-	Env      string `yaml:"env" env:"ENV" env-default:"DEV"`
-	Host     string `yaml:"host" env:"HOST" env-default:"localhost"`
-	GRPCport string `yaml:"grpc" env:"GRPC_PORT" env-default:"50058"`
+	Env      string `yaml:"env" env-default:"DEV"`
+	Host     string `yaml:"host" env-default:"localhost"`
+	GRPCport string `yaml:"grpc" env-default:"50058"`
 }
 
 type Kafka struct {
-	Host string `yaml:"host" env:"HOST" env-default:"localhost"`
-	Port string `yaml:"port" env:"KAFKA_PORT" env-default:"9092"`
+	Host string `yaml:"host" env-default:"localhost"`
+	Port string `yaml:"port" env-default:"9092"`
 }
 
 func MustLoad(path string) Config {

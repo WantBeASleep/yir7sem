@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package yir.auth;
 
-option go_package = "yir/auth/api/auth;authpb";
+option go_package = "yir/auth/api/auth;auth";
 
 import "google/api/annotations.proto";
 import "buf/validate/validate.proto";

@@ -2,8 +2,8 @@ gateway:
   env: DEV
   host: localhost
   http: 8080
-  timeout: 5m
-  idle_timeout: 5m 
+  request_timeout: 5m
+  tcp_timeout: 5m
 
 auth:
   env: DEV
