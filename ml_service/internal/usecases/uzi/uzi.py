@@ -102,12 +102,11 @@ class uziUseCase():
                 contour = contours[0].squeeze()
                 contour_points = [{"x": int(point[0]), "y": int(point[1])} for point in contour]
                 contourJS = json.dumps(contour_points)
+
                 print(type(contourJS))
     
                 segment_id = str(uuid.uuid4())
                 segment_ids.append(segment_id)
-                segment_path = uzi_id + "/" + pages_id[i] + "/" + segment_id + "/" + segment_id
-                self.store.store(contourJS.encode(), segment_path, "application/json")
 
                 tirads = pb_event.Tirads(
                     tirads_23=indv[i][j][0],
