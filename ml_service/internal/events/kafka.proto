@@ -15,7 +15,6 @@ message KafkaSegment {
   string formation_id = 200;
   string image_id = 300;
 
-  string contor_url = 400;
   Tirads tirads = 500;
 }
 

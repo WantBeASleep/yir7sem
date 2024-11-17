@@ -27,28 +27,28 @@ class uziUseCase():
         indv, tracked = self.efficientModel.predict(rois)
         return indv, tracked
     
-    def segmentAndClassificateByID(self, uzi_id):
-        global res_for_recursive
-        print("в с3 кабаном")
-        data = self.store.load(uzi_id)
+    # def segmentAndClassificateByID(self, uzi_id):
+    #     global res_for_recursive
+    #     print("Going to S3...")
+    #     data = self.store.load(uzi_id)
 
-        size_in_bytes = len(data)
-        size_in_kb = size_in_bytes/1024
-        size_in_mb = size_in_kb/1024    
-        print(f"Размер загруженных данных: {size_in_bytes} байт, {size_in_kb:.2f} Кб, {size_in_mb:.2f} Mb")
+    #     size_in_bytes = len(data)
+    #     size_in_kb = size_in_bytes/1024
+    #     size_in_mb = size_in_kb/1024    
+    #     print(f"Размер загруженных данных: {size_in_bytes} байт, {size_in_kb:.2f} Кб, {size_in_mb:.2f} Mb")
         
-        masks, rois = self.segmentUzi(data)
-        indv, tracked = self.classificateUzi(rois)
+    #     masks, rois = self.segmentUzi(data)
+    #     indv, tracked = self.classificateUzi(rois)
 
-        print_lengths_return_ndarray_list(rois)
-        print("\n\n\n\n")
-        print_lengths_return_ndarray_list(indv)
-        print("\n\n\n\n")
-        print_lengths_return_ndarray_list(tracked)
+    #     print_lengths_return_ndarray_list(rois)
+    #     print("\n\n\n\n")
+    #     print_lengths_return_ndarray_list(indv)
+    #     print("\n\n\n\n")
+    #     print_lengths_return_ndarray_list(tracked)
 
     def segmentClassificateSave(self, uzi_id, pages_id):
         # фул похуй поехали
-        print("в с3 кабаном")
+        print("Going to S3...")
         print(pages_id)
         data = self.store.load(uzi_id + "/" + uzi_id)
 
@@ -84,7 +84,7 @@ class uziUseCase():
 
 
         for i in range(len(rois)):
-            print("РАЗЪЕБНАЯ И:", i)
+            print("ROI num: ", i)
             for j in range(len(rois[i])):
                 formation_id_from_model = rois[i][j][1]
                 if formation_id_from_model not in formation_ids:
@@ -117,7 +117,6 @@ class uziUseCase():
                     id = segment_id,
                     formation_id = formation_id,
                     image_id=pages_id[i],
-                    contor_url=segment_path,
                     tirads = tirads
                 )
                 segments.append(ml_segment)
