@@ -9,7 +9,7 @@ import segmentation_models_pytorch as smp
 import imageio
 import matplotlib.pyplot as plt
 
-from neuro_class import ModelABC, settings
+from ml_service.internal.ml_model.neuro_class import ModelABC, settings
 
 
 class SegmentationModel(ModelABC):

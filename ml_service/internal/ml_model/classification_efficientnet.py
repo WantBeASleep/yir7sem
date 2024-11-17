@@ -6,7 +6,7 @@ from torchvision import transforms as T
 from imgaug import augmenters as iaa
 
 # from model_template_class import ModelABC, settings
-from neuro_class import ModelABC
+from ml_service.internal.ml_model.neuro_class import ModelABC
 
 
 settings = settings = {
