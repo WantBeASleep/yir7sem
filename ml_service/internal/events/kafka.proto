@@ -4,6 +4,11 @@ package yir.main;
 
 option go_package = "yir/api;main";
 
+message Point {
+  int64 X = 100;
+  int64 Y = 200;
+}
+
 message Tirads {
   double tirads_23 = 1 ;
   double tirads_4 = 2 ;
@@ -15,6 +20,7 @@ message KafkaSegment {
   string formation_id = 200;
   string image_id = 300;
 
+  repeated Point contor = 400;
   Tirads tirads = 500;
 }
 

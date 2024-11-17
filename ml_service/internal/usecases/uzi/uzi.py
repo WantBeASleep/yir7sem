@@ -100,11 +100,8 @@ class uziUseCase():
                 contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                 print("КОЛИЧЕСТВО КОНТУТУРОВ: ", len(contours))
                 contour = contours[0].squeeze()
-                contour_points = [{"x": int(point[0]), "y": int(point[1])} for point in contour]
-                contourJS = json.dumps(contour_points)
+                contour_points = [pb_event.Point(X=int(point[0]), Y=int(point[1])) for point in contour]
 
-                print(type(contourJS))
-    
                 segment_id = str(uuid.uuid4())
                 segment_ids.append(segment_id)
 
@@ -117,6 +114,7 @@ class uziUseCase():
                     id = segment_id,
                     formation_id = formation_id,
                     image_id=pages_id[i],
+                    contor=contour_points,
                     tirads = tirads
                 )
                 segments.append(ml_segment)
