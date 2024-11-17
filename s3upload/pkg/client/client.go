@@ -1,3 +1,4 @@
+// TODO: изменить на передачу conn
 package client
 
 import (

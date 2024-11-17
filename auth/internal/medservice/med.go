@@ -27,7 +27,7 @@ func (s *Service) AddMed(ctx context.Context, createData *entity.RequestRegister
 	req := &pb.AddMedWorkerRequest{
 		FirstName:       createData.FirstName,
 		LastName:        createData.LastName,
-		FathersName:      createData.FathersName,
+		FathersName:     createData.FathersName,
 		MedOrganization: createData.MedOrg,
 	}
 	resp, err := s.medClient.AddMedWorker(ctx, req)

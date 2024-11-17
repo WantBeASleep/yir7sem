@@ -12,9 +12,9 @@ tasks:
     env:
       DB_PASS: 1234
       TOKEN_PRIVATE_KEY: 
-        sh: cat '/home/zkryaev/med-git/private.key'
+        sh: cat 'private.key'
       TOKEN_PUBLIC_KEY: 
-        sh: cat '/home/zkryaev/med-git/public.key'
+        sh: cat 'public.key'
 
     cmds:
       - ./bin/auth

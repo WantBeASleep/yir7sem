@@ -1,8 +1,11 @@
+//TODO: Сделать магамеду
+
 package med
 
 import (
-	pb "yir/gateway/rpc/med"
 	"context"
+	pb "yir/gateway/rpc/med"
+
 	empty "github.com/golang/protobuf/ptypes/empty"
 )
 
@@ -11,9 +14,9 @@ type Ctrl struct {
 	pb.UnimplementedMedPatientServer
 	pb.UnimplementedMedWorkersServer
 
-	cardClient pb.MedCardClient
+	cardClient    pb.MedCardClient
 	patientClient pb.MedPatientClient
-	workerClient pb.MedWorkersClient
+	workerClient  pb.MedWorkersClient
 }
 
 func NewCtrl(
@@ -22,32 +25,95 @@ func NewCtrl(
 	workerClient pb.MedWorkersClient,
 ) *Ctrl {
 	return &Ctrl{
-		cardClient: cardClient,
+		cardClient:    cardClient,
 		patientClient: patientClient,
-		workerClient: workerClient,
+		workerClient:  workerClient,
 	}
 }
 
+// GetCards godoc
+//	@Summary		Get Patient Cards
+//	@Description	Retrieves a list of patient cards with pagination options.
+//	@Tags			cards
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	PatientCardList	"List of patient cards"
+//	@Failure		500	{string}	string			"Internal Error"
+//	@Router			/med/card/list [get]
 func (c *Ctrl) GetCards(ctx context.Context, req *pb.GetCardsRequest) (*pb.GetCardsResponse, error) {
 	return c.cardClient.GetCards(ctx, req)
 }
+
+// PostCard godoc
+//	@Summary		Add Patient Card
+//	@Description	Creates a new patient card with information about the patient, card details, and the medical worker.
+//	@Tags			cards
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		PatientInformation	true	"Patient Information"
+//	@Success		200		{string}	string				"Card created successfully"
+//	@Failure		500		{string}	string				"Internal Error"
+//	@Router			/med/card/add [post]
 func (c *Ctrl) PostCard(ctx context.Context, req *pb.PostCardRequest) (*pb.PostCardResponse, error) {
 	return c.cardClient.PostCard(ctx, req)
 }
+
+// GetCardByID godoc
+//	@Summary		Get Patient Card by ID
+//	@Description	Retrieves details of a specific patient card by its ID.
+//	@Tags			cards
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int			true	"Card ID"
+//	@Success		200	{object}	PatientCard	"Patient card details"
+//	@Failure		500	{string}	string		"Internal Error"
+//	@Router			/med/card/{id} [get]
 func (c *Ctrl) GetCardByID(ctx context.Context, req *pb.GetCardByIDRequest) (*pb.GetCardByIDResponse, error) {
 	return c.cardClient.GetCardByID(ctx, req)
 }
+
+// PutCard godoc
+//	@Summary		Update Patient Card
+//	@Description	Updates information of an existing patient card.
+//	@Tags			cards
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		PatientCard	true	"Patient Card Data"
+//	@Success		200		{object}	PatientCard	"Updated card information"
+//	@Failure		500		{string}	string		"Internal Error"
+//	@Router			/med/card/update [put]
 func (c *Ctrl) PutCard(ctx context.Context, req *pb.PutCardRequest) (*pb.PutCardResponse, error) {
 	return c.cardClient.PutCard(ctx, req)
-
 }
+
 func (c *Ctrl) PatchCard(ctx context.Context, req *pb.PatchCardRequest) (*pb.PatchCardResponse, error) {
 	return c.cardClient.PatchCard(ctx, req)
 }
+
+// DeleteCard godoc
+//	@Summary		Delete Patient Card
+//	@Description	Deletes a specific patient card by its ID.
+//	@Tags			cards
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int		true	"Card ID"
+//	@Success		200	{string}	string	"Card deleted successfully"
+//	@Failure		500	{string}	string	"Internal Error"
+//	@Router			/med/cards/delete/{id} [delete]
 func (c *Ctrl) DeleteCard(ctx context.Context, req *pb.DeleteCardRequest) (*pb.DeleteCardResponse, error) {
 	return c.cardClient.DeleteCard(ctx, req)
 }
 
+// AddPatient godoc
+//	@Summary		Add patien
+//	@Description	Add patien
+//	@Tags			cards
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		PatientCard	true	"Patient Card Data"
+//	@Success		200		{string}	string		"Card deleted successfully"
+//	@Failure		500		{string}	string		"Internal Error"
+//	@Router			/med/cards/delete/{id} [delete]
 func (c *Ctrl) AddPatient(ctx context.Context, req *pb.CreatePatientRequest) (*empty.Empty, error) {
 	return c.patientClient.AddPatient(ctx, req)
 }

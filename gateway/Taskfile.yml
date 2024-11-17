@@ -34,6 +34,16 @@ tasks:
       - for: { var: GENERATED }
         cmd: rm {{.ITEM}}
 
-  docs:
-    deps: [generate-rpc]
-    
+  style:
+    cmds:
+      - go fmt ./...
+      - goimports -w .
+
+  build:
+    deps: [generate-rpc, style]
+    cmds:
+      - go build -v -o bin/server cmd/server.go
+
+  run:
+    deps: [build]
+    cmd: ./bin/server

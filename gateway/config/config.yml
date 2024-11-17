@@ -1,0 +1,8 @@
+gateway:
+  env: DEV
+  host: localhost
+  grpc: 50050
+  http: 8080
+
+auth:
+  url: localhost:50053

@@ -149,6 +149,12 @@ message Tirads {
   ];
 }
 
+// TODO: добавить в валидацию на узи + написть под это логику
+message Point {
+  int64 X = 100 [(buf.validate.field).int64.gte = 0];
+  int64 Y = 200 [(buf.validate.field).int64.gte = 0];
+}
+
 message SegmentRequest {
   string formation_id = 200 [
     json_name = "formation_id",
@@ -173,8 +179,8 @@ message SegmentNestedRequest {
     (buf.validate.field).required = true
   ];
 
-  string contor_url = 200
-      [ json_name = "contor_url", (buf.validate.field).required = true ];
+  repeated Point contor = 200
+      [ json_name = "contor", (buf.validate.field).required = true ];
   Tirads tirads = 300 [ (buf.validate.field).required = true ];
 }
 
