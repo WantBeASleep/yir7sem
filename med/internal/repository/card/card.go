@@ -106,7 +106,7 @@ func (c *CardRepo) CreateCard(ctx context.Context, Card *entity.PatientCard) (*e
 
 func (c *CardRepo) CardByID(ctx context.Context, ID string) (*entity.PatientCard, error) {
 	var cardModel models.PatientCardInfo
-	if err := c.db.WithContext(ctx).First(&cardModel, ID).Error; err != nil {
+	if err := c.db.WithContext(ctx).Where("id = ?", ID).First(&cardModel).Error; err != nil {
 		return nil, fmt.Errorf("failed to get patient card by id: %w", err)
 	}
 
