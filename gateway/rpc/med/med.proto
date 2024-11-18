@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package yir.med;
 
-option go_package = "yir/med/api";
+option go_package = "yir/med/api;med";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";

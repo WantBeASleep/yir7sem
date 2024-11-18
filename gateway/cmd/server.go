@@ -37,7 +37,7 @@ func init() {
 	flag.StringVar(&configPath, "c", defaultCfgPath, "set config path"+shorthand)
 }
 
-// @title		API-Gateway
+// @title	Best API-Gateway ever!
 // @version	1.0
 // @schemes	http
 func main() {

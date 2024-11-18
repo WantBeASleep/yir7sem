@@ -4,7 +4,7 @@
     ],
     "swagger": "2.0",
     "info": {
-        "title": "API-Gateway",
+        "title": "Best API-Gateway ever!",
         "contact": {},
         "version": "1.0"
     },
@@ -200,6 +200,609 @@
                         "description": "ID элементов",
                         "schema": {
                             "$ref": "#/definitions/grpcapi.CreateFormationWithSegmentsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/cards": {
+            "get": {
+                "description": "Получить список карт",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Get cards",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.GetCardsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.GetCardsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Создать новую карту",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Add card",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.PostCardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.PostCardResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/cards/{id}": {
+            "get": {
+                "description": "Получить карту по ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Get card by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID карты",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.GetCardByIDResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Обновить карту",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Update card",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.PutCardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.PutCardResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Удалить карту",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Delete card",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.DeleteCardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.DeleteCardResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Частично обновить карту",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Patch card",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.PatchCardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.UpdateMedWorkerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/patient": {
+            "post": {
+                "description": "Добавить пациента",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Patients"
+                ],
+                "summary": "Add patient",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.CreatePatientRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/patient/list": {
+            "get": {
+                "description": "Получить список пациентов",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Patients"
+                ],
+                "summary": "Get patient list",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.PatientListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/patient/{id}": {
+            "get": {
+                "description": "Получить информацию о пациенте по ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Patients"
+                ],
+                "summary": "Get patient by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID пациента",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.PatientInfoResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Обновить информацию о пациенте",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Patients"
+                ],
+                "summary": "Update patient",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.PatientUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/worker": {
+            "post": {
+                "description": "Добавить нового медицинского работника",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MedWorkers"
+                ],
+                "summary": "Add med worker",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.AddMedWorkerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.AddMedWorkerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/worker/list": {
+            "get": {
+                "description": "Получить список медицинских работников",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MedWorkers"
+                ],
+                "summary": "Get med workers",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.GetMedworkerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.GetMedworkerListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/worker/patients": {
+            "get": {
+                "description": "Получить список пациентов, закрепленных за медицинским работником",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MedWorkers"
+                ],
+                "summary": "Get patients by med worker",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.GetPatientsByMedWorkerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.GetPatientsByMedWorkerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/worker/{id}": {
+            "get": {
+                "description": "Получить данные медицинского работника по ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MedWorkers"
+                ],
+                "summary": "Get med worker by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID медицинского работника",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.GetMedWorkerByIDResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Обновить данные медицинского работника",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MedWorkers"
+                ],
+                "summary": "Update med worker",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.UpdateMedWorkerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.UpdateMedWorkerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Частично обновить данные медицинского работника",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MedWorkers"
+                ],
+                "summary": "Patch med worker",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.PatchMedWorkerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.UpdateMedWorkerResponse"
                         }
                     },
                     "500": {
@@ -846,6 +1449,436 @@
                 },
                 "projection": {
                     "type": "string"
+                }
+            }
+        },
+        "med.AddMedWorkerRequest": {
+            "type": "object",
+            "properties": {
+                "expert_details": {
+                    "type": "string"
+                },
+                "fathers_name": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "is_remote_worker": {
+                    "type": "boolean"
+                },
+                "job": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "med_organization": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.AddMedWorkerResponse": {
+            "type": "object",
+            "properties": {
+                "worker": {
+                    "$ref": "#/definitions/med.MedWorker"
+                }
+            }
+        },
+        "med.Card": {
+            "type": "object",
+            "properties": {
+                "appointment_time": {
+                    "type": "string"
+                },
+                "diagnosis": {
+                    "type": "string"
+                },
+                "has_nodules": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "med_worker_id": {
+                    "type": "string"
+                },
+                "patient": {
+                    "$ref": "#/definitions/med.Patient"
+                }
+            }
+        },
+        "med.CreatePatientRequest": {
+            "type": "object",
+            "properties": {
+                "patient": {
+                    "$ref": "#/definitions/med.Patient"
+                },
+                "patient_card": {
+                    "$ref": "#/definitions/med.Card"
+                }
+            }
+        },
+        "med.DeleteCardRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.DeleteCardResponse": {
+            "type": "object",
+            "properties": {
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "med.GetCardByIDResponse": {
+            "type": "object",
+            "properties": {
+                "postcard": {
+                    "$ref": "#/definitions/med.Card"
+                }
+            }
+        },
+        "med.GetCardsRequest": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "description": "uint64 id = 1;\nstring acceptance_datetime = 2;\nbool has_nodules = 3;\nstring diagnosis = 4;\nuint64 patient_id = 5;\nuint64 medworker_id = 6;",
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                }
+            }
+        },
+        "med.GetCardsResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "next": {
+                    "type": "string"
+                },
+                "previous": {
+                    "type": "string"
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/med.Card"
+                    }
+                }
+            }
+        },
+        "med.GetMedWorkerByIDResponse": {
+            "type": "object",
+            "properties": {
+                "worker": {
+                    "$ref": "#/definitions/med.MedWorker"
+                }
+            }
+        },
+        "med.GetMedworkerListResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "next": {
+                    "type": "string"
+                },
+                "previous": {
+                    "type": "string"
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/med.MedWorker"
+                    }
+                }
+            }
+        },
+        "med.GetMedworkerRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "fathers_name": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_remote_worker": {
+                    "type": "boolean"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                }
+            }
+        },
+        "med.GetPatientsByMedWorkerRequest": {
+            "type": "object",
+            "properties": {
+                "medWorkerId": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.GetPatientsByMedWorkerResponse": {
+            "type": "object",
+            "properties": {
+                "cards": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/med.Card"
+                    }
+                },
+                "med_worker_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.MedWorker": {
+            "type": "object",
+            "properties": {
+                "expert_details": {
+                    "type": "string"
+                },
+                "fathers_name": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_remote_worker": {
+                    "type": "boolean"
+                },
+                "job": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "med_organization": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.PatchCardRequest": {
+            "type": "object",
+            "properties": {
+                "diagnosis": {
+                    "type": "string"
+                },
+                "has_nodules": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "medworker_id": {
+                    "type": "string"
+                },
+                "patient": {
+                    "$ref": "#/definitions/med.Patient"
+                }
+            }
+        },
+        "med.PatchMedWorkerRequest": {
+            "type": "object",
+            "properties": {
+                "expert_details": {
+                    "type": "string"
+                },
+                "fathers_name": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_remote_worker": {
+                    "type": "boolean"
+                },
+                "job": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "med_organization": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.Patient": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "father_name": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "medical_policy": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.PatientInfoResponse": {
+            "type": "object",
+            "properties": {
+                "patient": {
+                    "$ref": "#/definitions/med.Patient"
+                },
+                "patient_card": {
+                    "$ref": "#/definitions/med.Card"
+                }
+            }
+        },
+        "med.PatientListResponse": {
+            "type": "object",
+            "properties": {
+                "patients": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/med.Patient"
+                    }
+                }
+            }
+        },
+        "med.PatientUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "patient": {
+                    "$ref": "#/definitions/med.Patient"
+                },
+                "patient_card": {
+                    "$ref": "#/definitions/med.Card"
+                }
+            }
+        },
+        "med.PostCardRequest": {
+            "type": "object",
+            "properties": {
+                "diagnosis": {
+                    "type": "string"
+                },
+                "has_nodules": {
+                    "type": "boolean"
+                },
+                "medworker_id": {
+                    "type": "string"
+                },
+                "patient": {
+                    "$ref": "#/definitions/med.Patient"
+                }
+            }
+        },
+        "med.PostCardResponse": {
+            "type": "object",
+            "properties": {
+                "postcard": {
+                    "$ref": "#/definitions/med.Card"
+                }
+            }
+        },
+        "med.PutCardRequest": {
+            "type": "object",
+            "properties": {
+                "diagnosis": {
+                    "type": "string"
+                },
+                "has_nodules": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "medworker_id": {
+                    "type": "string"
+                },
+                "patient_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.PutCardResponse": {
+            "type": "object",
+            "properties": {
+                "postcard": {
+                    "$ref": "#/definitions/med.Card"
+                }
+            }
+        },
+        "med.UpdateMedWorkerRequest": {
+            "type": "object",
+            "properties": {
+                "expert_details": {
+                    "type": "string"
+                },
+                "fathers_name": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_remote_worker": {
+                    "type": "boolean"
+                },
+                "job": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "med_organization": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.UpdateMedWorkerResponse": {
+            "type": "object",
+            "properties": {
+                "worker": {
+                    "$ref": "#/definitions/med.MedWorker"
                 }
             }
         }
