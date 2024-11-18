@@ -217,9 +217,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/med/cards": {
+        "/med/card/by/{id}": {
             "get": {
-                "description": "Получить список карт",
+                "description": "Получить карту по ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -229,23 +229,21 @@ const docTemplate = `{
                 "tags": [
                     "Cards"
                 ],
-                "summary": "Get cards",
+                "summary": "Get card by ID",
                 "parameters": [
                     {
-                        "description": "Запрос",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/med.GetCardsRequest"
-                        }
+                        "type": "string",
+                        "description": "ID карты",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/med.GetCardsResponse"
+                            "$ref": "#/definitions/med.GetCardByIDResponse"
                         }
                     },
                     "500": {
@@ -255,7 +253,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/med/card/create": {
             "post": {
                 "description": "Создать новую карту",
                 "consumes": [
@@ -295,81 +295,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/med/cards/{id}": {
-            "get": {
-                "description": "Получить карту по ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cards"
-                ],
-                "summary": "Get card by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID карты",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/med.GetCardByIDResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Обновить карту",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cards"
-                ],
-                "summary": "Update card",
-                "parameters": [
-                    {
-                        "description": "Запрос",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/med.PutCardRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/med.PutCardResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
+        "/med/card/delete/{id}": {
             "delete": {
                 "description": "Удалить карту",
                 "consumes": [
@@ -407,7 +333,49 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/med/card/list": {
+            "get": {
+                "description": "Получить список карт",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Get cards",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.GetCardsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.GetCardsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/card/patch/{id}": {
             "patch": {
                 "description": "Частично обновить карту",
                 "consumes": [
@@ -447,7 +415,47 @@ const docTemplate = `{
                 }
             }
         },
-        "/med/patient": {
+        "/med/card/update/{id}": {
+            "put": {
+                "description": "Обновить карту",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Update card",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.PutCardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.PutCardResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/patient/create": {
             "post": {
                 "description": "Добавить пациента",
                 "consumes": [
@@ -474,6 +482,44 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/patient/info/{id}": {
+            "get": {
+                "description": "Получить информацию о пациенте по ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Patients"
+                ],
+                "summary": "Get patient by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID пациента",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.PatientInfoResponse"
+                        }
                     },
                     "500": {
                         "description": "Internal error",
@@ -513,43 +559,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/med/patient/{id}": {
-            "get": {
-                "description": "Получить информацию о пациенте по ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Patients"
-                ],
-                "summary": "Get patient by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID пациента",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/med.PatientInfoResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
+        "/med/patient/update/{patient.id}": {
             "put": {
                 "description": "Обновить информацию о пациенте",
                 "consumes": [
@@ -586,7 +596,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/med/worker": {
+        "/med/worker/by/{id}": {
+            "get": {
+                "description": "Получить данные медицинского работника по ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MedWorkers"
+                ],
+                "summary": "Get med worker by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID медицинского работника",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.GetMedWorkerByIDResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/worker/create": {
             "post": {
                 "description": "Добавить нового медицинского работника",
                 "consumes": [
@@ -666,7 +714,47 @@ const docTemplate = `{
                 }
             }
         },
-        "/med/worker/patients": {
+        "/med/worker/patch/{id}": {
+            "patch": {
+                "description": "Частично обновить данные медицинского работника",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MedWorkers"
+                ],
+                "summary": "Patch med worker",
+                "parameters": [
+                    {
+                        "description": "Запрос",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.PatchMedWorkerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/med.UpdateMedWorkerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/worker/patients/{worker_id}": {
             "get": {
                 "description": "Получить список пациентов, закрепленных за медицинским работником",
                 "consumes": [
@@ -706,43 +794,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/med/worker/{id}": {
-            "get": {
-                "description": "Получить данные медицинского работника по ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "MedWorkers"
-                ],
-                "summary": "Get med worker by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID медицинского работника",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/med.GetMedWorkerByIDResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
+        "/med/worker/update/{id}": {
             "put": {
                 "description": "Обновить данные медицинского работника",
                 "consumes": [
@@ -763,44 +815,6 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/med.UpdateMedWorkerRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/med.UpdateMedWorkerResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Частично обновить данные медицинского работника",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "MedWorkers"
-                ],
-                "summary": "Patch med worker",
-                "parameters": [
-                    {
-                        "description": "Запрос",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/med.PatchMedWorkerRequest"
                         }
                     }
                 ],
@@ -1496,6 +1510,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "appointment_time": {
+                    "description": "TODO: Валидировать время в формате ISO 8601?",
                     "type": "string"
                 },
                 "diagnosis": {
@@ -1508,6 +1523,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "med_worker_id": {
+                    "description": "TODO: Передается?",
                     "type": "string"
                 },
                 "patient": {
@@ -1520,9 +1536,6 @@ const docTemplate = `{
             "properties": {
                 "patient": {
                     "$ref": "#/definitions/med.Patient"
-                },
-                "patient_card": {
-                    "$ref": "#/definitions/med.Card"
                 }
             }
         },
@@ -1613,25 +1626,8 @@ const docTemplate = `{
         "med.GetMedworkerRequest": {
             "type": "object",
             "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "fathers_name": {
-                    "type": "string"
-                },
-                "first_name": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_remote_worker": {
-                    "type": "boolean"
-                },
-                "last_name": {
-                    "type": "string"
-                },
                 "limit": {
+                    "description": "string id = 1 [json_name = \"id\",\n(buf.validate.field).required = true\n];\nstring first_name = 2 [json_name = \"first_name\",\n(buf.validate.field).required = true\n];\nstring fathers_name = 3 [json_name = \"fathers_name\",\n(buf.validate.field).required = true\n];\nstring last_name = 4 [json_name = \"last_name\",\n(buf.validate.field).required = true\n];\nbool is_remote_worker = 5 [json_name = \"is_remote_worker\",\n(buf.validate.field).required = true\n];\nstring email = 6 [json_name = \"email\",\n(buf.validate.field).required = true\n];",
                     "type": "integer"
                 },
                 "offset": {
@@ -1743,6 +1739,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
+                    "description": "Email с валидацией по формату",
                     "type": "string"
                 },
                 "father_name": {
@@ -1770,9 +1767,6 @@ const docTemplate = `{
             "properties": {
                 "patient": {
                     "$ref": "#/definitions/med.Patient"
-                },
-                "patient_card": {
-                    "$ref": "#/definitions/med.Card"
                 }
             }
         },
@@ -1792,9 +1786,6 @@ const docTemplate = `{
             "properties": {
                 "patient": {
                     "$ref": "#/definitions/med.Patient"
-                },
-                "patient_card": {
-                    "$ref": "#/definitions/med.Card"
                 }
             }
         },

@@ -34,11 +34,10 @@ type Patient struct {
 
 type PatientInformation struct {
 	Patient *Patient
-	Card    *PatientCard
 }
 
 type PatientCardList struct {
-	Cards []PatientInformation
+	Cards []PatientCard
 	Count int //Кол-во карт
 }
 

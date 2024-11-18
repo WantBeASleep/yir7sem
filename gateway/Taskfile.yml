@@ -8,7 +8,7 @@ tasks:
     cmds:
       - cp ../auth/api/auth/auth.proto rpc/auth
       - cp ../uzi/api/grpcapi/uzi.proto rpc/uzi
-      - cp ../med/api/medservice.proto rpc/med
+      - cp ../med/api/med.proto rpc/med
 
   inject-tags:
     vars:
@@ -59,7 +59,7 @@ tasks:
   build:
     cmds:
       - task: clean
-      - task: source-mover
+      - task: get-proto
       - task: generate-rpc
       - task: style
       - swag init -g cmd/server.go

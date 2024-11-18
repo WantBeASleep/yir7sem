@@ -245,6 +245,7 @@ definitions:
   med.Card:
     properties:
       appointment_time:
+        description: 'TODO: Валидировать время в формате ISO 8601?'
         type: string
       diagnosis:
         type: string
@@ -253,6 +254,7 @@ definitions:
       id:
         type: string
       med_worker_id:
+        description: 'TODO: Передается?'
         type: string
       patient:
         $ref: '#/definitions/med.Patient'
@@ -261,8 +263,6 @@ definitions:
     properties:
       patient:
         $ref: '#/definitions/med.Patient'
-      patient_card:
-        $ref: '#/definitions/med.Card'
     type: object
   med.DeleteCardRequest:
     properties:
@@ -326,19 +326,26 @@ definitions:
     type: object
   med.GetMedworkerRequest:
     properties:
-      email:
-        type: string
-      fathers_name:
-        type: string
-      first_name:
-        type: string
-      id:
-        type: string
-      is_remote_worker:
-        type: boolean
-      last_name:
-        type: string
       limit:
+        description: |-
+          string id = 1 [json_name = "id",
+          (buf.validate.field).required = true
+          ];
+          string first_name = 2 [json_name = "first_name",
+          (buf.validate.field).required = true
+          ];
+          string fathers_name = 3 [json_name = "fathers_name",
+          (buf.validate.field).required = true
+          ];
+          string last_name = 4 [json_name = "last_name",
+          (buf.validate.field).required = true
+          ];
+          bool is_remote_worker = 5 [json_name = "is_remote_worker",
+          (buf.validate.field).required = true
+          ];
+          string email = 6 [json_name = "email",
+          (buf.validate.field).required = true
+          ];
         type: integer
       offset:
         type: integer
@@ -411,6 +418,7 @@ definitions:
   med.Patient:
     properties:
       email:
+        description: Email с валидацией по формату
         type: string
       father_name:
         type: string
@@ -429,8 +437,6 @@ definitions:
     properties:
       patient:
         $ref: '#/definitions/med.Patient'
-      patient_card:
-        $ref: '#/definitions/med.Card'
     type: object
   med.PatientListResponse:
     properties:
@@ -443,8 +449,6 @@ definitions:
     properties:
       patient:
         $ref: '#/definitions/med.Patient'
-      patient_card:
-        $ref: '#/definitions/med.Card'
     type: object
   med.PostCardRequest:
     properties:
@@ -641,32 +645,32 @@ paths:
       summary: Добавить формацию с сегментами
       tags:
       - Uzi
-  /med/cards:
+  /med/card/by/{id}:
     get:
       consumes:
       - application/json
-      description: Получить список карт
+      description: Получить карту по ID
       parameters:
-      - description: Запрос
-        in: body
-        name: body
+      - description: ID карты
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/med.GetCardsRequest'
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/med.GetCardsResponse'
+            $ref: '#/definitions/med.GetCardByIDResponse'
         "500":
           description: Internal error
           schema:
             type: string
-      summary: Get cards
+      summary: Get card by ID
       tags:
       - Cards
+  /med/card/create:
     post:
       consumes:
       - application/json
@@ -692,7 +696,7 @@ paths:
       summary: Add card
       tags:
       - Cards
-  /med/cards/{id}:
+  /med/card/delete/{id}:
     delete:
       consumes:
       - application/json
@@ -718,30 +722,33 @@ paths:
       summary: Delete card
       tags:
       - Cards
+  /med/card/list:
     get:
       consumes:
       - application/json
-      description: Получить карту по ID
+      description: Получить список карт
       parameters:
-      - description: ID карты
-        in: path
-        name: id
+      - description: Запрос
+        in: body
+        name: body
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/med.GetCardsRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/med.GetCardByIDResponse'
+            $ref: '#/definitions/med.GetCardsResponse'
         "500":
           description: Internal error
           schema:
             type: string
-      summary: Get card by ID
+      summary: Get cards
       tags:
       - Cards
+  /med/card/patch/{id}:
     patch:
       consumes:
       - application/json
@@ -767,6 +774,7 @@ paths:
       summary: Patch card
       tags:
       - Cards
+  /med/card/update/{id}:
     put:
       consumes:
       - application/json
@@ -792,7 +800,7 @@ paths:
       summary: Update card
       tags:
       - Cards
-  /med/patient:
+  /med/patient/create:
     post:
       consumes:
       - application/json
@@ -816,7 +824,7 @@ paths:
       summary: Add patient
       tags:
       - Patients
-  /med/patient/{id}:
+  /med/patient/info/{id}:
     get:
       consumes:
       - application/json
@@ -841,6 +849,26 @@ paths:
       summary: Get patient by ID
       tags:
       - Patients
+  /med/patient/list:
+    get:
+      consumes:
+      - application/json
+      description: Получить список пациентов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.PatientListResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Get patient list
+      tags:
+      - Patients
+  /med/patient/update/{patient.id}:
     put:
       consumes:
       - application/json
@@ -864,52 +892,7 @@ paths:
       summary: Update patient
       tags:
       - Patients
-  /med/patient/list:
-    get:
-      consumes:
-      - application/json
-      description: Получить список пациентов
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/med.PatientListResponse'
-        "500":
-          description: Internal error
-          schema:
-            type: string
-      summary: Get patient list
-      tags:
-      - Patients
-  /med/worker:
-    post:
-      consumes:
-      - application/json
-      description: Добавить нового медицинского работника
-      parameters:
-      - description: Запрос
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/med.AddMedWorkerRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/med.AddMedWorkerResponse'
-        "500":
-          description: Internal error
-          schema:
-            type: string
-      summary: Add med worker
-      tags:
-      - MedWorkers
-  /med/worker/{id}:
+  /med/worker/by/{id}:
     get:
       consumes:
       - application/json
@@ -934,54 +917,30 @@ paths:
       summary: Get med worker by ID
       tags:
       - MedWorkers
-    patch:
+  /med/worker/create:
+    post:
       consumes:
       - application/json
-      description: Частично обновить данные медицинского работника
+      description: Добавить нового медицинского работника
       parameters:
       - description: Запрос
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/med.PatchMedWorkerRequest'
+          $ref: '#/definitions/med.AddMedWorkerRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/med.UpdateMedWorkerResponse'
+            $ref: '#/definitions/med.AddMedWorkerResponse'
         "500":
           description: Internal error
           schema:
             type: string
-      summary: Patch med worker
-      tags:
-      - MedWorkers
-    put:
-      consumes:
-      - application/json
-      description: Обновить данные медицинского работника
-      parameters:
-      - description: Запрос
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/med.UpdateMedWorkerRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/med.UpdateMedWorkerResponse'
-        "500":
-          description: Internal error
-          schema:
-            type: string
-      summary: Update med worker
+      summary: Add med worker
       tags:
       - MedWorkers
   /med/worker/list:
@@ -1010,7 +969,33 @@ paths:
       summary: Get med workers
       tags:
       - MedWorkers
-  /med/worker/patients:
+  /med/worker/patch/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Частично обновить данные медицинского работника
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.PatchMedWorkerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.UpdateMedWorkerResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Patch med worker
+      tags:
+      - MedWorkers
+  /med/worker/patients/{worker_id}:
     get:
       consumes:
       - application/json
@@ -1034,6 +1019,32 @@ paths:
           schema:
             type: string
       summary: Get patients by med worker
+      tags:
+      - MedWorkers
+  /med/worker/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Обновить данные медицинского работника
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.UpdateMedWorkerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.UpdateMedWorkerResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Update med worker
       tags:
       - MedWorkers
   /report/{uzi_id}:

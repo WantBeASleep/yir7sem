@@ -21,7 +21,7 @@ func NewCardUseCase(CardRepo repository.Card, logger *zap.Logger) *CardUseCase {
 	}
 }
 
-func (c *CardUseCase) PostCard(ctx context.Context, Card *entity.PatientInformation) error {
+func (c *CardUseCase) PostCard(ctx context.Context, Card *entity.PatientCard) error {
 	c.logger.Debug("Starting PostCard usecase", zap.Any("PatientInformation", Card))
 	c.logger.Info("Adding new card")
 	err := c.CardRepo.CreateCard(ctx, Card)
@@ -45,7 +45,7 @@ func (c *CardUseCase) GetCards(ctx context.Context, limit, offset int) (*entity.
 	}
 
 	cardList := &entity.PatientCardList{
-		Cards: make([]entity.PatientInformation, len(cards)),
+		Cards: make([]entity.PatientCard, len(cards)),
 		Count: count,
 	}
 	for i, card := range cards {
@@ -57,7 +57,7 @@ func (c *CardUseCase) GetCards(ctx context.Context, limit, offset int) (*entity.
 	return cardList, nil
 }
 
-func (c *CardUseCase) GetCardByID(ctx context.Context, ID string) (*entity.PatientInformation, error) {
+func (c *CardUseCase) GetCardByID(ctx context.Context, ID string) (*entity.PatientCard, error) {
 	c.logger.Debug("Starting GetCardByID usecase", zap.Any("card_id", ID))
 	c.logger.Info("Fetching card by id", zap.Any("card_id", ID))
 

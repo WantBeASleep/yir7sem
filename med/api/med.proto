@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package yir.med;
 
-option go_package = "yir/med/api";
+option go_package = "yir/med/api;med";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
@@ -31,7 +31,7 @@ service MedCard {
     //
     rpc GetCardByID(GetCardByIDRequest) returns (GetCardByIDResponse) {
         option (google.api.http) = {
-            get: "/med/card/{id}"
+            get: "/med/card/by/{id}"
         };
     }
     //Запутить карту
@@ -39,7 +39,7 @@ service MedCard {
     //
     rpc PutCard(PutCardRequest) returns (PutCardResponse) {
         option (google.api.http) = {
-            put: "/med/card/{id}"
+            put: "/med/card/update/{id}"
             body: "*"
         };
     }
@@ -48,7 +48,7 @@ service MedCard {
     //
     rpc PatchCard(PatchCardRequest) returns (PatchCardResponse) {
         option (google.api.http) = {
-            patch: "/med/card/{id}"
+            patch: "/med/card/patch/{id}"
             body: "*"
         };
     }
@@ -57,7 +57,7 @@ service MedCard {
     //
     rpc DeleteCard(DeleteCardRequest) returns (DeleteCardResponse) {
         option (google.api.http) = {
-            delete: "/med/card/{id}"
+            delete: "/med/card/delete/{id}"
         };
     }
 }
@@ -76,7 +76,7 @@ service MedWorkers {
     //
     rpc UpdateMedWorker(UpdateMedWorkerRequest) returns (UpdateMedWorkerResponse) {
         option (google.api.http) = {
-            put: "/med/worker/{id}"
+            put: "/med/worker/update/{id}"
             body: "*"
         };
     }
@@ -85,7 +85,7 @@ service MedWorkers {
     //Возвращает информацию о медработнике по ID
     rpc GetMedWorkerByID(GetMedMedWorkerByIDRequest) returns (GetMedWorkerByIDResponse) {
         option (google.api.http) = {
-            get: "/med/worker/{id}"
+            get: "/med/worker/by/{id}"
         };
     }
     //Частичное обновление информации о медработнике
@@ -93,7 +93,7 @@ service MedWorkers {
     //
     rpc PatchMedWorker(PatchMedWorkerRequest) returns (UpdateMedWorkerResponse) {
         option (google.api.http) = {
-            patch: "/med/worker/{id}"
+            patch: "/med/worker/patch/{id}"
             body: "*"
         };
     }
@@ -102,7 +102,7 @@ service MedWorkers {
     //
     rpc AddMedWorker(AddMedWorkerRequest) returns (AddMedWorkerResponse) {
         option (google.api.http) = {
-            post: "/med/worker"
+            post: "/med/worker/create"
             body: "*"
         };
     }
@@ -139,7 +139,7 @@ service MedPatient{
     // Получает id пациента. Возвращает пациента и его карту
     rpc GetPatientInfoByID (PatientInfoRequest) returns (PatientInfoResponse) {
       option (google.api.http) = {
-        get: "/med/patient/info"
+        get: "/med/patient/info/{id}"
       };
     }
     // UNIMPLEMENTED!!!
@@ -147,7 +147,7 @@ service MedPatient{
     // Получает id пациента. Возвращает пациента, карту, снимки
     // rpc PatientShots (google.protobuf.Empty) returns (google.protobuf.Empty) {
     //   option (google.api.http) = {
-    //     get: "/med/patient/shots"
+    //     get: "/med/patient/shots/{id}"
     //   };
     // }
     // Обновить данные пациента
@@ -155,7 +155,7 @@ service MedPatient{
     // Получает пациента, карту. Возвращает id
     rpc UpdatePatient (PatientUpdateRequest) returns (google.protobuf.Empty) {
       option (google.api.http) = {
-        put: "/med/patient/{patient.id}"
+        put: "/med/patient/update/{patient.id}"
         body: "*"
       };
     }
@@ -192,24 +192,23 @@ service MedPatient{
     ];
     string appointment_time = 2 [json_name = "appointment_time", 
     (buf.validate.field).required = true
-    ]; // TODO: Валидировать время в формате ISO 8601?
+    ];
     bool has_nodules = 3 [json_name = "has_nodules", 
     (buf.validate.field).required = true
     ];
     string diagnosis = 4 [json_name = "diagnosis", 
     (buf.validate.field).required = true
     ];
-    // TODO: Передается?
     string med_worker_id = 5 [json_name = "med_worker_id", 
     (buf.validate.field).required = true
     ];
-    Patient patient = 6;
+    string patient_id = 6 [json_name = "patient_id", 
+    (buf.validate.field).required = true
+    ];
   }
   
-  // TODO: Карты?
   message CreatePatientRequest{
     Patient patient = 1;
-    Card patient_card = 2 [json_name = "patient_card"];
   }
   
   message PatientListResponse{
@@ -224,12 +223,10 @@ service MedPatient{
   
   message PatientInfoResponse{
     Patient patient = 1;
-    Card patient_card = 2 [json_name = "patient_card"];
   }
   
   message PatientUpdateRequest{
     Patient patient = 1;
-    Card patient_card = 2 [json_name = "patient_card"];
   }
   
   /* TODO: Сделать работу со снимками после того как разберемся с ними в узи
@@ -265,24 +262,24 @@ service MedPatient{
 }
 
 message GetMedworkerRequest {
-    string id = 1 [json_name = "id", 
-    (buf.validate.field).required = true
-    ];
-    string first_name = 2 [json_name = "first_name", 
-    (buf.validate.field).required = true
-    ];
-    string fathers_name = 3 [json_name = "fathers_name", 
-    (buf.validate.field).required = true
-    ];
-    string last_name = 4 [json_name = "last_name", 
-    (buf.validate.field).required = true
-    ];
-    bool is_remote_worker = 5 [json_name = "is_remote_worker", 
-    (buf.validate.field).required = true
-    ];
-    string email = 6 [json_name = "email", 
-    (buf.validate.field).required = true
-    ];
+    // string id = 1 [json_name = "id", 
+    // (buf.validate.field).required = true
+    // ];
+    // string first_name = 2 [json_name = "first_name", 
+    // (buf.validate.field).required = true
+    // ];
+    // string fathers_name = 3 [json_name = "fathers_name", 
+    // (buf.validate.field).required = true
+    // ];
+    // string last_name = 4 [json_name = "last_name", 
+    // (buf.validate.field).required = true
+    // ];
+    // bool is_remote_worker = 5 [json_name = "is_remote_worker", 
+    // (buf.validate.field).required = true
+    // ];
+    // string email = 6 [json_name = "email", 
+    // (buf.validate.field).required = true
+    // ];
     uint64 limit = 7 [json_name = "limit", 
     (buf.validate.field).required = true
     ];
@@ -337,6 +334,7 @@ message GetMedWorkerByIDResponse {
     MedWorker worker = 1;
 }
 
+// TODO: Валидация
 message PatchMedWorkerRequest {
     string id = 1;
     string first_name = 2;
@@ -403,7 +401,9 @@ message PostCardRequest {
     string diagnosis = 2 [json_name = "diagnosis", 
     (buf.validate.field).required = true
     ];
-    Patient patient = 3;
+    string patient_id = 3 [json_name = "patient_id", 
+    (buf.validate.field).required = true
+    ];
     string medworker_id = 4 [json_name = "medworker_id", 
     (buf.validate.field).required = true
     ];

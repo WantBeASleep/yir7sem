@@ -59,10 +59,10 @@ func NewRepository(cfg *config.DB) (*CardRepo, error) {
 
 //		return entities, int(total), nil
 //	}
-func (c *CardRepo) ListCards(ctx context.Context, limit, offset int) ([]*entity.PatientInformation, int, error) {
+func (c *CardRepo) ListCards(ctx context.Context, limit, offset int) ([]*entity.PatientCard, int, error) {
 	var (
-		respCards []models.PatientCardInfo
-		total     int64
+		cardsModel []models.PatientCardInfo
+		total      int64
 	)
 
 	query := c.db.WithContext(ctx).
@@ -73,47 +73,24 @@ func (c *CardRepo) ListCards(ctx context.Context, limit, offset int) ([]*entity.
 		return nil, 0, err
 	}
 
-	if err := query.Limit(limit).Offset(offset).Find(&respCards).Error; err != nil {
+	if err := query.Limit(limit).Offset(offset).Find(&cardsModel).Error; err != nil {
 		return nil, 0, err
 	}
 
-	var patientInfos []*entity.PatientInformation
-	for _, card := range respCards {
-		var patient models.PatientInfo
-		if err := c.db.WithContext(ctx).Where("id = ?", card.PatientID).First(&patient).Error; err != nil {
-			return nil, 0, err
-		}
-
-		cardEntity, err := mapper.PatientCardToEntity(&card)
-		if err != nil {
-			return nil, 0, err
-		}
-
-		patientInfo := &entity.PatientInformation{
-			Patient: mapper.PatientToEntity(&patient),
-			Card:    cardEntity,
-		}
-		patientInfos = append(patientInfos, patientInfo)
+	var Cards []*entity.PatientCard
+	for _, cardModel := range cardsModel {
+		Cards = append(Cards, mapper.PatientCardToEntity(&cardModel))
 	}
 
-	return patientInfos, int(total), nil
+	return Cards, int(total), nil
 }
 
-func (c *CardRepo) CreateCard(ctx context.Context, Card *entity.PatientInformation) error {
+func (c *CardRepo) CreateCard(ctx context.Context, Card *entity.PatientCard) error {
 	tx := c.db.WithContext(ctx).Begin()
 	if tx.Error != nil {
 		return fmt.Errorf("failed to create patient: %w", tx.Error)
 	}
-	patientDB := mapper.PatientToModels(Card.Patient)
-	if err := tx.
-		Model(&models.PatientInfo{}).
-		Create(&patientDB).
-		Error; err != nil {
-		tx.Rollback()
-		return fmt.Errorf("failed to create patient info: %w", err)
-	}
-
-	CardDB := mapper.PatientCardToModels(Card.Card)
+	CardDB := mapper.PatientCardToModels(Card)
 	if err := tx.
 		Model(&models.PatientCardInfo{}).
 		Create(&CardDB).
@@ -126,28 +103,15 @@ func (c *CardRepo) CreateCard(ctx context.Context, Card *entity.PatientInformati
 
 }
 
-func (c *CardRepo) CardByID(ctx context.Context, ID string) (*entity.PatientInformation, error) {
-	var respCard models.PatientCardInfo
-	if err := c.db.WithContext(ctx).First(&respCard, ID).Error; err != nil {
+func (c *CardRepo) CardByID(ctx context.Context, ID string) (*entity.PatientCard, error) {
+	var cardModel models.PatientCardInfo
+	if err := c.db.WithContext(ctx).First(&cardModel, ID).Error; err != nil {
 		return nil, fmt.Errorf("failed to get patient card by id: %w", err)
 	}
 
-	var patient models.PatientInfo
-	if err := c.db.WithContext(ctx).Where("id = ?", respCard.PatientID).First(&patient).Error; err != nil {
-		return nil, fmt.Errorf("failed to get patient by card id: %w", err)
-	}
+	cardEntity := mapper.PatientCardToEntity(&cardModel)
 
-	cardEntity, err := mapper.PatientCardToEntity(&respCard)
-	if err != nil {
-		return nil, fmt.Errorf("failed to map patient card: %w", err)
-	}
-
-	patientInfo := &entity.PatientInformation{
-		Patient: mapper.PatientToEntity(&patient),
-		Card:    cardEntity,
-	}
-
-	return patientInfo, nil
+	return cardEntity, nil
 }
 
 func (c *CardRepo) UpdateCardInfo(ctx context.Context, Card *entity.PatientCard) error {

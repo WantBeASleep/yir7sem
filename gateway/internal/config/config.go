@@ -11,6 +11,7 @@ type Config struct {
 	Gateway Gateway `yaml:"gateway"`
 	Auth    Auth    `yaml:"auth"`
 	Uzi     Uzi     `yaml:"uzi"`
+	Med     Med     `yaml:"med"`
 }
 
 type Gateway struct {
@@ -27,6 +28,10 @@ type Auth struct {
 }
 
 type Uzi struct {
+	Url string `yaml:"url" env-default:"localhost:50055"`
+}
+
+type Med struct {
 	Url string `yaml:"url" env-default:"localhost:50055"`
 }
 

@@ -186,15 +186,7 @@ func (s *Server) GetPatientsByMedWorker(ctx context.Context, request *pb.GetPati
 			HasNodules:      card.HasNodules,
 			Diagnosis:       card.Diagnosis,
 			MedWorkerId:     card.MedWorkerID.String(),
-			Patient: &pb.Patient{
-				Id: card.PatientID.String(),
-				// FirstName:     card.Patient.FirstName,  //эт подумать - оставлять полностью или только айдишник
-				// LastName:      card.Patient.LastName,
-				// FatherName:    card.Patient.FatherName,
-				// MedicalPolicy: card.Patient.MedicalPolicy,
-				// Email:         card.Patient.Email,
-				// IsActive:      card.Patient.IsActive,
-			},
+			PatientId:       card.PatientID.String(),
 		}
 		response.Cards = append(response.Cards, cardResponse)
 	}

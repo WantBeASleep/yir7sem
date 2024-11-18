@@ -163,10 +163,7 @@ func (r *MedicalWorkerRepo) GetPatientsByMedWorker(ctx context.Context, medWorke
 	}
 	patientCards := make([]*entity.PatientCard, len(cards))
 	for i := range cards {
-		patientCard, err := mapper.PatientCardToEntity(&cards[i])
-		if err != nil {
-			return nil, err
-		}
+		patientCard := mapper.PatientCardToEntity(&cards[i])
 		patientCards[i] = patientCard
 	}
 

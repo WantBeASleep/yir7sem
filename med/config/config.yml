@@ -12,6 +12,6 @@ db:
 
 medservice:
   host: localhost
-  grpc: 50054
+  grpc: 50056
 
 

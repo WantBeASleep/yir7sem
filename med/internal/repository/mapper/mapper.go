@@ -5,7 +5,7 @@ import (
 	"yir/med/internal/repository/models"
 )
 
-func PatientCardToEntity(pc *models.PatientCardInfo) (*entity.PatientCard, error) {
+func PatientCardToEntity(pc *models.PatientCardInfo) *entity.PatientCard {
 	return &entity.PatientCard{
 		ID:              pc.ID,
 		AppointmentTime: pc.AppointmentTime,
@@ -13,7 +13,7 @@ func PatientCardToEntity(pc *models.PatientCardInfo) (*entity.PatientCard, error
 		Diagnosis:       pc.Diagnosis,
 		MedWorkerID:     pc.MedWorkerID,
 		PatientID:       pc.PatientID,
-	}, nil
+	}
 }
 
 func PatientCardToModels(pc *entity.PatientCard) *models.PatientCardInfo {

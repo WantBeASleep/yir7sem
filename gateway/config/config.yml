@@ -10,3 +10,6 @@ auth:
 uzi:
   url: localhost:50054
 
+med:
+  url: localhost:50055
+
