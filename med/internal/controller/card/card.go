@@ -121,7 +121,7 @@ func (s *Server) PutCard(ctx context.Context, request *pb.PutCardRequest) (*pb.P
 		PatientID:   uuid2,
 		MedWorkerID: uuid3,
 	}
-	err := s.cardUseCase.PutCard(ctx, Card)
+	data, err := s.cardUseCase.PutCard(ctx, Card)
 	if err != nil {
 		switch {
 		case errors.Is(err, entity.ErrNotFound):
@@ -131,7 +131,15 @@ func (s *Server) PutCard(ctx context.Context, request *pb.PutCardRequest) (*pb.P
 		}
 	}
 
-	return nil, nil
+	return &pb.PutCardResponse{
+		Postcard: &pb.Card{
+			Id:          data.ID.String(),
+			HasNodules:  data.HasNodules,
+			Diagnosis:   data.Diagnosis,
+			PatientId:   data.PatientID.String(),
+			MedWorkerId: data.MedWorkerID.String(),
+		},
+	}, nil
 }
 
 func (s *Server) DeleteCard(ctx context.Context, request *pb.DeleteCardRequest) (*pb.DeleteCardResponse, error) {

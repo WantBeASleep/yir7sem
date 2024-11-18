@@ -115,17 +115,18 @@ func (c *CardRepo) CardByID(ctx context.Context, ID string) (*entity.PatientCard
 	return cardEntity, nil
 }
 
-func (c *CardRepo) UpdateCardInfo(ctx context.Context, Card *entity.PatientCard) error {
+func (c *CardRepo) UpdateCardInfo(ctx context.Context, Card *entity.PatientCard) (*entity.PatientCard, error) {
 	query := c.db.WithContext(ctx).Begin()
 	if query.Error != nil {
-		return fmt.Errorf("failed to update card info: %w", query.Error)
+		return nil, fmt.Errorf("failed to update card info: %w", query.Error)
 	}
 	CardDB := mapper.PatientCardToModels(Card)
 	if err := query.Model(&models.PatientCardInfo{}).Where("id = ?", CardDB.ID).Updates(&CardDB).Error; err != nil {
 		query.Rollback()
-		return fmt.Errorf("failed to update patient card: %w", err)
+		return nil, fmt.Errorf("failed to update patient card: %w", err)
 	}
-	return query.Commit().Error
+	resp := mapper.PatientCardToEntity(CardDB)
+	return resp, query.Commit().Error
 }
 
 func (c *CardRepo) PatchCardInfo(ctx context.Context, Card *entity.PatientCard) error {
