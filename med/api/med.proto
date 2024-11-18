@@ -55,7 +55,7 @@ service MedCard {
     //Удалить карту
     //
     //
-    rpc DeleteCard(DeleteCardRequest) returns (DeleteCardResponse) {
+    rpc DeleteCard(DeleteCardRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             delete: "/med/card/delete/{id}"
         };

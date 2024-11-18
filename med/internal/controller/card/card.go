@@ -7,6 +7,7 @@ import (
 	"yir/med/internal/entity"
 	"yir/med/internal/usecase"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -142,17 +143,17 @@ func (s *Server) PutCard(ctx context.Context, request *pb.PutCardRequest) (*pb.P
 	}, nil
 }
 
-func (s *Server) DeleteCard(ctx context.Context, request *pb.DeleteCardRequest) error {
+func (s *Server) DeleteCard(ctx context.Context, request *pb.DeleteCardRequest) (*empty.Empty, error) {
 	s.logger.Info("[Request] Delete card", zap.Any("request", request))
 
 	err := s.cardUseCase.DeleteCard(ctx, request.Id)
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
-			return status.Error(codes.NotFound, "Card not found")
+			return nil, status.Error(codes.NotFound, "Card not found")
 		}
 		s.logger.Error("Failed to delete card", zap.Error(err))
-		return status.Error(codes.Internal, "Failed to delete card")
+		return nil, status.Error(codes.Internal, "Failed to delete card")
 	}
 
-	return nil
+	return nil, nil
 }
