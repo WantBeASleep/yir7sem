@@ -462,7 +462,3 @@ message DeleteCardRequest {
     (buf.validate.field).required = true
     ];
 }
-
-message DeleteCardResponse {
-    bool success = 1;
-}

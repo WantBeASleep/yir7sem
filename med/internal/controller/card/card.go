@@ -142,17 +142,17 @@ func (s *Server) PutCard(ctx context.Context, request *pb.PutCardRequest) (*pb.P
 	}, nil
 }
 
-func (s *Server) DeleteCard(ctx context.Context, request *pb.DeleteCardRequest) (*pb.DeleteCardResponse, error) {
+func (s *Server) DeleteCard(ctx context.Context, request *pb.DeleteCardRequest) error {
 	s.logger.Info("[Request] Delete card", zap.Any("request", request))
 
 	err := s.cardUseCase.DeleteCard(ctx, request.Id)
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
-			return nil, status.Error(codes.NotFound, "Card not found")
+			return status.Error(codes.NotFound, "Card not found")
 		}
 		s.logger.Error("Failed to delete card", zap.Error(err))
-		return nil, status.Error(codes.Internal, "Failed to delete card")
+		return status.Error(codes.Internal, "Failed to delete card")
 	}
 
-	return &pb.DeleteCardResponse{}, nil
+	return nil
 }
