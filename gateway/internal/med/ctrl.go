@@ -265,7 +265,7 @@ func (c *Ctrl) AddMedWorker(ctx context.Context, req *pb.AddMedWorkerRequest) (*
 // @Param        body  body  med.GetPatientsByMedWorkerRequest  true  "Запрос"
 // @Success      200   {object}  med.GetPatientsByMedWorkerResponse
 // @Failure      500		{string}	string			"Internal error"
-// @Router       /med/worker/patients [get]
+// @Router       /med/worker/patients/{worker_id} [get]
 func (c *Ctrl) GetPatientsByMedWorker(ctx context.Context, req *pb.GetPatientsByMedWorkerRequest) (*pb.GetPatientsByMedWorkerResponse, error) {
 	return c.workerClient.GetPatientsByMedWorker(ctx, req)
 }
