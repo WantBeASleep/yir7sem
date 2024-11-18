@@ -97,15 +97,15 @@ func (c *Ctrl) PutCard(ctx context.Context, req *pb.PutCardRequest) (*pb.PutCard
 }
 
 // Не работает (В сваггер не включен)
-// @Summary		Patch card
-// @Description	Частично обновить карту
-// @Tags			Cards
-// @Accept			json
-// @Produce		json
-// @Param			body	body		med.PatchCardRequest	true	"Запрос"
-// @Success		200		{object}	med.UpdateMedWorkerResponse
-// @Failure		500		{string}	string	"Internal error"
-// @Router			/med/card/patch/{id} [patch]
+//	@Summary		Patch card
+//	@Description	Частично обновить карту
+//	@Tags			Cards
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		med.PatchCardRequest	true	"Запрос"
+//	@Success		200		{object}	med.UpdateMedWorkerResponse
+//	@Failure		500		{string}	string	"Internal error"
+//	@Router			/med/card/patch/{id} [patch]
 func (c *Ctrl) PatchCard(ctx context.Context, req *pb.PatchCardRequest) (*pb.PatchCardResponse, error) {
 	log.Println("Called PatchCard")
 	return c.cardClient.PatchCard(ctx, req)
@@ -118,11 +118,11 @@ func (c *Ctrl) PatchCard(ctx context.Context, req *pb.PatchCardRequest) (*pb.Pat
 //	@Tags			Cards
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body		med.DeleteCardRequest	true	"Запрос"
-//	@Success		200		{object}	med.DeleteCardResponse
-//	@Failure		500		{string}	string	"Internal error"
+//	@Param			body	body	med.DeleteCardRequest	true	"Запрос"
+//	@Success		200
+//	@Failure		500	{string}	string	"Internal error"
 //	@Router			/med/card/delete/{id} [delete]
-func (c *Ctrl) DeleteCard(ctx context.Context, req *pb.DeleteCardRequest) (*pb.DeleteCardResponse, error) {
+func (c *Ctrl) DeleteCard(ctx context.Context, req *pb.DeleteCardRequest) (*empty.Empty, error) {
 	log.Println("Called DeleteCard")
 	return c.cardClient.DeleteCard(ctx, req)
 }
