@@ -4,10 +4,11 @@ vars:
   VENDOR_PROTOGEN: '../vendor.protogen'
 
 tasks:
-  source-mover:
+  get-proto:
     cmds:
       - cp ../auth/api/auth/auth.proto rpc/auth
       - cp ../uzi/api/grpcapi/uzi.proto rpc/uzi
+      - cp ../med/api/medservice.proto rpc/med
 
   inject-tags:
     vars:
