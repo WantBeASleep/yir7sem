@@ -68,13 +68,22 @@ func (s *Server) PostCard(ctx context.Context, request *pb.PostCardRequest) (*pb
 		PatientID:   uuid1,
 		MedWorkerID: uuid2,
 	}
-	err := s.cardUseCase.PostCard(ctx, card)
+	data, err := s.cardUseCase.PostCard(ctx, card)
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
 			return nil, status.Error(codes.Internal, err.Error())
 		}
 	}
-	return nil, nil
+
+	return &pb.PostCardResponse{
+		Postcard: &pb.Card{
+			Id:          data.ID.String(),
+			HasNodules:  data.HasNodules,
+			Diagnosis:   data.Diagnosis,
+			PatientId:   data.PatientID.String(),
+			MedWorkerId: data.MedWorkerID.String(),
+		},
+	}, nil
 }
 
 func (s *Server) GetCardByID(ctx context.Context, request *pb.GetCardByIDRequest) (*pb.GetCardByIDResponse, error) {

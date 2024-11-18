@@ -85,10 +85,10 @@ func (c *CardRepo) ListCards(ctx context.Context, limit, offset int) ([]*entity.
 	return Cards, int(total), nil
 }
 
-func (c *CardRepo) CreateCard(ctx context.Context, Card *entity.PatientCard) error {
+func (c *CardRepo) CreateCard(ctx context.Context, Card *entity.PatientCard) (*entity.PatientCard, error) {
 	tx := c.db.WithContext(ctx).Begin()
 	if tx.Error != nil {
-		return fmt.Errorf("failed to create patient: %w", tx.Error)
+		return nil, fmt.Errorf("failed to create patient: %w", tx.Error)
 	}
 	CardDB := mapper.PatientCardToModels(Card)
 	if err := tx.
@@ -96,10 +96,11 @@ func (c *CardRepo) CreateCard(ctx context.Context, Card *entity.PatientCard) err
 		Create(&CardDB).
 		Error; err != nil {
 		tx.Rollback()
-		return fmt.Errorf("failed to create card info: %w", err)
+		return nil, fmt.Errorf("failed to create card info: %w", err)
 	}
+	resp := mapper.PatientCardToEntity(CardDB)
 
-	return tx.Commit().Error
+	return resp, tx.Commit().Error
 
 }
 

@@ -7,7 +7,7 @@ import (
 
 type Card interface {
 	GetCards(ctx context.Context, limit, offset int) (*entity.PatientCardList, error)
-	PostCard(ctx context.Context, Card *entity.PatientCard) error
+	PostCard(ctx context.Context, Card *entity.PatientCard) (*entity.PatientCard, error)
 	GetCardByID(ctx context.Context, ID string) (*entity.PatientCard, error)
 	PutCard(ctx context.Context, Card *entity.PatientCard) error
 	DeleteCard(ctx context.Context, ID string) error

@@ -21,17 +21,17 @@ func NewCardUseCase(CardRepo repository.Card, logger *zap.Logger) *CardUseCase {
 	}
 }
 
-func (c *CardUseCase) PostCard(ctx context.Context, Card *entity.PatientCard) error {
+func (c *CardUseCase) PostCard(ctx context.Context, Card *entity.PatientCard) (*entity.PatientCard, error) {
 	c.logger.Debug("Starting PostCard usecase", zap.Any("PatientInformation", Card))
 	c.logger.Info("Adding new card")
-	err := c.CardRepo.CreateCard(ctx, Card)
+	resp, err := c.CardRepo.CreateCard(ctx, Card)
 	if err != nil {
 		c.logger.Error("Failed to add card to database", zap.Error(err))
-		return fmt.Errorf("add card to DB: %w", err)
+		return nil, fmt.Errorf("add card to DB: %w", err)
 	}
 	c.logger.Info("Successfully added new card", zap.Any("PatientInformation", Card))
 	c.logger.Debug("PostCard usecase complete", zap.Any("PatientInformation", Card))
-	return nil
+	return resp, nil
 }
 
 func (c *CardUseCase) GetCards(ctx context.Context, limit, offset int) (*entity.PatientCardList, error) {
