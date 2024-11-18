@@ -6,6 +6,7 @@ option go_package = "yir/med/api";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+import "buf/validate/validate.proto";
 
 service MedCard {
     //Получение всех карт пациентов
@@ -161,24 +162,51 @@ service MedPatient{
   }
 
   message Patient{
-    string id = 1 [json_name = "id"];
-    string first_name = 2 [json_name = "first_name"];
-    string last_name = 3 [json_name = "last_name"];
-    string father_name = 4 [json_name = "father_name"];
-    string medical_policy = 5[json_name = "medical_policy"]; 
-    string email = 6 [json_name = "email"]; 
-    bool is_active = 7 [json_name = "is_active"];
+    string id = 1 [json_name = "id", 
+    (buf.validate.field).required = true
+    ];
+    string first_name = 2 [json_name = "first_name", 
+    (buf.validate.field).required = true
+    ]; 
+    string last_name = 3 [json_name = "last_name", 
+    (buf.validate.field).required = true
+    ]; 
+    string father_name = 4 [json_name = "father_name", 
+    (buf.validate.field).required = true
+    ]; 
+    string medical_policy = 5 [json_name = "medical_policy", 
+    (buf.validate.field).required = true
+    ];
+    string email = 6 [json_name = "email", 
+    (buf.validate.field).required = true
+    ]; // Email с валидацией по формату
+    bool is_active = 7 [json_name = "is_active", 
+    (buf.validate.field).required = true
+    ]; 
   }
   
+  
   message Card{
-    string id = 1;
-    string appointment_time = 2 [json_name = "appointment_time"];
-    bool has_nodules = 3 [json_name = "has_nodules"]; 
-    string diagnosis = 4 [json_name = "diagnosis"];
-    string med_worker_id = 5;
+    string id = 1 [json_name = "id", 
+    (buf.validate.field).required = true
+    ];
+    string appointment_time = 2 [json_name = "appointment_time", 
+    (buf.validate.field).required = true
+    ]; // TODO: Валидировать время в формате ISO 8601?
+    bool has_nodules = 3 [json_name = "has_nodules", 
+    (buf.validate.field).required = true
+    ];
+    string diagnosis = 4 [json_name = "diagnosis", 
+    (buf.validate.field).required = true
+    ];
+    // TODO: Передается?
+    string med_worker_id = 5 [json_name = "med_worker_id", 
+    (buf.validate.field).required = true
+    ];
     Patient patient = 6;
   }
   
+  // TODO: Карты?
   message CreatePatientRequest{
     Patient patient = 1;
     Card patient_card = 2 [json_name = "patient_card"];
@@ -189,7 +217,9 @@ service MedPatient{
   }
   
   message PatientInfoRequest{
-    string id = 1;
+    string id = 1 [json_name = "id", 
+    (buf.validate.field).required = true
+    ]; 
   }
   
   message PatientInfoResponse{
@@ -206,26 +236,59 @@ service MedPatient{
     
   */
 
+
+  
   message MedWorker { 
-    string id = 1;
-    string last_name = 2;
-    string first_name = 3;
-    string fathers_name = 4;
-    string med_organization = 5;
-    string job = 6;
-    bool is_remote_worker = 7;
-    string expert_details = 8; 
+    string id = 1 [json_name = "id", 
+    (buf.validate.field).required = true
+    ];
+    string last_name = 2 [json_name = "last_name", 
+    (buf.validate.field).required = true];
+    string first_name = 3 [json_name = "first_name", 
+    (buf.validate.field).required = true
+    ];
+    string fathers_name = 4 [json_name = "fathers_name", 
+    (buf.validate.field).required = true
+    ];
+    string med_organization = 5 [json_name = "med_organization", 
+    (buf.validate.field).required = true
+    ];
+    string job = 6 [json_name = "job", 
+    (buf.validate.field).required = true
+    ];
+    bool is_remote_worker = 7 [json_name = "is_remote_worker", 
+    (buf.validate.field).required = true
+    ]; 
+    string expert_details = 8 [json_name = "expert_details", 
+    (buf.validate.field).required = true
+    ]; 
 }
 
 message GetMedworkerRequest {
-    string id = 1;
-    string first_name = 2;
-    string fathers_name =3;
-    string last_name = 4;
-    bool is_remote_worker = 5;
-    string email = 6;
-    uint64 limit = 7;
-    uint64 offset = 8;
+    string id = 1 [json_name = "id", 
+    (buf.validate.field).required = true
+    ];
+    string first_name = 2 [json_name = "first_name", 
+    (buf.validate.field).required = true
+    ];
+    string fathers_name = 3 [json_name = "fathers_name", 
+    (buf.validate.field).required = true
+    ];
+    string last_name = 4 [json_name = "last_name", 
+    (buf.validate.field).required = true
+    ];
+    bool is_remote_worker = 5 [json_name = "is_remote_worker", 
+    (buf.validate.field).required = true
+    ];
+    string email = 6 [json_name = "email", 
+    (buf.validate.field).required = true
+    ];
+    uint64 limit = 7 [json_name = "limit", 
+    (buf.validate.field).required = true
+    ];
+    uint64 offset = 8 [json_name = "offset", 
+    (buf.validate.field).required = true
+    ];
 }
 
 message GetMedworkerListResponse {
@@ -236,14 +299,30 @@ message GetMedworkerListResponse {
 }
 
 message UpdateMedWorkerRequest {
-    string id = 1;
-    string first_name = 2;
-    string fathers_name = 3;
-    string last_name = 4;
-    string med_organization = 5;
-    string job = 6;
-    bool is_remote_worker = 7;
-    string expert_details = 8;
+    string id = 1 [json_name = "id", 
+    (buf.validate.field).required = true
+    ];
+    string first_name = 2 [json_name = "first_name", 
+    (buf.validate.field).required = true
+    ];
+    string fathers_name = 3 [json_name = "fathers_name", 
+    (buf.validate.field).required = true
+    ];
+    string last_name = 4 [json_name = "last_name", 
+    (buf.validate.field).required = true
+    ];
+    string med_organization = 5 [json_name = "med_organization", 
+    (buf.validate.field).required = true
+    ];
+    string job = 6 [json_name = "job", 
+    (buf.validate.field).required = true
+    ];
+    bool is_remote_worker = 7 [json_name = "is_remote_worker", 
+    (buf.validate.field).required = true
+    ];
+    string expert_details = 8 [json_name = "expert_details", 
+    (buf.validate.field).required = true
+    ];
 }
 
 message UpdateMedWorkerResponse {
@@ -284,7 +363,9 @@ message AddMedWorkerResponse {
 }
 
 message GetPatientsByMedWorkerRequest {
-    string medWorkerId = 1;
+    string medWorkerId = 1 [json_name = "medWorkerId", 
+    (buf.validate.field).required = true
+    ]; 
 }
 
 message GetPatientsByMedWorkerResponse {
@@ -300,8 +381,12 @@ message GetCardsRequest {
     // string diagnosis = 4;
     // uint64 patient_id = 5;
     // uint64 medworker_id = 6;
-    uint64 limit = 1;
-    uint64 offset = 2;
+    uint64 limit = 7 [json_name = "limit", 
+    (buf.validate.field).required = true
+    ];
+    uint64 offset = 8 [json_name = "offset", 
+    (buf.validate.field).required = true
+    ];
 }
 
 message GetCardsResponse {
@@ -312,10 +397,16 @@ message GetCardsResponse {
 }
 
 message PostCardRequest {
-    bool has_nodules = 1;
-    string diagnosis = 2;
-    Patient patient =3;
-    string medworker_id = 4;
+    bool has_nodules = 1 [json_name = "has_nodules", 
+    (buf.validate.field).required = true
+    ];
+    string diagnosis = 2 [json_name = "diagnosis", 
+    (buf.validate.field).required = true
+    ];
+    Patient patient = 3;
+    string medworker_id = 4 [json_name = "medworker_id", 
+    (buf.validate.field).required = true
+    ];
 }
 
 message PostCardResponse {
@@ -323,7 +414,9 @@ message PostCardResponse {
 }
 
 message GetCardByIDRequest {
-    string id = 1;
+    string id = 1 [json_name = "id", 
+    (buf.validate.field).required = true
+    ]; 
 }
 
 message GetCardByIDResponse {
@@ -331,11 +424,21 @@ message GetCardByIDResponse {
 }
 
 message PutCardRequest {
-    string id = 1;
-    bool has_nodules = 2;
-    string diagnosis = 3;
-    string patient_id = 4;
-    string medworker_id = 5;
+    string id = 1 [json_name = "id", 
+    (buf.validate.field).required = true
+    ];
+    bool has_nodules = 2 [json_name = "has_nodules", 
+    (buf.validate.field).required = true
+    ];
+    string diagnosis = 3 [json_name = "diagnosis", 
+    (buf.validate.field).required = true
+    ];
+    string patient_id = 4 [json_name = "patient_id", 
+    (buf.validate.field).required = true
+    ];
+    string medworker_id = 5 [json_name = "medworker_id", 
+    (buf.validate.field).required = true
+    ];
 }
 
 message PutCardResponse {
@@ -343,11 +446,11 @@ message PutCardResponse {
 }
 
 message PatchCardRequest {
-    string id = 1;
-    bool has_nodules = 2;
-    string diagnosis = 3;
+    string id = 1 [json_name = "id", (buf.validate.field).required = true];
+    bool has_nodules = 2 [json_name = "has_nodules", (buf.validate.field).required = true];
+    string diagnosis = 3 [json_name = "diagnosis", (buf.validate.field).required = true];
     Patient patient = 4;
-    string medworker_id = 5;
+    string medworker_id = 5 [json_name = "medworker_id", (buf.validate.field).required = true];
 }
 
 message PatchCardResponse {
@@ -355,7 +458,9 @@ message PatchCardResponse {
 }
 
 message DeleteCardRequest {
-    string id = 1;
+    string id = 1 [json_name = "id", 
+    (buf.validate.field).required = true
+    ];
 }
 
 message DeleteCardResponse {
