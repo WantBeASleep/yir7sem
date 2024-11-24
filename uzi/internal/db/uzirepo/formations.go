@@ -11,13 +11,13 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *UziRepo) CreateFormation(ctx context.Context, formation *entity.Formation) (uuid.UUID, error) {
+func (r *UziRepo) InsertFormation(ctx context.Context, formation *entity.Formation) error {
 	formationDB := mappers.MustTransformObj[entity.Formation, models.Formation](formation)
 	if err := db.CreateRecord[models.Formation](ctx, r.db, formationDB); err != nil {
-		return uuid.Nil, fmt.Errorf("create formation: %w", err)
+		return fmt.Errorf("create formation: %w", err)
 	}
 
-	return formationDB.Id, nil
+	return nil
 }
 
 func (r *UziRepo) GetFormationByID(ctx context.Context, id uuid.UUID) (*entity.Formation, error) {
@@ -66,16 +66,14 @@ func (r *UziRepo) GetFormationsByImageID(ctx context.Context, imageID uuid.UUID)
 
 func (r *UziRepo) UpdateFormation(ctx context.Context, id uuid.UUID, formation *entity.Formation) (*entity.Formation, error) {
 	formationDB := mappers.MustTransformObj[entity.Formation, models.Formation](formation)
-	var updateFormation models.Formation
 
 	if err := r.db.WithContext(ctx).
 		Model(&models.Formation{}).
 		Where("id = ?", id).
 		Updates(formationDB).
-		Find(&updateFormation).
 		Error; err != nil {
 		return nil, fmt.Errorf("update formation: %w", err)
 	}
 
-	return mappers.MustTransformObj[models.Formation, entity.Formation](&updateFormation), nil
+	return r.GetFormationByID(ctx, id)
 }

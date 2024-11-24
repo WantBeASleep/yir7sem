@@ -46,7 +46,7 @@ func (s *Server) GetMedWorkers(ctx context.Context, request *pb.GetMedworkerRequ
 		workerResponse := &pb.MedWorker{
 			Id:              worker.ID.String(),
 			FirstName:       worker.FirstName,
-			MiddleName:      worker.MiddleName,
+			FathersName:     worker.FathersName,
 			LastName:        worker.LastName,
 			MedOrganization: worker.MedOrganization,
 			Job:             worker.Job,
@@ -75,7 +75,7 @@ func (s *Server) GetMedWorkerByID(ctx context.Context, request *pb.GetMedMedWork
 		Worker: &pb.MedWorker{
 			Id:              worker.ID.String(),
 			FirstName:       worker.FirstName,
-			MiddleName:      worker.MiddleName,
+			FathersName:     worker.FathersName,
 			LastName:        worker.LastName,
 			MedOrganization: worker.MedOrganization,
 			Job:             worker.Job,
@@ -92,7 +92,7 @@ func (s *Server) UpdateMedWorker(ctx context.Context, request *pb.UpdateMedWorke
 
 	updateData := &entity.MedicalWorkerUpdateRequest{
 		FirstName:       request.FirstName,
-		MiddleName:      request.MiddleName,
+		FathersName:     request.FathersName,
 		LastName:        request.LastName,
 		MedOrganization: request.MedOrganization,
 		Job:             request.Job,
@@ -114,7 +114,7 @@ func (s *Server) UpdateMedWorker(ctx context.Context, request *pb.UpdateMedWorke
 		Worker: &pb.MedWorker{
 			Id:              updatedWorker.ID.String(),
 			FirstName:       updatedWorker.FirstName,
-			MiddleName:      updatedWorker.MiddleName,
+			FathersName:     updatedWorker.FathersName,
 			LastName:        updatedWorker.LastName,
 			MedOrganization: updatedWorker.MedOrganization,
 			Job:             updatedWorker.Job,
@@ -131,7 +131,7 @@ func (s *Server) AddMedWorker(ctx context.Context, request *pb.AddMedWorkerReque
 
 	medworkerReq := &entity.AddMedicalWorkerRequest{
 		FirstName:       request.GetFirstName(),
-		MiddleName:      request.GetMiddleName(),
+		FathersName:     request.GetFathersName(),
 		LastName:        request.GetLastName(),
 		MedOrganization: request.GetMedOrganization(),
 		Job:             request.GetJob(),
@@ -149,7 +149,7 @@ func (s *Server) AddMedWorker(ctx context.Context, request *pb.AddMedWorkerReque
 		Worker: &pb.MedWorker{
 			Id:              medworker.ID.String(),
 			FirstName:       medworker.FirstName,
-			MiddleName:      medworker.MiddleName,
+			FathersName:     medworker.FathersName,
 			LastName:        medworker.LastName,
 			MedOrganization: medworker.MedOrganization,
 			Job:             medworker.Job,
@@ -186,15 +186,7 @@ func (s *Server) GetPatientsByMedWorker(ctx context.Context, request *pb.GetPati
 			HasNodules:      card.HasNodules,
 			Diagnosis:       card.Diagnosis,
 			MedWorkerId:     card.MedWorkerID.String(),
-			Patient: &pb.Patient{
-				Id: card.PatientID.String(),
-				// FirstName:     card.Patient.FirstName,  //эт подумать - оставлять полностью или только айдишник
-				// LastName:      card.Patient.LastName,
-				// FatherName:    card.Patient.FatherName,
-				// MedicalPolicy: card.Patient.MedicalPolicy,
-				// Email:         card.Patient.Email,
-				// IsActive:      card.Patient.IsActive,
-			},
+			PatientId:       card.PatientID.String(),
 		}
 		response.Cards = append(response.Cards, cardResponse)
 	}
@@ -225,7 +217,7 @@ func (s *Server) GetPatientsByMedWorker(ctx context.Context, request *pb.GetPati
 // 			Id:              uint64(medWorker.ID),
 // 			LastName:        medWorker.LastName,
 // 			FirstName:       medWorker.FirstName,
-// 			MiddleName:      medWorker.MiddleName,
+// 			FathersName:      medWorker.FathersName,
 // 			MedOrganization: medWorker.MedOrganization,
 // 			Job:             medWorker.Job,
 // 			IsRemoteWorker:  medWorker.IsRemoteWorker,
@@ -270,7 +262,7 @@ func (s *Server) GetPatientsByMedWorker(ctx context.Context, request *pb.GetPati
 // 		MedWorker: &pb.MedWorker{
 // 			Id:              uint64(result.MedWorker.ID),
 // 			FirstName:       result.MedWorker.FirstName,
-// 			MiddleName:      result.MedWorker.MiddleName,
+// 			FathersName:      result.MedWorker.FathersName,
 // 			LastName:        result.MedWorker.LastName,
 // 			MedOrganization: result.MedWorker.MedOrganization,
 // 			Job:             result.MedWorker.Job,

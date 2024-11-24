@@ -7,6 +7,7 @@ import (
 	"yir/med/internal/entity"
 	"yir/med/internal/usecase"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -46,20 +47,12 @@ func (s *Server) GetCards(ctx context.Context, request *pb.GetCardsRequest) (*pb
 	}
 	for _, cardInfo := range cardList.Cards {
 		cardResponse := &pb.Card{
-			Id:              cardInfo.Card.ID.String(),
-			AppointmentTime: cardInfo.Card.AppointmentTime,
-			HasNodules:      cardInfo.Card.HasNodules,
-			Diagnosis:       cardInfo.Card.Diagnosis,
-			Patient: &pb.Patient{
-				Id:            cardInfo.Patient.ID.String(),
-				FirstName:     cardInfo.Patient.FirstName,
-				LastName:      cardInfo.Patient.LastName,
-				FatherName:    cardInfo.Patient.FatherName,
-				MedicalPolicy: cardInfo.Patient.MedicalPolicy,
-				Email:         cardInfo.Patient.Email,
-				IsActive:      cardInfo.Patient.IsActive,
-			},
-			MedWorkerId: cardInfo.Card.MedWorkerID.String(),
+			Id:              cardInfo.ID.String(),
+			AppointmentTime: cardInfo.AppointmentTime,
+			HasNodules:      cardInfo.HasNodules,
+			Diagnosis:       cardInfo.Diagnosis,
+			PatientId:       cardInfo.PatientID.String(),
+			MedWorkerId:     cardInfo.MedWorkerID.String(),
 		}
 		response.Results = append(response.Results, cardResponse)
 	}
@@ -68,32 +61,30 @@ func (s *Server) GetCards(ctx context.Context, request *pb.GetCardsRequest) (*pb
 }
 
 func (s *Server) PostCard(ctx context.Context, request *pb.PostCardRequest) (*pb.PostCardResponse, error) {
-	uuid1, _ := uuid.Parse(request.Patient.Id)
+	uuid1, _ := uuid.Parse(request.PatientId)
 	uuid2, _ := uuid.Parse(request.MedworkerId)
-	cardInfo := &entity.PatientInformation{
-		Patient: &entity.Patient{
-			ID:            uuid1,
-			FirstName:     request.Patient.FirstName,
-			LastName:      request.Patient.LastName,
-			FatherName:    request.Patient.FatherName,
-			MedicalPolicy: request.Patient.MedicalPolicy,
-			Email:         request.Patient.Email,
-			IsActive:      request.Patient.IsActive,
-		},
-		Card: &entity.PatientCard{
-			HasNodules:  request.HasNodules,
-			Diagnosis:   request.Diagnosis,
-			PatientID:   uuid1,
-			MedWorkerID: uuid2,
-		},
+	card := &entity.PatientCard{
+		HasNodules:  request.HasNodules,
+		Diagnosis:   request.Diagnosis,
+		PatientID:   uuid1,
+		MedWorkerID: uuid2,
 	}
-	err := s.cardUseCase.PostCard(ctx, cardInfo)
+	data, err := s.cardUseCase.PostCard(ctx, card)
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
 			return nil, status.Error(codes.Internal, err.Error())
 		}
 	}
-	return nil, nil
+
+	return &pb.PostCardResponse{
+		Postcard: &pb.Card{
+			Id:          data.ID.String(),
+			HasNodules:  data.HasNodules,
+			Diagnosis:   data.Diagnosis,
+			PatientId:   data.PatientID.String(),
+			MedWorkerId: data.MedWorkerID.String(),
+		},
+	}, nil
 }
 
 func (s *Server) GetCardByID(ctx context.Context, request *pb.GetCardByIDRequest) (*pb.GetCardByIDResponse, error) {
@@ -108,20 +99,12 @@ func (s *Server) GetCardByID(ctx context.Context, request *pb.GetCardByIDRequest
 	}
 	response := &pb.GetCardByIDResponse{
 		Postcard: &pb.Card{
-			Id:              CardInfo.Card.ID.String(),
-			AppointmentTime: CardInfo.Card.AppointmentTime,
-			HasNodules:      CardInfo.Card.HasNodules,
-			Diagnosis:       CardInfo.Card.Diagnosis,
-			Patient: &pb.Patient{
-				Id:            CardInfo.Patient.ID.String(),
-				FirstName:     CardInfo.Patient.FirstName,
-				LastName:      CardInfo.Patient.LastName,
-				FatherName:    CardInfo.Patient.FatherName,
-				MedicalPolicy: CardInfo.Patient.MedicalPolicy,
-				Email:         CardInfo.Patient.Email,
-				IsActive:      CardInfo.Patient.IsActive,
-			},
-			MedWorkerId: CardInfo.Card.MedWorkerID.String(),
+			Id:              CardInfo.ID.String(),
+			AppointmentTime: CardInfo.AppointmentTime,
+			HasNodules:      CardInfo.HasNodules,
+			Diagnosis:       CardInfo.Diagnosis,
+			PatientId:       CardInfo.PatientID.String(),
+			MedWorkerId:     CardInfo.MedWorkerID.String(),
 		},
 	}
 	return response, nil
@@ -139,7 +122,7 @@ func (s *Server) PutCard(ctx context.Context, request *pb.PutCardRequest) (*pb.P
 		PatientID:   uuid2,
 		MedWorkerID: uuid3,
 	}
-	err := s.cardUseCase.PutCard(ctx, Card)
+	data, err := s.cardUseCase.PutCard(ctx, Card)
 	if err != nil {
 		switch {
 		case errors.Is(err, entity.ErrNotFound):
@@ -149,10 +132,18 @@ func (s *Server) PutCard(ctx context.Context, request *pb.PutCardRequest) (*pb.P
 		}
 	}
 
-	return nil, nil
+	return &pb.PutCardResponse{
+		Postcard: &pb.Card{
+			Id:          data.ID.String(),
+			HasNodules:  data.HasNodules,
+			Diagnosis:   data.Diagnosis,
+			PatientId:   data.PatientID.String(),
+			MedWorkerId: data.MedWorkerID.String(),
+		},
+	}, nil
 }
 
-func (s *Server) DeleteCard(ctx context.Context, request *pb.DeleteCardRequest) (*pb.DeleteCardResponse, error) {
+func (s *Server) DeleteCard(ctx context.Context, request *pb.DeleteCardRequest) (*empty.Empty, error) {
 	s.logger.Info("[Request] Delete card", zap.Any("request", request))
 
 	err := s.cardUseCase.DeleteCard(ctx, request.Id)
@@ -164,5 +155,5 @@ func (s *Server) DeleteCard(ctx context.Context, request *pb.DeleteCardRequest) 
 		return nil, status.Error(codes.Internal, "Failed to delete card")
 	}
 
-	return &pb.DeleteCardResponse{}, nil
+	return nil, nil
 }

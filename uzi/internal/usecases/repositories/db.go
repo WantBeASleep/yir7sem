@@ -9,24 +9,24 @@ import (
 
 type UziRepo interface {
 	// uzi
-	CreateUzi(ctx context.Context, uzi *entity.Uzi) (uuid.UUID, error)
+	InsertUzi(ctx context.Context, uzi *entity.Uzi) error
 	GetUziByID(ctx context.Context, id uuid.UUID) (*entity.Uzi, error)
 	UpdateUzi(ctx context.Context, id uuid.UUID, uzi *entity.Uzi) (*entity.Uzi, error)
 
 	// image
-	CreateImages(ctx context.Context, images []entity.Image) (uuid.UUIDs, error)
+	InsertImages(ctx context.Context, images []entity.Image) error
 	GetImagesByUziID(ctx context.Context, uziID uuid.UUID) ([]entity.Image, error)
 	GetImageByID(ctx context.Context, id uuid.UUID) (*entity.Image, error)
 
 	// formations
-	CreateFormation(ctx context.Context, formation *entity.Formation) (uuid.UUID, error)
+	InsertFormation(ctx context.Context, formation *entity.Formation) error
 	GetFormationByID(ctx context.Context, id uuid.UUID) (*entity.Formation, error)
 	GetFormationsByUziID(ctx context.Context, uziID uuid.UUID) ([]entity.Formation, error)
 	GetFormationsByImageID(ctx context.Context, imageID uuid.UUID) ([]entity.Formation, error)
 	UpdateFormation(ctx context.Context, id uuid.UUID, formation *entity.Formation) (*entity.Formation, error)
 
 	// segments
-	CreateSegments(ctx context.Context, segments []entity.Segment) (uuid.UUIDs, error)
+	InsertSegments(ctx context.Context, segments []entity.Segment) error
 	GetSegmentsByUziID(ctx context.Context, uziID uuid.UUID) ([]entity.Segment, error)
 	GetSegmentsByImageID(ctx context.Context, imageID uuid.UUID) ([]entity.Segment, error)
 	GetSegmentsByFormationID(ctx context.Context, formationID uuid.UUID) ([]entity.Segment, error)

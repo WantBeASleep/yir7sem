@@ -11,11 +11,13 @@ tasks:
     deps: [build]
     env:
       DB_PASS: 1234
-      TOKEN_PRIVATE_KEY: 1
-      TOKEN_PUBLIC_KEY: 1
+      TOKEN_PRIVATE_KEY: 
+        sh: cat 'private.key'
+      TOKEN_PUBLIC_KEY: 
+        sh: cat 'public.key'
 
     cmds:
-      - ./bin/server
+      - ./bin/auth
 
   default:
     - task: root_tasks:build

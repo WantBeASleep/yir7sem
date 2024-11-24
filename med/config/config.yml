@@ -2,7 +2,7 @@ app:
   env: DEV
   host: localhost
   grpc: 50055
-  http: 8080
+  http: 8085
 
 db:
   host: localhost
@@ -12,6 +12,6 @@ db:
 
 medservice:
   host: localhost
-  grpc: 50054
+  grpc: 50056
 
 

@@ -6,7 +6,7 @@ type MedWorkerInfo struct {
 	ID              uuid.UUID `gorm:"primaryKey"`
 	FirstName       string
 	LastName        string
-	MiddleName      string
+	FathersName     string
 	MedOrganization string
 	Job             string
 	IsRemoteWorker  bool `gorm:"not null;default:false"`

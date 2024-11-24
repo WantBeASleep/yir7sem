@@ -45,8 +45,8 @@ type Segment struct {
 	FormationID uuid.UUID
 
 	// meta
-	ContorURL string
-	TiradsID  int
+	Contor   string
+	TiradsID int
 }
 
 type Device struct {

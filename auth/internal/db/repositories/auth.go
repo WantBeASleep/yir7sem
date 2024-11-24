@@ -54,13 +54,15 @@ func (r *AuthRepo) GetUserByMail(ctx context.Context, mail string) (*entity.User
 	return resp, nil
 }
 
+// TODO: поправить эту генерацию в uzi
 func (r *AuthRepo) CreateUser(ctx context.Context, user *entity.User) (uuid.UUID, error) {
 	userDB := mappers.MustTransformObj[entity.User, models.User](user)
+	userDB.ID = uuid.New()
 	if err := db.CreateRecord[models.User](ctx, r.db, userDB); err != nil {
 		return uuid.Nil, err
 	}
 
-	return user.Id, nil
+	return userDB.ID, nil
 }
 
 func (r *AuthRepo) UpdateRefreshTokenByUserID(ctx context.Context, id uuid.UUID, refreshTokenWord string) error {

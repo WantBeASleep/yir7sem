@@ -11,8 +11,10 @@ import (
 
 func (u *UziUseCase) CreateUzi(ctx context.Context, req *entity.Uzi) (uuid.UUID, error) {
 	u.logger.Debug("[Request] Create Uzi", zap.Any("Data", req))
-	uziID, err := u.uziRepo.CreateUzi(ctx, req)
-	if err != nil {
+	uziID := uuid.New()
+	req.Id = uziID
+
+	if err := u.uziRepo.InsertUzi(ctx, req); err != nil {
 		u.logger.Error("Create Uzi", zap.Error(err))
 		return uuid.Nil, fmt.Errorf("create uzi: %w", err)
 	}

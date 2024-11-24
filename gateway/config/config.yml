@@ -1,0 +1,15 @@
+gateway:
+  env: DEV
+  host: localhost
+  grpc: 50050
+  http: 8080
+
+auth:
+  url: localhost:50053
+
+uzi:
+  url: localhost:50054
+
+med:
+  url: localhost:50055
+

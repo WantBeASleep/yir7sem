@@ -11,17 +11,25 @@ import (
 )
 
 func (u *UziUseCase) CreateImages(ctx context.Context, images []entity.Image) (uuid.UUIDs, error) {
+	// generate uuid
+	resp := make([]uuid.UUID, 0, len(images))
+	for i := range images {
+		id := uuid.New()
+		resp = append(resp, id)
+		images[i].Id = id
+	}
+
 	u.logger.Debug("[Request] Create images")
-	ids, err := u.uziRepo.CreateImages(ctx, images)
-	if err != nil {
+	if err := u.uziRepo.InsertImages(ctx, images); err != nil {
 		u.logger.Error("Create images", zap.Error(err))
 		return nil, fmt.Errorf("create images: %w", err)
 	}
 	u.logger.Debug("[Response] Created images")
 
-	return ids, nil
+	return resp, nil
 }
 
+// TODO: после formation/segments в базе
 func (u *UziUseCase) GetImageWithFormationsSegments(ctx context.Context, id uuid.UUID) (*dto.ImageWithFormationsSegments, error) {
 	u.logger.Debug("[Request] Get image by ID", zap.String("image id", id.String()))
 	image, err := u.uziRepo.GetImageByID(ctx, id)
@@ -39,7 +47,7 @@ func (u *UziUseCase) GetImageWithFormationsSegments(ctx context.Context, id uuid
 	}
 	u.logger.Debug("[Response] Got image formations", zap.Int("count formations", len(formations)))
 
-	formationsWithTirads, err := u.GetDTOFormations(ctx, formations)
+	formationsWithTirads, err := u.GetDTOFormationsFromEntity(ctx, formations)
 	if err != nil {
 		return nil, fmt.Errorf("get dto formations: %w", err)
 	}
@@ -52,7 +60,7 @@ func (u *UziUseCase) GetImageWithFormationsSegments(ctx context.Context, id uuid
 	}
 	u.logger.Debug("[Response] Got image segments", zap.Int("count segments", len(segments)))
 
-	segmentsWithTirads, err := u.GetDTOSegments(ctx, segments)
+	segmentsWithTirads, err := u.GetDTOSegmentsFromEntity(ctx, segments)
 	if err != nil {
 		return nil, fmt.Errorf("get dto segments: %w", err)
 	}
