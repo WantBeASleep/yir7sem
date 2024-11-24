@@ -37,7 +37,7 @@ service UziAPI {
   // Создать uzi
   rpc CreateUzi(UziRequest) returns (Id) {
     option (google.api.http) = {
-      post : "/uzi/create"
+      post : "/uzi/create/del_not_active"
       body : "*"
     };
   }
@@ -210,13 +210,17 @@ message ImageResponse {
 }
 
 message UziRequest {
-  string url = 200 [ (buf.validate.field).required = true ];
+  // @gotags: json:"url"
+  string url = 200;
+  // @gotags: json:"projection"
   string projection = 300 [ (buf.validate.field).required = true ];
+  // @gotags: json:"patient_id"
   string patient_id = 400 [
     json_name = "patient_id",
     (buf.validate.field).string.uuid = true,
     (buf.validate.field).required = true
   ];
+  // @gotags: json:"device_id"
   int64 device_id = 500
       [ json_name = "device_id", (buf.validate.field).required = true ];
 }

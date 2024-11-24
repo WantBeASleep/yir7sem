@@ -10,23 +10,14 @@ import (
 	"go.uber.org/zap"
 )
 
-func (u *UziUseCase) CreateImages(ctx context.Context, images []entity.Image) (uuid.UUIDs, error) {
-	// generate uuid
-	resp := make([]uuid.UUID, 0, len(images))
-	for i := range images {
-		id := uuid.New()
-		resp = append(resp, id)
-		images[i].Id = id
-	}
-
+func (u *UziUseCase) InsertImages(ctx context.Context, images []entity.Image) error {
 	u.logger.Debug("[Request] Create images")
 	if err := u.uziRepo.InsertImages(ctx, images); err != nil {
 		u.logger.Error("Create images", zap.Error(err))
-		return nil, fmt.Errorf("create images: %w", err)
+		return fmt.Errorf("create images: %w", err)
 	}
 	u.logger.Debug("[Response] Created images")
-
-	return resp, nil
+	return nil
 }
 
 // TODO: после formation/segments в базе

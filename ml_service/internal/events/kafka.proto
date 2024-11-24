@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-package yir.main;
+package yir.uzi.kafka;
 
-option go_package = "yir/api;main";
+message uziUpload { string id = 100; }
 
 message Point {
-  int64 X = 100;
-  int64 Y = 200;
+  int64 x = 100;
+  int64 y = 200;
 }
 
 message Tirads {
@@ -40,4 +40,3 @@ message uziSplitted {
   string uzi_id = 100;
   repeated string pages_id = 200;
 }
-

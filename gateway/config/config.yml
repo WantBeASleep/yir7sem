@@ -13,3 +13,6 @@ uzi:
 med:
   url: localhost:50055
 
+s3:
+  url: localhost:50056
+

@@ -2,39 +2,132 @@ package uzi
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	_ "image/png"
 	"log"
+	"net/http"
+	"path/filepath"
+	pbkafka "yir/gateway/rpc/broker"
 	pb "yir/gateway/rpc/uzi"
+	"yir/pkg/kafka"
+	"yir/s3upload/pkg/client"
+
+	_ "golang.org/x/image/tiff"
 
 	empty "github.com/golang/protobuf/ptypes/empty"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 type Ctrl struct {
 	pb.UnimplementedUziAPIServer
 
-	client pb.UziAPIClient
+	client   pb.UziAPIClient
+	s3client *client.S3Client
+	producer *kafka.Producer
 }
 
 func NewCtrl(
 	client pb.UziAPIClient,
+	s3client *client.S3Client,
+	producer *kafka.Producer,
 ) *Ctrl {
 	return &Ctrl{
-		client: client,
+		client:   client,
+		s3client: s3client,
+		producer: producer,
 	}
+}
+
+type CreateUziHTTPReq struct {
+	Projection string `json:"projection"`
+	Patient_id string `json:"patient_id"`
+	Device_id  int    `json:"device_id"`
 }
 
 // CreateUzi godoc
 //
 //	@Summary		ЗагрузитьUzi
-//	@Description	Да пиздец.
+//	@Description	**ОТПРАВЛЯТЬ JSON + FILE**
 //	@Tags			Uzi
+//	@Accept			multipart/form-data
 //	@Produce		json
-//	@Failure		500	{string}	string	"Internal error"
+//	@Param			Uzi		formData	CreateUziHTTPReq	true	"поля из JSON"
+//	@Param			data	formData	string				true	"JSON с данными для Uzi"
+//	@Param			file	formData	file				true	"Файл"
+//	@Failure		500		{string}	string				"Internal error"
 //	@Router			/uzi/create [post]
-func (c *Ctrl) CreateUzi(ctx context.Context, req *pb.UziRequest) (*pb.Id, error) {
+func (c *Ctrl) CreateUziHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Println("Called CreateUzi")
-	return nil, status.Error(codes.Unimplemented, "method not implemented")
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	jsonData := r.FormValue("data") // замените "data" на имя вашего поля с JSON
+	if jsonData == "" {
+		http.Error(w, "JSON data is required", http.StatusBadRequest)
+		return
+	}
+
+	req := CreateUziHTTPReq{}
+	if err := json.Unmarshal([]byte(jsonData), &req); err != nil {
+		http.Error(w, fmt.Sprintf("Unable to parse JSON: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	file, _, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error reading file: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// head := make([]byte, 512)
+	// if _, err := file.Read(head); err != nil {
+	// 	http.Error(w, "Error reading file", http.StatusInternalServerError)
+	// 	return
+	// }
+
+	// TODO: не определяется тип подумать
+	// contentType := http.DetectContentType(head)
+	// log.Println(contentType)
+	// if contentType != "image/png" && contentType != "image/tiff" {
+	// 	http.Error(w, "Invalid file type; only PNG and TIFF are allowed", http.StatusBadRequest)
+	// 	return
+	// }
+	// file.Seek(0, io.SeekStart)
+
+	resp, err := c.client.CreateUzi(r.Context(), &pb.UziRequest{
+		Projection: req.Projection,
+		PatientId:  req.Patient_id,
+		DeviceId:   int64(req.Device_id),
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error create part of uzi: %v", err), http.StatusInternalServerError)
+		return
+	}
+	log.Println("RESPONSE", resp)
+
+	err = c.s3client.Upload(r.Context(), &client.FileMeta{
+		Path:        filepath.Join(resp.Id, resp.Id),
+		ContentType: "image/tiff",
+	}, file)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error upload file to UZI: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	kafkareq := pbkafka.UziUpload{Id: resp.Id}
+	payload, err := proto.Marshal(&kafkareq)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("marshal to kafka: %v", err), http.StatusInternalServerError)
+		return
+	}
+	// TODO: прокинуть куда писать
+	if err := c.producer.Send("uziUpload", payload); err != nil {
+		http.Error(w, fmt.Sprintf("spawn kafka event: %v", err), http.StatusInternalServerError)
+		return
+	}
 }
 
 // GetUzi godoc

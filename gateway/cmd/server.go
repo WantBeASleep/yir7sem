@@ -8,10 +8,14 @@ import (
 	"net/http"
 	"sync"
 	_ "yir/gateway/docs"
+	"yir/pkg/kafka"
 
 	auth "yir/gateway/internal/auth"
 	"yir/gateway/internal/med"
 	authpb "yir/gateway/rpc/auth"
+
+	s3api "yir/s3upload/api"
+	s3client "yir/s3upload/pkg/client"
 
 	uzi "yir/gateway/internal/uzi"
 	uzipb "yir/gateway/rpc/uzi"
@@ -28,7 +32,7 @@ import (
 )
 
 const (
-	defaultCfgPath = "config/config.yml"
+	defaultCfgPath = "/home/wantbeasleep/yir/gateway/config/config.yml"
 	shorthand      = " (shorthand)"
 )
 
@@ -87,12 +91,21 @@ func main() {
 	}
 	log.Println("Registered Auth and set endpoint")
 
+	s3conn, err := grpc.Dial(cfg.S3.Url, grpc.WithInsecure())
+	if err != nil {
+		panic(fmt.Errorf("uzi conn: %w", err))
+	}
+	s3clientGRPC := s3api.NewS3Client(s3conn)
+	s3clientPKG := s3client.NewS3Client(s3clientGRPC)
+
+	prod := kafka.New([]string{"localhost:9092"}, "uziUpload")
+
 	uziConn, err := grpc.Dial(cfg.Uzi.Url, grpc.WithInsecure())
 	if err != nil {
 		panic(fmt.Errorf("uzi conn: %w", err))
 	}
 	log.Println("Connected to Uzi")
-	uziCtrl := uzi.NewCtrl(uzipb.NewUziAPIClient(uziConn))
+	uziCtrl := uzi.NewCtrl(uzipb.NewUziAPIClient(uziConn), s3clientPKG, prod)
 
 	uzipb.RegisterUziAPIServer(s, uziCtrl)
 	if err := uzipb.RegisterUziAPIHandlerFromEndpoint(context.Background(), mux, cfg.Gateway.Host+":"+cfg.Gateway.GRPCport, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
@@ -107,6 +120,10 @@ func main() {
 
 	mux.HandlePath("GET", "/docs/*", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 		httpswag.WrapHandler.ServeHTTP(w, r)
+	})
+
+	mux.HandlePath("POST", "/uzi/create", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+		uziCtrl.CreateUziHTTP(w, r)
 	})
 
 	var wg sync.WaitGroup
