@@ -8,6 +8,7 @@ tasks:
     cmds:
       - cp ../auth/api/auth/auth.proto rpc/auth
       - cp ../uzi/api/grpcapi/uzi.proto rpc/uzi
+      - cp ../uzi/api/broker/kafka.proto rpc/broker
       - cp ../med/api/med.proto rpc/med
 
   inject-tags:

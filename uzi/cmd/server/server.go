@@ -75,7 +75,8 @@ func main() {
 		panic(fmt.Errorf("init ctrl: %w", err))
 	}
 
-	uziBroker := uziapi.NewBroker(uziUseCase, logger)
+	splittedProd := kafka.New([]string{"localhost:9092"}, "uziSplitted")
+	uziBroker := uziapi.NewBroker(uziUseCase, logger, splittedProd)
 
 	grpcServer := grpc.NewServer()
 	pbgrpc.RegisterUziAPIServer(grpcServer, uziController)

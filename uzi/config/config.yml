@@ -12,4 +12,4 @@ db:
   password: 1234 # дебаг
 
 services:
-  s3servicehost: localhost:50055
+  s3servicehost: localhost:50056

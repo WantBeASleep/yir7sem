@@ -6,7 +6,7 @@ authors = ["dexxhawk <Dsshnyakin@yandex.ru>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 minio = "^7.2.10"
 grpcio = "^1.0.0"
 grpcio-tools = "^1.67.0"

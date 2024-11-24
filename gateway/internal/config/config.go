@@ -12,6 +12,7 @@ type Config struct {
 	Auth    Auth    `yaml:"auth"`
 	Uzi     Uzi     `yaml:"uzi"`
 	Med     Med     `yaml:"med"`
+	S3      S3      `yaml:"s3"`
 }
 
 type Gateway struct {
@@ -33,6 +34,10 @@ type Uzi struct {
 
 type Med struct {
 	Url string `yaml:"url" env-default:"localhost:50055"`
+}
+
+type S3 struct {
+	Url string `yaml:"url" env-default:"localhost:50056"`
 }
 
 func MustLoad(path string) Config {

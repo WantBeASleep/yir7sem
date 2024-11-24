@@ -7,8 +7,8 @@ option go_package = "yir/uzi/api/broker;broker";
 message uziUpload { string id = 100; }
 
 message Point {
-  int64 X = 100;
-  int64 Y = 200;
+  int64 x = 100;
+  int64 y = 200;
 }
 
 message Tirads {
@@ -36,4 +36,9 @@ message KafkaFormation {
 message uziProcessed {
   repeated KafkaFormation formations = 100;
   repeated KafkaSegment segments = 200;
+}
+
+message uziSplitted {
+  string uzi_id = 100;
+  repeated string pages_id = 200;
 }

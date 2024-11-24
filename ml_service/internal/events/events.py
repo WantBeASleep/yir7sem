@@ -17,6 +17,7 @@ class EventsYo():
         consumer.subscribe(['uziSplitted'])
         while True:
             msg = consumer.poll(timeout=1.0)
+            # continue
             if msg is None:
                 continue  # Если сообщения нет, то пропускаем итерацию
 

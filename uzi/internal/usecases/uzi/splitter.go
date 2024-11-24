@@ -56,7 +56,7 @@ func (u *UziUseCase) SplitLoadSaveUzi(ctx context.Context, uziID uuid.UUID) (uui
 	}
 	u.logger.Info("[Response] Uploaded all pages to S3")
 
-	if _, err := u.CreateImages(ctx, images); err != nil {
+	if err := u.InsertImages(ctx, images); err != nil {
 		return nil, fmt.Errorf("insert images to postgres: %w", err)
 	}
 
