@@ -54,29 +54,33 @@ class uziUseCase():
 
         masks, rois = self.segmentUzi(data)
         indv, tracked = self.classificateUzi(rois)
-
+        print(type(tracked))
         # indv - probs по segments
         # tracked - probs по formations
         # tirads=probs
 
         formations = dict()
-        # k - это formation_id
+        # k - это formation_id из модели
+        formation_ids = {}
         for k in tracked:
+            print(k)
             tirads = pb_event.Tirads(
                 tirads_23=tracked[k][0],
                 tirads_4=tracked[k][1],
                 tirads_5=tracked[k][2]
             )
+            formation_uuid = str(uuid.uuid4())
             formations[k] = pb_event.KafkaFormation(
-                id=str(uuid.uuid4()),
+                id=formation_uuid,
                 tirads=tirads,
                 ai=True
             )
+            formation_ids[k] = formation_uuid
+
         # Это мы запихнули в словарик dct[formation] = probs
-        # print_lengths_return_ndarray_list(tracked) #Чекнуть, че происходит
+        # print_lengths_return_ndarray_list(tracked)
 
         segment_ids = []
-        formation_ids = {}
 
         # Далее бежим по всем картинкам и сегментам с целью отдать 
 
@@ -86,7 +90,8 @@ class uziUseCase():
         for i in range(len(rois)):
             print("ROI num: ", i)
             for j in range(len(rois[i])):
-                formation_id_from_model = rois[i][j][1]
+                formation_id_from_model = rois[i][j][1] #Это то же самое, что k
+                print("FORMATION ID FROM MODEL: ", formation_id_from_model)
                 if formation_id_from_model not in formation_ids:
                     formation_ids[formation_id_from_model] = str(uuid.uuid4())
                 formation_id = formation_ids.get(formation_id_from_model)
