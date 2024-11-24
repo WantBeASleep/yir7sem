@@ -1,0 +1,1252 @@
+definitions:
+  auth.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  auth.RegisterRequest:
+    properties:
+      email:
+        type: string
+      fathers_name:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      med_organization:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.RegisterResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  auth.TokenRefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  auth.TokenRefreshResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  grpcapi.CreateFormationWithSegmentsResponse:
+    properties:
+      formation_id:
+        type: string
+      segments_ids:
+        items:
+          type: string
+        type: array
+    type: object
+  grpcapi.Device:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  grpcapi.FormationRequest:
+    properties:
+      ai:
+        type: boolean
+      tirads:
+        $ref: '#/definitions/grpcapi.Tirads'
+    type: object
+  grpcapi.FormationResponse:
+    properties:
+      ai:
+        type: boolean
+      id:
+        type: string
+      tirads:
+        $ref: '#/definitions/grpcapi.Tirads'
+    type: object
+  grpcapi.FormationWithNestedSegmentsRequest:
+    properties:
+      ai:
+        type: boolean
+      segments:
+        items:
+          $ref: '#/definitions/grpcapi.SegmentNestedRequest'
+        type: array
+      tirads:
+        $ref: '#/definitions/grpcapi.Tirads'
+    type: object
+  grpcapi.FormationWithSegments:
+    properties:
+      formation:
+        $ref: '#/definitions/grpcapi.FormationResponse'
+      segments:
+        items:
+          $ref: '#/definitions/grpcapi.SegmentResponse'
+        type: array
+    type: object
+  grpcapi.ImageResponse:
+    properties:
+      id:
+        type: string
+      page:
+        type: integer
+      url:
+        type: string
+    type: object
+  grpcapi.ImageWithFormationsSegments:
+    properties:
+      formations:
+        items:
+          $ref: '#/definitions/grpcapi.FormationResponse'
+        type: array
+      image:
+        $ref: '#/definitions/grpcapi.ImageResponse'
+      segments:
+        items:
+          $ref: '#/definitions/grpcapi.SegmentResponse'
+        type: array
+    type: object
+  grpcapi.Point:
+    properties:
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  grpcapi.Report:
+    properties:
+      formations:
+        items:
+          $ref: '#/definitions/grpcapi.FormationResponse'
+        type: array
+      images:
+        items:
+          $ref: '#/definitions/grpcapi.ImageResponse'
+        type: array
+      segments:
+        items:
+          $ref: '#/definitions/grpcapi.SegmentResponse'
+        type: array
+      uzi:
+        $ref: '#/definitions/grpcapi.UziReponse'
+    type: object
+  grpcapi.SegmentNestedRequest:
+    properties:
+      contor:
+        items:
+          $ref: '#/definitions/grpcapi.Point'
+        type: array
+      image_id:
+        type: string
+      tirads:
+        $ref: '#/definitions/grpcapi.Tirads'
+    type: object
+  grpcapi.SegmentRequest:
+    properties:
+      contor:
+        items:
+          $ref: '#/definitions/grpcapi.Point'
+        type: array
+      formation_id:
+        type: string
+      image_id:
+        type: string
+      tirads:
+        $ref: '#/definitions/grpcapi.Tirads'
+    type: object
+  grpcapi.SegmentResponse:
+    properties:
+      contor:
+        items:
+          $ref: '#/definitions/grpcapi.Point'
+        type: array
+      formation_id:
+        type: string
+      id:
+        type: string
+      image_id:
+        type: string
+      tirads:
+        $ref: '#/definitions/grpcapi.Tirads'
+    type: object
+  grpcapi.Tirads:
+    properties:
+      tirads_4:
+        type: number
+      tirads_5:
+        type: number
+      tirads_23:
+        type: number
+    type: object
+  grpcapi.UziReponse:
+    properties:
+      device_id:
+        type: integer
+      id:
+        type: string
+      patient_id:
+        type: string
+      projection:
+        type: string
+      url:
+        type: string
+    type: object
+  grpcapi.UziUpdateRequest:
+    properties:
+      device_id:
+        type: integer
+      patient_id:
+        type: string
+      projection:
+        type: string
+    type: object
+  med.AddMedWorkerRequest:
+    properties:
+      expert_details:
+        type: string
+      fathers_name:
+        type: string
+      first_name:
+        type: string
+      is_remote_worker:
+        type: boolean
+      job:
+        type: string
+      last_name:
+        type: string
+      med_organization:
+        type: string
+    type: object
+  med.AddMedWorkerResponse:
+    properties:
+      worker:
+        $ref: '#/definitions/med.MedWorker'
+    type: object
+  med.Card:
+    properties:
+      appointment_time:
+        type: string
+      diagnosis:
+        type: string
+      has_nodules:
+        type: boolean
+      id:
+        type: string
+      med_worker_id:
+        type: string
+      patient_id:
+        type: string
+    type: object
+  med.CreatePatientRequest:
+    properties:
+      patient:
+        $ref: '#/definitions/med.Patient'
+    type: object
+  med.DeleteCardRequest:
+    properties:
+      id:
+        type: string
+    type: object
+  med.GetCardByIDResponse:
+    properties:
+      postcard:
+        $ref: '#/definitions/med.Card'
+    type: object
+  med.GetCardsRequest:
+    properties:
+      limit:
+        description: |-
+          uint64 id = 1;
+          string acceptance_datetime = 2;
+          bool has_nodules = 3;
+          string diagnosis = 4;
+          uint64 patient_id = 5;
+          uint64 medworker_id = 6;
+        type: integer
+      offset:
+        type: integer
+    type: object
+  med.GetCardsResponse:
+    properties:
+      count:
+        type: integer
+      next:
+        type: string
+      previous:
+        type: string
+      results:
+        items:
+          $ref: '#/definitions/med.Card'
+        type: array
+    type: object
+  med.GetMedWorkerByIDResponse:
+    properties:
+      worker:
+        $ref: '#/definitions/med.MedWorker'
+    type: object
+  med.GetMedworkerListResponse:
+    properties:
+      count:
+        type: integer
+      next:
+        type: string
+      previous:
+        type: string
+      results:
+        items:
+          $ref: '#/definitions/med.MedWorker'
+        type: array
+    type: object
+  med.GetMedworkerRequest:
+    properties:
+      limit:
+        description: |-
+          string id = 1 [json_name = "id",
+          (buf.validate.field).required = true
+          ];
+          string first_name = 2 [json_name = "first_name",
+          (buf.validate.field).required = true
+          ];
+          string fathers_name = 3 [json_name = "fathers_name",
+          (buf.validate.field).required = true
+          ];
+          string last_name = 4 [json_name = "last_name",
+          (buf.validate.field).required = true
+          ];
+          bool is_remote_worker = 5 [json_name = "is_remote_worker",
+          (buf.validate.field).required = true
+          ];
+          string email = 6 [json_name = "email",
+          (buf.validate.field).required = true
+          ];
+        type: integer
+      offset:
+        type: integer
+    type: object
+  med.GetPatientsByMedWorkerRequest:
+    properties:
+      medWorkerId:
+        type: string
+    type: object
+  med.GetPatientsByMedWorkerResponse:
+    properties:
+      cards:
+        items:
+          $ref: '#/definitions/med.Card'
+        type: array
+      med_worker_id:
+        type: string
+    type: object
+  med.MedWorker:
+    properties:
+      expert_details:
+        type: string
+      fathers_name:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      is_remote_worker:
+        type: boolean
+      job:
+        type: string
+      last_name:
+        type: string
+      med_organization:
+        type: string
+    type: object
+  med.PatchCardRequest:
+    properties:
+      diagnosis:
+        type: string
+      has_nodules:
+        type: boolean
+      id:
+        type: string
+      medworker_id:
+        type: string
+      patient:
+        $ref: '#/definitions/med.Patient'
+    type: object
+  med.PatchMedWorkerRequest:
+    properties:
+      expert_details:
+        type: string
+      fathers_name:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      is_remote_worker:
+        type: boolean
+      job:
+        type: string
+      last_name:
+        type: string
+      med_organization:
+        type: string
+    type: object
+  med.Patient:
+    properties:
+      email:
+        description: Email с валидацией по формату
+        type: string
+      father_name:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      last_name:
+        type: string
+      medical_policy:
+        type: string
+    type: object
+  med.PatientInfoResponse:
+    properties:
+      patient:
+        $ref: '#/definitions/med.Patient'
+    type: object
+  med.PatientListResponse:
+    properties:
+      patients:
+        items:
+          $ref: '#/definitions/med.Patient'
+        type: array
+    type: object
+  med.PatientUpdateRequest:
+    properties:
+      patient:
+        $ref: '#/definitions/med.Patient'
+    type: object
+  med.PostCardRequest:
+    properties:
+      diagnosis:
+        type: string
+      has_nodules:
+        type: boolean
+      medworker_id:
+        type: string
+      patient_id:
+        type: string
+    type: object
+  med.PostCardResponse:
+    properties:
+      postcard:
+        $ref: '#/definitions/med.Card'
+    type: object
+  med.PutCardRequest:
+    properties:
+      diagnosis:
+        type: string
+      has_nodules:
+        type: boolean
+      id:
+        type: string
+      medworker_id:
+        type: string
+      patient_id:
+        type: string
+    type: object
+  med.PutCardResponse:
+    properties:
+      postcard:
+        $ref: '#/definitions/med.Card'
+    type: object
+  med.UpdateMedWorkerRequest:
+    properties:
+      expert_details:
+        type: string
+      fathers_name:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      is_remote_worker:
+        type: boolean
+      job:
+        type: string
+      last_name:
+        type: string
+      med_organization:
+        type: string
+    type: object
+  med.UpdateMedWorkerResponse:
+    properties:
+      worker:
+        $ref: '#/definitions/med.MedWorker'
+    type: object
+info:
+  contact: {}
+  title: 1000-7 dev cursed
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a token pair.
+      parameters:
+      - description: User Login Data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LoginResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: User Login
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user and returns a response with a UUID.
+      parameters:
+      - description: User Registration Data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.RegisterResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: User Registration
+      tags:
+      - auth
+  /auth/token/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refreshes an expired access token using a refresh token.
+      parameters:
+      - description: Token Data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.TokenRefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.TokenRefreshResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Token Refresh
+      tags:
+      - auth
+  /med/card/by/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Получить карту по ID
+      parameters:
+      - description: ID карты
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.GetCardByIDResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Get card by ID
+      tags:
+      - Cards
+  /med/card/create:
+    post:
+      consumes:
+      - application/json
+      description: Создать новую карту
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.PostCardRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.PostCardResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Add card
+      tags:
+      - Cards
+  /med/card/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удалить карту
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.DeleteCardRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Delete card
+      tags:
+      - Cards
+  /med/card/list:
+    get:
+      consumes:
+      - application/json
+      description: Получить список карт
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.GetCardsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.GetCardsResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Get cards
+      tags:
+      - Cards
+  /med/card/patch/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Частично обновить карту
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.PatchCardRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.UpdateMedWorkerResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Patch card
+      tags:
+      - Cards
+  /med/card/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Обновить карту
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.PutCardRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.PutCardResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Update card
+      tags:
+      - Cards
+  /med/patient/create:
+    post:
+      consumes:
+      - application/json
+      description: Добавить пациента
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.CreatePatientRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Add patient
+      tags:
+      - Patients
+  /med/patient/info/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Получить информацию о пациенте по ID
+      parameters:
+      - description: ID пациента
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.PatientInfoResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Get patient by ID
+      tags:
+      - Patients
+  /med/patient/list:
+    get:
+      consumes:
+      - application/json
+      description: Получить список пациентов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.PatientListResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Get patient list
+      tags:
+      - Patients
+  /med/patient/update/{patient.id}:
+    put:
+      consumes:
+      - application/json
+      description: Обновить информацию о пациенте
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.PatientUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Update patient
+      tags:
+      - Patients
+  /med/worker/by/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Получить данные медицинского работника по ID
+      parameters:
+      - description: ID медицинского работника
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.GetMedWorkerByIDResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Get med worker by ID
+      tags:
+      - MedWorkers
+  /med/worker/create:
+    post:
+      consumes:
+      - application/json
+      description: Добавить нового медицинского работника
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.AddMedWorkerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.AddMedWorkerResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Add med worker
+      tags:
+      - MedWorkers
+  /med/worker/list:
+    get:
+      consumes:
+      - application/json
+      description: Получить список медицинских работников
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.GetMedworkerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.GetMedworkerListResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Get med workers
+      tags:
+      - MedWorkers
+  /med/worker/patch/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Частично обновить данные медицинского работника
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.PatchMedWorkerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.UpdateMedWorkerResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Patch med worker
+      tags:
+      - MedWorkers
+  /med/worker/patients/{worker_id}:
+    get:
+      consumes:
+      - application/json
+      description: Получить список пациентов, закрепленных за медицинским работником
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.GetPatientsByMedWorkerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.GetPatientsByMedWorkerResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Get patients by med worker
+      tags:
+      - MedWorkers
+  /med/worker/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Обновить данные медицинского работника
+      parameters:
+      - description: Запрос
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.UpdateMedWorkerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.UpdateMedWorkerResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Update med worker
+      tags:
+      - MedWorkers
+  /report/{uzi_id}:
+    get:
+      description: Возвращает информацию о Репорте по указанному ID.
+      parameters:
+      - description: ID УЗИ
+        in: path
+        name: uzi_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные УЗИ
+          schema:
+            $ref: '#/definitions/grpcapi.Report'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Получить Репорт по ID
+      tags:
+      - Uzi
+  /uzi/{uzi_id}:
+    get:
+      description: Возвращает информацию о УЗИ по указанному ID.
+      parameters:
+      - description: ID УЗИ
+        in: path
+        name: uzi_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные УЗИ
+          schema:
+            $ref: '#/definitions/grpcapi.UziReponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Получить УЗИ по ID
+      tags:
+      - Uzi
+    put:
+      consumes:
+      - application/json
+      description: Обновляет существующую запись УЗИ по переданным данным.
+      parameters:
+      - description: ID УЗИ
+        in: path
+        name: uzi_id
+        required: true
+        type: string
+      - description: Метаданные УЗИ
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/grpcapi.UziUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное выполнение
+          schema:
+            $ref: '#/definitions/grpcapi.UziReponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Обновить УЗИ
+      tags:
+      - Uzi
+  /uzi/create:
+    post:
+      consumes:
+      - multipart/form-data
+      description: '**ОТПРАВЛЯТЬ JSON + FILE**'
+      parameters:
+      - in: formData
+        name: device_id
+        type: integer
+      - in: formData
+        name: patient_id
+        type: string
+      - in: formData
+        name: projection
+        type: string
+      - description: JSON с данными для Uzi
+        in: formData
+        name: data
+        required: true
+        type: string
+      - description: Файл
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: ЗагрузитьUzi
+      tags:
+      - Uzi
+  /uzi/device/list:
+    get:
+      description: Возвращает список доступных устройств для УЗИ.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список устройств
+          schema:
+            items:
+              $ref: '#/definitions/grpcapi.Device'
+            type: array
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Получить список устройств
+      tags:
+      - Uzi
+  /uzi/formation/{formation_id}:
+    put:
+      consumes:
+      - application/json
+      description: Обновляет существующую формацию по переданному ID.
+      parameters:
+      - description: ID формации
+        in: path
+        name: formation_id
+        required: true
+        type: string
+      - description: Данные формации
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/grpcapi.FormationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное выполнение
+          schema:
+            $ref: '#/definitions/grpcapi.FormationResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Обновить формацию
+      tags:
+      - Uzi
+  /uzi/formation/withsegments/{formation_id}:
+    get:
+      description: Возвращает формацию с сегментами по указанному ID формации.
+      parameters:
+      - description: ID формации
+        in: path
+        name: formation_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные формации с сегментами
+          schema:
+            $ref: '#/definitions/grpcapi.FormationWithSegments'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Получить формацию с сегментами
+      tags:
+      - Uzi
+  /uzi/formation/withsegments/{uzi_id}:
+    post:
+      consumes:
+      - application/json
+      description: Создает формацию с сегментами, привязанную к указанному uziID.
+      parameters:
+      - description: ID УЗИ
+        in: path
+        name: uzi_id
+        required: true
+        type: string
+      - description: Формация с сегментами
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/grpcapi.FormationWithNestedSegmentsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ID элементов
+          schema:
+            $ref: '#/definitions/grpcapi.CreateFormationWithSegmentsResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Добавить формацию с сегментами
+      tags:
+      - Uzi
+  /uzi/image/withsegments/{image_id}:
+    get:
+      description: Возвращает изображение УЗИ и информацию о сегментах по указанному
+        ID изображения.
+      parameters:
+      - description: ID изображения
+        in: path
+        name: image_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Изображение с сегментами
+          schema:
+            $ref: '#/definitions/grpcapi.ImageWithFormationsSegments'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Получить изображение УЗИ с сегментами
+      tags:
+      - Uzi
+  /uzi/segment/{segment_id}:
+    put:
+      consumes:
+      - application/json
+      description: Обновляет существующую сегмент по переданному ID. (Мы его не тестили)
+      parameters:
+      - description: ID формации
+        in: path
+        name: segment_id
+        required: true
+        type: string
+      - description: Данные формации
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/grpcapi.SegmentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное выполнение
+          schema:
+            $ref: '#/definitions/grpcapi.SegmentResponse'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+      summary: Обновить сегмент
+      tags:
+      - Uzi
+schemes:
+- http
+swagger: "2.0"
