@@ -8,6 +8,7 @@ from ml_service.internal.ml_model.neuro_class import ModelABC
 from ml_service.internal.s3.s3 import S3
 from ml_service.internal.utils import image_parser
 import ml_service.internal.events.kafka_pb2 as pb_event
+import uuid
 
 res_for_recursive = []
 
@@ -26,50 +27,69 @@ class uziUseCase():
         indv, tracked = self.efficientModel.predict(rois)
         return indv, tracked
     
-    def segmentAndClassificateByID(self, uzi_id):
-        global res_for_recursive
-        print("в с3 кабаном")
-        data = self.store.load(uzi_id)
+    # def segmentAndClassificateByID(self, uzi_id):
+    #     global res_for_recursive
+    #     print("Going to S3...")
+    #     data = self.store.load(uzi_id)
 
-        size_in_bytes = len(data)
-        size_in_kb = size_in_bytes/1024
-        size_in_mb = size_in_kb/1024    
-        print(f"Размер загруженных данных: {size_in_bytes} байт, {size_in_kb:.2f} Кб, {size_in_mb:.2f} Mb")
+    #     size_in_bytes = len(data)
+    #     size_in_kb = size_in_bytes/1024
+    #     size_in_mb = size_in_kb/1024    
+    #     print(f"Размер загруженных данных: {size_in_bytes} байт, {size_in_kb:.2f} Кб, {size_in_mb:.2f} Mb")
         
-        masks, rois = self.segmentUzi(data)
-        indv, tracked = self.classificateUzi(rois)
+    #     masks, rois = self.segmentUzi(data)
+    #     indv, tracked = self.classificateUzi(rois)
 
-        print_lengths_return_ndarray_list(rois)
-        print("\n\n\n\n")
-        print_lengths_return_ndarray_list(indv)
-        print("\n\n\n\n")
-        print_lengths_return_ndarray_list(tracked)
+    #     print_lengths_return_ndarray_list(rois)
+    #     print("\n\n\n\n")
+    #     print_lengths_return_ndarray_list(indv)
+    #     print("\n\n\n\n")
+    #     print_lengths_return_ndarray_list(tracked)
 
     def segmentClassificateSave(self, uzi_id, pages_id):
         # фул похуй поехали
-        print("в с3 кабаном")
+        print("Going to S3...")
+        print(pages_id)
         data = self.store.load(uzi_id + "/" + uzi_id)
 
         masks, rois = self.segmentUzi(data)
         indv, tracked = self.classificateUzi(rois)
 
+        # indv - probs по segments
+        # tracked - probs по formations
+        # tirads=probs
+
         formations = dict()
+        # k - это formation_id
         for k in tracked:
             tirads = pb_event.Tirads(
-                tirads_1=0,
-                tirads_2=0,
-                tirads_3=tracked[k][0],
-                tirads_4=tracked[k][0],
-                tirads_5=tracked[k][0]
+                tirads_23=tracked[k][0],
+                tirads_4=tracked[k][1],
+                tirads_5=tracked[k][2]
             )
-            formations[k] = pb_event.MlFormation(
-                tirads=tirads
+            formations[k] = pb_event.KafkaFormation(
+                id=str(uuid.uuid4()),
+                tirads=tirads,
+                ai=True
             )
+        # Это мы запихнули в словарик dct[formation] = probs
+        # print_lengths_return_ndarray_list(tracked) #Чекнуть, че происходит
+
+        segment_ids = []
+        formation_ids = {}
+
+        # Далее бежим по всем картинкам и сегментам с целью отдать 
+
+        segments = []
 
 
         for i in range(len(rois)):
-            print("РАЗЪЕБНАЯ И:", i)
+            print("ROI num: ", i)
             for j in range(len(rois[i])):
+                formation_id_from_model = rois[i][j][1]
+                if formation_id_from_model not in formation_ids:
+                    formation_ids[formation_id_from_model] = str(uuid.uuid4())
+                formation_id = formation_ids.get(formation_id_from_model)
                 # бинаризуем
                 mask = rois[i][j][2]
                 mask = mask.astype(np.uint8)
@@ -80,32 +100,35 @@ class uziUseCase():
                 contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                 print("КОЛИЧЕСТВО КОНТУТУРОВ: ", len(contours))
                 contour = contours[0].squeeze()
-                contour_points = [{"x": int(point[0]), "y": int(point[1])} for point in contour]
-                contourJSSSSSSSSS = json.dumps(contour_points)
+                contour_points = [pb_event.Point(X=int(point[0]), Y=int(point[1])) for point in contour]
+
+                segment_id = str(uuid.uuid4())
+                segment_ids.append(segment_id)
 
                 tirads = pb_event.Tirads(
-                    tirads_1=0,
-                    tirads_2=0,
-                    tirads_3=indv[i][j][0],
+                    tirads_23=indv[i][j][0],
                     tirads_4=indv[i][j][1],
                     tirads_5=indv[i][j][2]
                 )
-                ml_segment = pb_event.MlSegment(
+                ml_segment = pb_event.KafkaSegment(
+                    id = segment_id,
+                    formation_id = formation_id,
                     image_id=pages_id[i],
-                    contor=contourJSSSSSSSSS,
+                    contor=contour_points,
                     tirads = tirads
                 )
-                
-                formations[rois[i][j][1]].segments.append(ml_segment)
+                segments.append(ml_segment)
+
 
         msg_event = pb_event.uziProcessed(
-            formations=list(formations.values())
+            formations=list(formations.values()),
+            segments=segments
         )
 
         content = msg_event.SerializeToString()
 
         producer_config = {
-            'bootstrap.servers': 'localhost:9092'  # Адрес вашего Kafka брокера
+            'bootstrap.servers': 'localhost:9092' 
         }
         producer = Producer(producer_config)
 
@@ -113,11 +136,6 @@ class uziUseCase():
         producer.flush()
 
         
-
-        
-
-
-
 
 def print_lengths_return_ndarray_list(data, level=0):
     """Рекурсивная функция для вывода длин всех вложенных массивов/list."""
@@ -137,7 +155,8 @@ def print_lengths_return_ndarray_list(data, level=0):
             print(f"{' ' * level}Item: {data} (type: {type(data)})")
     
 def save_result(arr: list, name):
-        path = "/home/wantbeasleep/yir/trashlog/" + name + ".tiff"
+        # relative 
+        path = "../../../../trashlog/" + name + ".tiff"
         if len(arr) > 1:
             imageio.mimwrite(path, arr)
         elif len(arr) == 1:

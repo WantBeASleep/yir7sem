@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "ml_service"
+version = "0.1.0"
+description = ""
+authors = ["dexxhawk <Dsshnyakin@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+minio = "^7.2.10"
+grpcio = "^1.0.0"
+grpcio-tools = "^1.67.0"
+google-api = "^0.1.12"
+googleapis-common-protos = "^1.65.0"
+torch = "^2.5.0"
+pillow = "^11.0.0"
+scikit-image = "^0.24.0"
+torchvision = "^0.20.0"
+segmentation-models-pytorch = "^0.3.4"
+matplotlib = "^3.9.2"
+imgaug = "^0.4.0"
+numpy = "<2.0"
+pydantic-settings = "^2.6.1"
+confluent-kafka = "^2.6.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.7.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

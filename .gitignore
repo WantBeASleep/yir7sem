@@ -18,3 +18,11 @@ trash*
 
 *_pb2_grpc.py
 *_pb2.py
+
+*.pyi
+
+# Temporary
+.data/
+docker-compose.yaml
+include/
+*.lock
