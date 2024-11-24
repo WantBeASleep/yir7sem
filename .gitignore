@@ -1,0 +1,28 @@
+vendor.protogen
+bin
+*.code-workspace
+*.task
+store
+*.key
+*.vscode
+trash*
+*__pycache__
+*.pkl
+*.pth
+.DS_Store
+
+# gRPC + Proto
+*.pb.go
+*.pb.gw.go
+*.swagger.json
+
+*_pb2_grpc.py
+*_pb2.py
+
+*.pyi
+
+# Temporary
+.data/
+docker-compose.yaml
+include/
+*.lock
