@@ -9,6 +9,7 @@ db:
   port: 5432
   name: uzidb
   user: postgres
+  password: 1234 # дебаг
 
 services:
   s3servicehost: localhost:50055

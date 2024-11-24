@@ -58,7 +58,7 @@ service UziAPI {
 
   rpc UpdateUzi(UpdateUziRequest) returns (UziReponse) {
     option (google.api.http) = {
-      patch : "/uzi/{id}"
+      put : "/uzi/{id}"
       body : "uzi"
     };
   }
@@ -68,7 +68,7 @@ service UziAPI {
   // Получить image с сегментами и узлами на нем
   rpc GetImageWithFormationsSegments(Id) returns (ImageWithFormationsSegments) {
     option (google.api.http) = {
-      get : "/image/withsegments/{id}"
+      get : "/uzi/image/withsegments/{id}"
     };
   }
 
@@ -78,7 +78,7 @@ service UziAPI {
   rpc CreateFormationWithSegments(CreateFormationWithSegmentsRequest)
       returns (CreateFormationWithSegmentsResponse) {
     option (google.api.http) = {
-      post : "/formation/withsegments/{id}"
+      post : "/uzi/formation/withsegments/{id}"
       body : "formation"
     };
   }
@@ -86,14 +86,14 @@ service UziAPI {
   // Получить formation + segments
   rpc GetFormationWithSegments(Id) returns (FormationWithSegments) {
     option (google.api.http) = {
-      get : "/formation/withsegments/{id}"
+      get : "/uzi/formation/withsegments/{id}"
     };
   }
 
   // Обновить formation
   rpc UpdateFormation(UpdateFormationRequest) returns (FormationResponse) {
     option (google.api.http) = {
-      patch : "/formation/{id}"
+      put : "/uzi/formation/{id}"
       body : "formation"
     };
   }
@@ -102,7 +102,7 @@ service UziAPI {
 
   rpc UpdateSegment(UpdateSegmentRequest) returns (SegmentResponse) {
     option (google.api.http) = {
-      patch : "/segment/{id}"
+      put : "/uzi/segment/{id}"
       body : "tirads"
     };
   }
@@ -112,7 +112,7 @@ service UziAPI {
   // Получить список девайсов
   rpc GetDeviceList(google.protobuf.Empty) returns (GetDeviceListResponse) {
     option (google.api.http) = {
-      get : "/device/list"
+      get : "/uzi/device/list"
     };
   }
 }
@@ -142,8 +142,8 @@ message Tirads {
 }
 
 message Point {
-  int64 X = 100 [(buf.validate.field).int64.gte = 0];
-  int64 Y = 200 [(buf.validate.field).int64.gte = 0];
+  int64 x = 100 [(buf.validate.field).int64.gte = 0];
+  int64 y = 200 [(buf.validate.field).int64.gte = 0];
 }
 
 message SegmentRequest {

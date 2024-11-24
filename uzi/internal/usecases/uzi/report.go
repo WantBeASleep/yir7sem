@@ -10,13 +10,13 @@ import (
 )
 
 func (u *UziUseCase) GetReport(ctx context.Context, id uuid.UUID) (*dto.Report, error) {
-	u.logger.Debug("[Request] Get Uzi", zap.String("uzi id", id.String()))
+	u.logger.Debug("[Request] Get report", zap.String("uzi id", id.String()))
 	uzi, err := u.uziRepo.GetUziByID(ctx, id)
 	if err != nil {
-		u.logger.Error("Get uzi", zap.Error(err))
-		return nil, fmt.Errorf("get uzi: %w", err)
+		u.logger.Error("Get report", zap.Error(err))
+		return nil, fmt.Errorf("get report: %w", err)
 	}
-	u.logger.Debug("[Response] Got uzi", zap.Any("Uzi", uzi))
+	u.logger.Debug("[Response] Got report", zap.Any("Uzi", uzi))
 
 	u.logger.Debug("[Request] Get uzi images", zap.String("uzi id", id.String()))
 	images, err := u.uziRepo.GetImagesByUziID(ctx, id)
@@ -34,7 +34,7 @@ func (u *UziUseCase) GetReport(ctx context.Context, id uuid.UUID) (*dto.Report, 
 	}
 	u.logger.Debug("[Response] Got uzi formations", zap.Int("Count formations", len(formations)))
 
-	formationsWithTirads, err := u.GetDTOFormations(ctx, formations)
+	formationsWithTirads, err := u.GetDTOFormationsFromEntity(ctx, formations)
 	if err != nil {
 		return nil, fmt.Errorf("get dto formations: %w", err)
 	}
@@ -47,7 +47,7 @@ func (u *UziUseCase) GetReport(ctx context.Context, id uuid.UUID) (*dto.Report, 
 	}
 	u.logger.Debug("[Response] Got uzi segments", zap.Int("Count segments", len(segments)))
 
-	segmentsWithTirads, err := u.GetDTOSegments(ctx, segments)
+	segmentsWithTirads, err := u.GetDTOSegmentsFromEntity(ctx, segments)
 	if err != nil {
 		return nil, fmt.Errorf("get dto segments: %w", err)
 	}

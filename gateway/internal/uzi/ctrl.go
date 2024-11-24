@@ -2,6 +2,7 @@ package uzi
 
 import (
 	"context"
+	"log"
 	pb "yir/gateway/rpc/uzi"
 
 	empty "github.com/golang/protobuf/ptypes/empty"
@@ -32,6 +33,7 @@ func NewCtrl(
 //	@Failure		500	{string}	string	"Internal error"
 //	@Router			/uzi/create [post]
 func (c *Ctrl) CreateUzi(ctx context.Context, req *pb.UziRequest) (*pb.Id, error) {
+	log.Println("Called CreateUzi")
 	return nil, status.Error(codes.Unimplemented, "method not implemented")
 }
 
@@ -46,6 +48,7 @@ func (c *Ctrl) CreateUzi(ctx context.Context, req *pb.UziRequest) (*pb.Id, error
 //	@Failure		500		{string}	string				"Internal error"
 //	@Router			/uzi/{uzi_id} [get]
 func (c *Ctrl) GetUzi(ctx context.Context, req *pb.Id) (*pb.UziReponse, error) {
+	log.Println("Called GetUzi")
 	return c.client.GetUzi(ctx, req)
 }
 
@@ -60,6 +63,7 @@ func (c *Ctrl) GetUzi(ctx context.Context, req *pb.Id) (*pb.UziReponse, error) {
 //	@Failure		500		{string}	string			"Internal error"
 //	@Router			/report/{uzi_id} [get]
 func (c *Ctrl) GetReport(ctx context.Context, req *pb.Id) (*pb.Report, error) {
+	log.Println("Called GetReport")
 	return c.client.GetReport(ctx, req)
 }
 
@@ -71,11 +75,12 @@ func (c *Ctrl) GetReport(ctx context.Context, req *pb.Id) (*pb.Report, error) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			uzi_id	path		string						true	"ID УЗИ"
-//	@Param			body	body		grpcapi.UpdateUziRequest	true	"Метаданные УЗИ"
+//	@Param			body	body		grpcapi.UziUpdateRequest	true	"Метаданные УЗИ"
 //	@Success		200		{object}	grpcapi.UziReponse			"Успешное выполнение"
 //	@Failure		500		{string}	string						"Internal error"
-//	@Router			/uzi/{uzi_id} [patch]
+//	@Router			/uzi/{uzi_id} [put]
 func (c *Ctrl) UpdateUzi(ctx context.Context, req *pb.UpdateUziRequest) (*pb.UziReponse, error) {
+	log.Println("Called UpdateUzi")
 	return c.client.UpdateUzi(ctx, req)
 }
 
@@ -88,12 +93,12 @@ func (c *Ctrl) UpdateUzi(ctx context.Context, req *pb.UpdateUziRequest) (*pb.Uzi
 //	@Param			image_id	path		string								true	"ID изображения"
 //	@Success		200			{object}	grpcapi.ImageWithFormationsSegments	"Изображение с сегментами"
 //	@Failure		500			{string}	string								"Internal error"
-//	@Router			/uzi/image/segments/{image_id} [get]
+//	@Router			/uzi/image/withsegments/{image_id} [get]
 func (c *Ctrl) GetImageWithFormationsSegments(ctx context.Context, req *pb.Id) (*pb.ImageWithFormationsSegments, error) {
+	log.Println("Called GetImageWithFormationsSegments")
 	return c.client.GetImageWithFormationsSegments(ctx, req)
 }
 
-// TODO: узел и не тока здесь
 // CreateFormationWithSegments godoc
 //
 //	@Summary		Добавить формацию с сегментами
@@ -105,8 +110,9 @@ func (c *Ctrl) GetImageWithFormationsSegments(ctx context.Context, req *pb.Id) (
 //	@Param			body	body		grpcapi.FormationWithNestedSegmentsRequest	true	"Формация с сегментами"
 //	@Success		200		{object}	grpcapi.CreateFormationWithSegmentsResponse	"ID элементов"
 //	@Failure		500		{string}	string										"Internal error"
-//	@Router			/formation/segments/{uzi_id} [post]
+//	@Router			/uzi/formation/withsegments/{uzi_id} [post]
 func (c *Ctrl) CreateFormationWithSegments(ctx context.Context, req *pb.CreateFormationWithSegmentsRequest) (*pb.CreateFormationWithSegmentsResponse, error) {
+	log.Println("Called CreateFormationWithSegments")
 	return c.client.CreateFormationWithSegments(ctx, req)
 }
 
@@ -119,8 +125,9 @@ func (c *Ctrl) CreateFormationWithSegments(ctx context.Context, req *pb.CreateFo
 //	@Param			formation_id	path		string							true	"ID формации"
 //	@Success		200				{object}	grpcapi.FormationWithSegments	"Данные формации с сегментами"
 //	@Failure		500				{string}	string							"Internal error"
-//	@Router			/formation/segments/{formation_id} [get]
+//	@Router			/uzi/formation/withsegments/{formation_id} [get]
 func (c *Ctrl) GetFormationWithSegments(ctx context.Context, req *pb.Id) (*pb.FormationWithSegments, error) {
+	log.Println("Called GetFormationWithSegments")
 	return c.client.GetFormationWithSegments(ctx, req)
 }
 
@@ -136,15 +143,16 @@ func (c *Ctrl) GetFormationWithSegments(ctx context.Context, req *pb.Id) (*pb.Fo
 //	@Param			body			body		grpcapi.FormationRequest	true	"Данные формации"
 //	@Success		200				{object}	grpcapi.FormationResponse	"Успешное выполнение"
 //	@Failure		500				{string}	string						"Internal error"
-//	@Router			/uzi/formation/{formation_id} [patch]
+//	@Router			/uzi/formation/{formation_id} [put]
 func (c *Ctrl) UpdateFormation(ctx context.Context, req *pb.UpdateFormationRequest) (*pb.FormationResponse, error) {
+	log.Println("Called UpdateFormation")
 	return c.client.UpdateFormation(ctx, req)
 }
 
 // UpdateSegment godoc
 //
 //	@Summary		Обновить сегмент
-//	@Description	Обновляет существующую сегмент по переданному ID.
+//	@Description	Обновляет существующую сегмент по переданному ID. (Мы его не тестили)
 //	@Tags			Uzi
 //	@Accept			json
 //	@Produce		json
@@ -152,8 +160,9 @@ func (c *Ctrl) UpdateFormation(ctx context.Context, req *pb.UpdateFormationReque
 //	@Param			body		body		grpcapi.SegmentRequest	true	"Данные формации"
 //	@Success		200			{object}	grpcapi.SegmentResponse	"Успешное выполнение"
 //	@Failure		500			{string}	string					"Internal error"
-//	@Router			/uzi/segment/{segment_id} [patch]
+//	@Router			/uzi/segment/{segment_id} [put]
 func (c *Ctrl) UpdateSegment(ctx context.Context, req *pb.UpdateSegmentRequest) (*pb.SegmentResponse, error) {
+	log.Println("Called UpdateSegment")
 	return c.client.UpdateSegment(ctx, req)
 }
 
@@ -167,5 +176,6 @@ func (c *Ctrl) UpdateSegment(ctx context.Context, req *pb.UpdateSegmentRequest) 
 //	@Failure		500	{string}	string			"Internal error"
 //	@Router			/uzi/device/list [get]
 func (c *Ctrl) GetDeviceList(ctx context.Context, req *empty.Empty) (*pb.GetDeviceListResponse, error) {
+	log.Println("Called GetDeviceList")
 	return c.client.GetDeviceList(ctx, req)
 }

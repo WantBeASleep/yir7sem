@@ -11,18 +11,15 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *UziRepo) CreateImages(ctx context.Context, images []entity.Image) (uuid.UUIDs, error) {
+func (r *UziRepo) InsertImages(ctx context.Context, images []entity.Image) error {
 	imagesDB := mappers.MustTransformSlice[entity.Image, models.Image](images)
-	resp := make(uuid.UUIDs, 0, len(imagesDB))
 	for _, img := range imagesDB {
 		if err := db.CreateRecord[models.Image](ctx, r.db, &img); err != nil {
-			return nil, fmt.Errorf("create image: %w", err)
+			return fmt.Errorf("create image: %w", err)
 		}
-
-		resp = append(resp, img.Id)
 	}
 
-	return resp, nil
+	return nil
 }
 
 func (r *UziRepo) GetImagesByUziID(ctx context.Context, uziID uuid.UUID) ([]entity.Image, error) {

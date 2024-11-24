@@ -97,6 +97,7 @@ func (c *Ctrl) PutCard(ctx context.Context, req *pb.PutCardRequest) (*pb.PutCard
 }
 
 // Не работает (В сваггер не включен)
+//
 //	@Summary		Patch card
 //	@Description	Частично обновить карту
 //	@Tags			Cards

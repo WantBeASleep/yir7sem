@@ -9,6 +9,7 @@ import (
 	"yir/uzi/internal/entity"
 )
 
+// генериться ID на стороне БД потому что не uuid
 func (r *UziRepo) CreateTirads(ctx context.Context, tirads *entity.Tirads) (int, error) {
 	tiradsDB := mappers.MustTransformObj[entity.Tirads, models.Tirads](tirads)
 

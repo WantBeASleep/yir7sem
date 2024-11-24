@@ -41,7 +41,7 @@ func init() {
 	flag.StringVar(&configPath, "c", defaultCfgPath, "set config path"+shorthand)
 }
 
-// @title		Best API-Gateway ever!
+// @title		1000-7 dev cursed
 // @version	1.0
 // @schemes	http
 func main() {
@@ -95,7 +95,7 @@ func main() {
 	uziCtrl := uzi.NewCtrl(uzipb.NewUziAPIClient(uziConn))
 
 	uzipb.RegisterUziAPIServer(s, uziCtrl)
-	if err := authpb.RegisterAuthHandlerFromEndpoint(context.Background(), mux, cfg.Gateway.Host+":"+cfg.Gateway.GRPCport, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
+	if err := uzipb.RegisterUziAPIHandlerFromEndpoint(context.Background(), mux, cfg.Gateway.Host+":"+cfg.Gateway.GRPCport, []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}); err != nil {
 		panic(fmt.Errorf("register http auth: %w", err))
 	}
 	log.Println("Registered Uzi and set endpoint")
