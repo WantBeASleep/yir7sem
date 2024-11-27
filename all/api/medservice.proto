@@ -1,0 +1,363 @@
+syntax = "proto3";
+
+package service.medservice;
+
+option go_package = "service/all/api";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+service MedCard {
+    //Получение всех карт пациентов
+    //
+    //
+    rpc GetCards(GetCardsRequest) returns (GetCardsResponse) {
+        option (google.api.http) = {
+            get: "/med/card/list"
+        };
+    }
+    //Добавить карту пациента
+    //
+    //
+    rpc PostCard(PostCardRequest) returns (PostCardResponse) {
+        option (google.api.http) = {
+            post: "/med/card/create"
+            body: "*"
+        };
+    }
+    //Получить карту по id
+    //
+    //
+    rpc GetCardByID(GetCardByIDRequest) returns (GetCardByIDResponse) {
+        option (google.api.http) = {
+            get: "/med/card/id/{id}"
+        };
+    }
+    //Запутить карту
+    //
+    //
+    rpc PutCard(PutCardRequest) returns (PutCardResponse) {
+        option (google.api.http) = {
+            put: "/med/card/update/{id}"
+            body: "*"
+        };
+    }
+    //Запатчить карту
+    //
+    //
+    rpc PatchCard(PatchCardRequest) returns (PatchCardResponse) {
+        option (google.api.http) = {
+            patch: "/med/card/update/{id}"
+            body: "*"
+        };
+    }
+    //Удалить карту
+    //
+    //
+    rpc DeleteCard(DeleteCardRequest) returns (DeleteCardResponse) {
+        option (google.api.http) = {
+            delete: "/med/card/{id}"
+        };
+    }
+}
+
+service MedWorkers {
+    //Получение списка медработников
+    //
+    //Возвращает список со всеми медработниками
+    rpc GetMedWorkers(GetMedworkerRequest) returns (GetMedworkerListResponse) {
+        option (google.api.http) = {
+            get: "/med/medworkers/list"
+        };
+    }
+    //Полное обновление информации о медработнике
+    //
+    //
+    rpc UpdateMedWorker(UpdateMedWorkerRequest) returns (UpdateMedWorkerResponse) {
+        option (google.api.http) = {
+            put: "/med/medworkers/update/{id}"
+            body: "*"
+        };
+    }
+    //Получение информации о медработнике по ID
+    //
+    //Возвращает информацию о медработнике по ID
+    rpc GetMedWorkerByID(GetMedMedWorkerByIDRequest) returns (GetMedWorkerByIDResponse) {
+        option (google.api.http) = {
+            get: "/med/medworkers/id/{id}"
+        };
+    }
+    //Частичное обновление информации о медработнике
+    //
+    //
+    rpc PatchMedWorker(PatchMedWorkerRequest) returns (UpdateMedWorkerResponse) {
+        option (google.api.http) = {
+            patch: "/med/medworkers/update/{id}"
+            body: "*"
+        };
+    }
+    //Добавление медработника
+    //
+    //
+    rpc AddMedWorker(AddMedWorkerRequest) returns (AddMedWorkerResponse) {
+        option (google.api.http) = {
+            post: "/med/medworkers/add"
+            body: "*"
+        };
+    }
+    //Получение пациентов, прикрепленных к врачу
+    //
+    //Вернет пациентов, их карточки и главого врача
+    rpc GetPatientsByMedWorker(GetPatientsByMedWorkerRequest) returns (GetPatientsByMedWorkerResponse) {
+        option (google.api.http) = {
+            get: "/med/medworkers/patients/{medWorkerId}"
+        };
+    } 
+}
+
+service MedPatient{
+    // Добавить пациента
+    //
+    // Принимает данные пациента и его карты.
+    rpc AddPatient (CreatePatientRequest) returns (google.protobuf.Empty){
+      option (google.api.http) = {
+        post: "/med/patient/create"
+        body: "*"
+      };
+    }
+    // Получить список пациентов
+    //
+    // Принимает пагинацию (Пока без нее). Возвращает список пациентов
+    rpc GetPatientList (google.protobuf.Empty) returns (PatientListResponse) {
+      option (google.api.http) = {
+        get: "/med/patient/list"
+      };
+    }
+    // Получить пациента и его карту
+    // 
+    // Получает id пациента. Возвращает пациента и его карту
+    rpc GetPatientInfoByID (PatientInfoRequest) returns (PatientInfoResponse) {
+      option (google.api.http) = {
+        get: "/med/patient/info"
+      };
+    }
+    // UNIMPLEMENTED!!!
+    // 
+    // Получает id пациента. Возвращает пациента, карту, снимки
+    // rpc PatientShots (google.protobuf.Empty) returns (google.protobuf.Empty) {
+    //   option (google.api.http) = {
+    //     get: "/med/patient/shots"
+    //   };
+    // }
+    // Обновить данные пациента
+    // 
+    // Получает пациента, карту. Возвращает id
+    rpc UpdatePatient (PatientUpdateRequest) returns (google.protobuf.Empty) {
+      option (google.api.http) = {
+        put: "/med/patient/update"
+        body: "*"
+      };
+    }
+  }
+
+  message Patient{
+    uint64 id = 1 [json_name = "id"];
+    string first_name = 2 [json_name = "first_name"];
+    string last_name = 3 [json_name = "last_name"];
+    string father_name = 4 [json_name = "father_name"];
+    string medical_policy = 5[json_name = "medical_policy"]; 
+    string email = 6 [json_name = "email"]; 
+    bool is_active = 7 [json_name = "is_active"];
+  }
+  
+  message Card{
+    uint64 id = 1;
+    string appointment_time = 2 [json_name = "appointment_time"];
+    bool has_nodules = 3 [json_name = "has_nodules"]; 
+    string diagnosis = 4 [json_name = "diagnosis"];
+    uint64 med_worker_id = 5;
+    Patient patient = 6;
+  }
+  
+  message CreatePatientRequest{
+    Patient patient = 1;
+    Card patient_card = 2 [json_name = "patient_card"];
+  }
+  
+  message PatientListResponse{
+    repeated Patient patients = 1;
+  }
+  
+  message PatientInfoRequest{
+    uint64 id = 1;
+  }
+  
+  message PatientInfoResponse{
+    Patient patient = 1;
+    Card patient_card = 2 [json_name = "patient_card"];
+  }
+  
+  message PatientUpdateRequest{
+    Patient patient = 1;
+    Card patient_card = 2 [json_name = "patient_card"];
+  }
+  
+  /* TODO: Сделать работу со снимками после того как разберемся с ними в узи
+    
+  */
+
+  message MedWorker { 
+    uint64 id = 1;
+    string last_name = 2;
+    string first_name = 3;
+    string middle_name = 4;
+    string med_organization = 5;
+    string job = 6;
+    bool is_remote_worker = 7;
+    string expert_details = 8; 
+}
+
+message GetMedworkerRequest {
+    uint64 id = 1;
+    string first_name = 2;
+    string middle_name =3;
+    string last_name = 4;
+    bool is_remote_worker = 5;
+    string email = 6;
+    uint64 limit = 7;
+    uint64 offset = 8;
+}
+
+message GetMedworkerListResponse {
+    uint64 count = 1;
+    string next = 2;
+    string previous = 3;
+    repeated MedWorker results = 4;
+}
+
+message UpdateMedWorkerRequest {
+    uint64 id = 1;
+    string first_name = 2;
+    string middle_name = 3;
+    string last_name = 4;
+    string med_organization = 5;
+    string job = 6;
+    bool is_remote_worker = 7;
+    string expert_details = 8;
+}
+
+message UpdateMedWorkerResponse {
+    MedWorker worker = 1;
+}
+
+message GetMedMedWorkerByIDRequest {
+    uint64 id = 1;
+}
+
+message GetMedWorkerByIDResponse {
+    MedWorker worker = 1;
+}
+
+message PatchMedWorkerRequest {
+    uint64 id = 1;
+    string first_name = 2;
+    string middle_name = 3;
+    string last_name = 4;
+    string med_organization = 5;
+    string job = 6;
+    bool is_remote_worker = 7;
+    string expert_details = 8;
+}
+
+message AddMedWorkerRequest {
+    string first_name = 1;
+    string middle_name = 2;
+    string last_name = 3;
+    string med_organization = 4;
+    string job = 5;
+    bool is_remote_worker = 6;
+    string expert_details = 7;
+}
+
+message AddMedWorkerResponse {
+    MedWorker worker = 1; 
+}
+
+message GetPatientsByMedWorkerRequest {
+    uint64 medWorkerId = 1;
+}
+
+message GetPatientsByMedWorkerResponse {
+    repeated Card cards = 1;
+    uint64 med_worker_id = 2 [json_name = "med_worker_id"];
+}
+
+
+message GetCardsRequest {
+    // uint64 id = 1;
+    // string acceptance_datetime = 2;
+    // bool has_nodules = 3;
+    // string diagnosis = 4;
+    // uint64 patient_id = 5;
+    // uint64 medworker_id = 6;
+    uint64 limit = 1;
+    uint64 offset = 2;
+}
+
+message GetCardsResponse {
+    uint64 count = 1;
+    string next = 2;
+    string previous = 3;
+    repeated Card results = 4;
+}
+
+message PostCardRequest {
+    bool has_nodules = 1;
+    string diagnosis = 2;
+    Patient patient =3;
+    uint64 medworker_id = 4;
+}
+
+message PostCardResponse {
+    Card postcard = 1;
+}
+
+message GetCardByIDRequest {
+    uint64 id = 1;
+}
+
+message GetCardByIDResponse {
+    Card postcard = 1;
+}
+
+message PutCardRequest {
+    uint64 id = 1;
+    bool has_nodules = 2;
+    string diagnosis = 3;
+    uint64 patient_id = 4;
+    uint64 medworker_id = 5;
+}
+
+message PutCardResponse {
+    Card postcard = 1;
+}
+
+message PatchCardRequest {
+    uint64 id = 1;
+    bool has_nodules = 2;
+    string diagnosis = 3;
+    Patient patient = 4;
+    uint64 medworker_id = 5;
+}
+
+message PatchCardResponse {
+    Card postcard = 1;
+}
+
+message DeleteCardRequest {
+    uint64 id = 1;
+}
+
+message DeleteCardResponse {
+    bool success = 1;
+}
