@@ -1,0 +1,681 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "UZI API **ПУТИ КАК ЗАГЛУШКА**",
+    "description": "Сервис нужен для хранения отношений **REPORT**, **UZI**, **IMAGES**, **FORMATION**, **SEGMENT**.\n\n**SEGMENT** - контур конкретного узла на конкретном изображении.\n*при добавлении узлов врачем, tirads можно опустить*\n**FORMATION** - конкретный узел, можно ассоциировать с физическим узлом, его сегменты могут быть на многих изображениях.\n**IMAGE** - одно изображение UZI, может содержать на себе несколько сегментов.\n**UZI** - общая информация об узи. Все остальные сущности так или иначе относятся к конкретному узи\n**REPORT** - это uzi \u0026\u0026 images \u0026\u0026 formations \u0026\u0026 segments\n**report id = uzi id**, *сущность нужна для охвата остальных*",
+    "version": "v0"
+  },
+  "tags": [
+    {
+      "name": "UziAPI"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/report/{id}": {
+      "get": {
+        "summary": "Получить report (файлы идут как ссылки в S3)",
+        "operationId": "UziAPI_GetReport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uziReport"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UziAPI"
+        ]
+      }
+    },
+    "/uzi/create/del_not_active": {
+      "post": {
+        "summary": "Создать uzi",
+        "operationId": "UziAPI_CreateUzi",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uziId"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/uziUziRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UziAPI"
+        ]
+      }
+    },
+    "/uzi/device/list": {
+      "get": {
+        "summary": "Получить список девайсов",
+        "operationId": "UziAPI_GetDeviceList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uziGetDeviceListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UziAPI"
+        ]
+      }
+    },
+    "/uzi/formation/withsegments/{id}": {
+      "get": {
+        "summary": "Получить formation + segments",
+        "operationId": "UziAPI_GetFormationWithSegments",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uziFormationWithSegments"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UziAPI"
+        ]
+      },
+      "post": {
+        "summary": "Добавить formation + segments",
+        "operationId": "UziAPI_CreateFormationWithSegments",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uziCreateFormationWithSegmentsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "formation",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/uziFormationWithNestedSegmentsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UziAPI"
+        ]
+      }
+    },
+    "/uzi/formation/{id}": {
+      "put": {
+        "summary": "Обновить formation",
+        "operationId": "UziAPI_UpdateFormation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uziFormationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "formation",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/uziFormationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UziAPI"
+        ]
+      }
+    },
+    "/uzi/image/withsegments/{id}": {
+      "get": {
+        "summary": "Получить image с сегментами и узлами на нем",
+        "operationId": "UziAPI_GetImageWithFormationsSegments",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uziImageWithFormationsSegments"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UziAPI"
+        ]
+      }
+    },
+    "/uzi/segment/{id}": {
+      "put": {
+        "operationId": "UziAPI_UpdateSegment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uziSegmentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tirads",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/uziTirads"
+            }
+          }
+        ],
+        "tags": [
+          "UziAPI"
+        ]
+      }
+    },
+    "/uzi/{id}": {
+      "get": {
+        "summary": "Получить uzi",
+        "operationId": "UziAPI_GetUzi",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uziUziReponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UziAPI"
+        ]
+      },
+      "put": {
+        "operationId": "UziAPI_UpdateUzi",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uziUziReponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "uzi",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/uziUziUpdateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UziAPI"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "uziCreateFormationWithSegmentsResponse": {
+      "type": "object",
+      "properties": {
+        "formation_id": {
+          "type": "string"
+        },
+        "segments_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "uziDevice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "uziFormationRequest": {
+      "type": "object",
+      "properties": {
+        "tirads": {
+          "$ref": "#/definitions/uziTirads"
+        },
+        "ai": {
+          "type": "boolean"
+        }
+      }
+    },
+    "uziFormationResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "tirads": {
+          "$ref": "#/definitions/uziTirads"
+        },
+        "ai": {
+          "type": "boolean"
+        }
+      }
+    },
+    "uziFormationWithNestedSegmentsRequest": {
+      "type": "object",
+      "properties": {
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uziSegmentNestedRequest"
+          }
+        },
+        "tirads": {
+          "$ref": "#/definitions/uziTirads"
+        },
+        "ai": {
+          "type": "boolean"
+        }
+      }
+    },
+    "uziFormationWithSegments": {
+      "type": "object",
+      "properties": {
+        "formation": {
+          "$ref": "#/definitions/uziFormationResponse"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uziSegmentResponse"
+          }
+        }
+      }
+    },
+    "uziGetDeviceListResponse": {
+      "type": "object",
+      "properties": {
+        "devices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uziDevice"
+          }
+        }
+      }
+    },
+    "uziId": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "uziImageResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "page": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "uziImageWithFormationsSegments": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "$ref": "#/definitions/uziImageResponse"
+        },
+        "formations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uziFormationResponse"
+          }
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uziSegmentResponse"
+          }
+        }
+      }
+    },
+    "uziPoint": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "string",
+          "format": "int64"
+        },
+        "y": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "uziReport": {
+      "type": "object",
+      "properties": {
+        "uzi": {
+          "$ref": "#/definitions/uziUziReponse"
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uziImageResponse"
+          }
+        },
+        "formations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uziFormationResponse"
+          }
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uziSegmentResponse"
+          }
+        }
+      }
+    },
+    "uziSegmentNestedRequest": {
+      "type": "object",
+      "properties": {
+        "image_id": {
+          "type": "string"
+        },
+        "contor": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uziPoint"
+          }
+        },
+        "tirads": {
+          "$ref": "#/definitions/uziTirads"
+        }
+      }
+    },
+    "uziSegmentResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "formation_id": {
+          "type": "string"
+        },
+        "image_id": {
+          "type": "string"
+        },
+        "contor": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uziPoint"
+          }
+        },
+        "tirads": {
+          "$ref": "#/definitions/uziTirads"
+        }
+      }
+    },
+    "uziTirads": {
+      "type": "object",
+      "properties": {
+        "tirads23": {
+          "type": "number",
+          "format": "double"
+        },
+        "tirads4": {
+          "type": "number",
+          "format": "double"
+        },
+        "tirads5": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "uziUziReponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "projection": {
+          "type": "string"
+        },
+        "patient_id": {
+          "type": "string"
+        },
+        "device_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "uziUziRequest": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "title": "@gotags: json:\"url\""
+        },
+        "projection": {
+          "type": "string",
+          "title": "@gotags: json:\"projection\""
+        },
+        "patient_id": {
+          "type": "string",
+          "title": "@gotags: json:\"patient_id\""
+        },
+        "device_id": {
+          "type": "string",
+          "format": "int64",
+          "title": "@gotags: json:\"device_id\""
+        }
+      }
+    },
+    "uziUziUpdateRequest": {
+      "type": "object",
+      "properties": {
+        "projection": {
+          "type": "string"
+        },
+        "patient_id": {
+          "type": "string"
+        },
+        "device_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    }
+  }
+}

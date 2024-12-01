@@ -1,0 +1,1 @@
+# Golang type conventor

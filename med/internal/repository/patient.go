@@ -1,124 +1,127 @@
 package repository
 
 import (
-	"context"
 	"fmt"
-	"yir/med/internal/entity"
-	"yir/med/internal/repository/config"
-	"yir/med/internal/repository/mapper"
-	"yir/med/internal/repository/models"
-	"yir/med/internal/repository/utils"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"yir/med/internal/repository/entity"
+	"yir/pkg/daolib"
+
+	sq "github.com/Masterminds/squirrel"
+	"github.com/google/uuid"
 )
 
-type PatientRepo struct {
-	db *gorm.DB
+const patientTable = "patient"
+
+type PatientQuery interface {
+	InsertPatient(patient entity.Patient) error
+	GetPatientByPK(id uuid.UUID) (entity.Patient, error)
+	GetPatientsByDoctorID(id uuid.UUID) ([]entity.Patient, error)
+	UpdatePatient(patient entity.Patient) (int64, error)
 }
 
-func NewRepository(cfg *config.DB) (*PatientRepo, error) {
-	db, err := gorm.Open(postgres.Open(utils.GetDSN(cfg)), &gorm.Config{})
+type patientQuery struct {
+	*daolib.BaseQuery
+}
+
+func (q *patientQuery) SetBaseQuery(baseQuery *daolib.BaseQuery) {
+	q.BaseQuery = baseQuery
+}
+
+func (q *patientQuery) InsertPatient(patient entity.Patient) error {
+	query := q.QueryBuilder().
+		Insert(patientTable).
+		Columns(
+			"id",
+			"fullname",
+			"email",
+			"policy",
+			"active",
+			"malignancy",
+			"last_uzi_date",
+		).
+		Values(
+			patient.Id,
+			patient.FullName,
+			patient.Email,
+			patient.Policy,
+			patient.Active,
+			patient.Malignancy,
+			patient.LastUziDate,
+		)
+
+	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return nil, fmt.Errorf("create db gorm obj: %w", err)
+		return fmt.Errorf("insert patient: %w", err)
 	}
 
-	db.AutoMigrate(
-		&models.PatientInfo{},
-		//&models.PatientCardInfo{},
-	)
-
-	return &PatientRepo{
-		db: db,
-	}, nil
+	return nil
 }
 
-func (p *PatientRepo) CreatePatient(ctx context.Context, PatientInfo *entity.PatientInformation) error {
-	tx := p.db.WithContext(ctx).Begin()
-	if tx.Error != nil {
-		return fmt.Errorf("failed to update patient: %w", tx.Error)
+func (q *patientQuery) GetPatientByPK(id uuid.UUID) (entity.Patient, error) {
+	query := q.QueryBuilder().
+		Select(
+			"id",
+			"fullname",
+			"email",
+			"policy",
+			"active",
+			"malignancy",
+			"last_uzi_date",
+		).
+		From(patientTable).
+		Where(sq.Eq{
+			"id": id,
+		})
+
+	var patient entity.Patient
+	if err := q.Runner().Getx(q.Context(), &patient, query); err != nil {
+		return entity.Patient{}, fmt.Errorf("get patient: %w", err)
 	}
 
-	PatientDB := mapper.PatientToModels(PatientInfo.Patient)
-	if err := tx.
-		Model(&models.PatientInfo{}).
-		Create(&PatientDB).
-		Error; err != nil {
-		tx.Rollback()
-		return fmt.Errorf("failed to create patient info: %w", err)
-	}
-
-	// CardDB := mapper.PatientCardToModels(PatientInfo.Card)
-	// if err := tx.
-	// 	Model(&models.PatientCardInfo{}).
-	// 	Create(&CardDB).
-	// 	Error; err != nil {
-	// 	tx.Rollback()
-	// 	return fmt.Errorf("failed to create patient card: %w", err)
-	// }
-
-	return tx.Commit().Error
-
+	return patient, nil
 }
 
-func (p *PatientRepo) UpdatePatient(ctx context.Context, PatientInfo *entity.PatientInformation) error {
-	tx := p.db.WithContext(ctx).Begin()
-	if tx.Error != nil {
-		return fmt.Errorf("failed to update patient: %w", tx.Error)
+func (q *patientQuery) GetPatientsByDoctorID(id uuid.UUID) ([]entity.Patient, error) {
+	query := q.QueryBuilder().
+		Select(
+			"patient.id",
+			"patient.fullname",
+			"patient.email",
+			"patient.policy",
+			"patient.active",
+			"patient.malignancy",
+			"patient.last_uzi_date",
+		).
+		From(patientTable).
+		InnerJoin("card ON card.patient_id = patient.id").
+		Where(sq.Eq{
+			"card.doctor_id": id,
+		})
+
+	var patient []entity.Patient
+	if err := q.Runner().Selectx(q.Context(), &patient, query); err != nil {
+		return nil, fmt.Errorf("get patients by doctor id: %w", err)
 	}
 
-	PatientDB := mapper.PatientToModels(PatientInfo.Patient)
-	if err := tx.Model(&models.PatientInfo{}).Where("id = ?", PatientDB.ID).Updates(&PatientDB).Error; err != nil {
-		tx.Rollback()
-		return fmt.Errorf("failed to update patient info: %w", err)
-	}
-
-	// CardDB := mapper.PatientCardToModels(PatientInfo.Card)
-	// if err := tx.Model(&models.PatientCardInfo{}).Where("id = ?", CardDB.ID).Updates(&CardDB).Error; err != nil {
-	// 	tx.Rollback()
-	// 	return fmt.Errorf("failed to update patient card: %w", err)
-	// }
-
-	return tx.Commit().Error
+	return patient, nil
 }
 
-func (p *PatientRepo) GetListPatient(ctx context.Context) ([]*entity.Patient, error) {
-	var resp []*models.PatientInfo
-	query := p.db.WithContext(ctx).Model(&models.PatientInfo{})
+func (q *patientQuery) UpdatePatient(patient entity.Patient) (int64, error) {
+	query := q.QueryBuilder().
+		Update(patientTable).
+		SetMap(sq.Eq{
+			"active":        patient.Active,
+			"malignancy":    patient.Malignancy,
+			"last_uzi_date": patient.LastUziDate,
+		}).
+		Where(sq.Eq{
+			"id": patient.Id,
+		})
 
-	if err := query.Find(&resp).Error; err != nil {
-		return nil, fmt.Errorf("failed to get list patient: %w", err)
+	res, err := q.Runner().Execx(q.Context(), query)
+	if err != nil {
+		return 0, fmt.Errorf("update patient: %w", err)
 	}
 
-	patients := make([]*entity.Patient, len(resp))
-	for i := range resp {
-		patients[i] = mapper.PatientToEntity(resp[i])
-	}
-
-	return patients, nil
-}
-
-func (p *PatientRepo) GetPatientInfoByID(ctx context.Context, ID string) (*entity.PatientInformation, error) {
-	var respPatient *models.PatientInfo
-	//var respCard *models.PatientCardInfo
-
-	tx := p.db.WithContext(ctx)
-	// if err := tx.First(&respPatient, ID).Error; err != nil {
-	// 	return nil, fmt.Errorf("failed to get patient: %w", err)
-	// }
-
-	if err := tx.Model(&models.PatientInfo{}).Where("id = ?", ID).First(&respPatient).Error; err != nil {
-		tx.Rollback()
-		return nil, fmt.Errorf("failed to get patient card: %w", err)
-	}
-	// cardEntity, err := mapper.PatientCardToEntity(respCard)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("failed to map patient card: %w", err)
-	// }
-	PatientInfo := &entity.PatientInformation{
-		Patient: mapper.PatientToEntity(respPatient),
-		//Card:    cardEntity,
-	}
-
-	return PatientInfo, nil
+	return res.RowsAffected()
 }

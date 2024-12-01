@@ -1,0 +1,999 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "med.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "MedCard"
+    },
+    {
+      "name": "MedWorkers"
+    },
+    {
+      "name": "MedPatient"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/med/card/by/{id}": {
+      "get": {
+        "summary": "Получить карту по id",
+        "operationId": "MedCard_GetCardByID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medGetCardByIDResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      }
+    },
+    "/med/card/create": {
+      "post": {
+        "summary": "Добавить карту пациента",
+        "operationId": "MedCard_PostCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medPostCardResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/medPostCardRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      }
+    },
+    "/med/card/delete/{id}": {
+      "delete": {
+        "summary": "Удалить карту",
+        "operationId": "MedCard_DeleteCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      }
+    },
+    "/med/card/list": {
+      "get": {
+        "summary": "Получение всех карт пациентов",
+        "operationId": "MedCard_GetCards",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medGetCardsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "uint64 id = 1;\nstring acceptance_datetime = 2;\nbool has_nodules = 3;\nstring diagnosis = 4;\nuint64 patient_id = 5;\nuint64 medworker_id = 6;",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      }
+    },
+    "/med/card/patch/{id}": {
+      "patch": {
+        "summary": "Запатчить карту",
+        "operationId": "MedCard_PatchCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medPatchCardResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MedCardPatchCardBody"
+            }
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      }
+    },
+    "/med/card/update/{id}": {
+      "put": {
+        "summary": "Запутить карту",
+        "operationId": "MedCard_PutCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medPutCardResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MedCardPutCardBody"
+            }
+          }
+        ],
+        "tags": [
+          "MedCard"
+        ]
+      }
+    },
+    "/med/patient/create": {
+      "post": {
+        "summary": "Добавить пациента",
+        "description": "Принимает данные пациента и его карты.",
+        "operationId": "MedPatient_AddPatient",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/medCreatePatientRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MedPatient"
+        ]
+      }
+    },
+    "/med/patient/info/{id}": {
+      "get": {
+        "summary": "Получить пациента и его карту",
+        "description": "Получает id пациента. Возвращает пациента и его карту",
+        "operationId": "MedPatient_GetPatientInfoByID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medPatientInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MedPatient"
+        ]
+      }
+    },
+    "/med/patient/list": {
+      "get": {
+        "summary": "Получить список пациентов",
+        "description": "Принимает пагинацию (Пока без нее). Возвращает список пациентов",
+        "operationId": "MedPatient_GetPatientList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medPatientListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "MedPatient"
+        ]
+      }
+    },
+    "/med/patient/update/{patient.id}": {
+      "put": {
+        "summary": "UNIMPLEMENTED!!!",
+        "description": "Получает id пациента. Возвращает пациента, карту, снимки\nrpc PatientShots (google.protobuf.Empty) returns (google.protobuf.Empty) {\n  option (google.api.http) = {\n    get: \"/med/patient/shots/{id}\"\n  };\n}\nОбновить данные пациента\n\nПолучает пациента, карту. Возвращает id",
+        "operationId": "MedPatient_UpdatePatient",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "patient.id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MedPatientUpdatePatientBody"
+            }
+          }
+        ],
+        "tags": [
+          "MedPatient"
+        ]
+      }
+    },
+    "/med/worker/by/{id}": {
+      "get": {
+        "summary": "Получение информации о медработнике по ID",
+        "description": "Возвращает информацию о медработнике по ID",
+        "operationId": "MedWorkers_GetMedWorkerByID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medGetMedWorkerByIDResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      }
+    },
+    "/med/worker/create": {
+      "post": {
+        "summary": "Добавление медработника",
+        "operationId": "MedWorkers_AddMedWorker",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medAddMedWorkerResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/medAddMedWorkerRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      }
+    },
+    "/med/worker/list": {
+      "get": {
+        "summary": "Получение списка медработников",
+        "description": "Возвращает список со всеми медработниками",
+        "operationId": "MedWorkers_GetMedWorkers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medGetMedworkerListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "string id = 1 [json_name = \"id\", \n(buf.validate.field).required = true\n];\nstring first_name = 2 [json_name = \"first_name\", \n(buf.validate.field).required = true\n];\nstring fathers_name = 3 [json_name = \"fathers_name\", \n(buf.validate.field).required = true\n];\nstring last_name = 4 [json_name = \"last_name\", \n(buf.validate.field).required = true\n];\nbool is_remote_worker = 5 [json_name = \"is_remote_worker\", \n(buf.validate.field).required = true\n];\nstring email = 6 [json_name = \"email\", \n(buf.validate.field).required = true\n];",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      }
+    },
+    "/med/worker/patch/{id}": {
+      "patch": {
+        "summary": "Частичное обновление информации о медработнике",
+        "operationId": "MedWorkers_PatchMedWorker",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medUpdateMedWorkerResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MedWorkersPatchMedWorkerBody"
+            }
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      }
+    },
+    "/med/worker/patients/{medWorkerId}": {
+      "get": {
+        "summary": "Получение пациентов, прикрепленных к врачу",
+        "description": "Вернет пациентов, их карточки и главого врача",
+        "operationId": "MedWorkers_GetPatientsByMedWorker",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medGetPatientsByMedWorkerResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "medWorkerId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      }
+    },
+    "/med/worker/update/{id}": {
+      "put": {
+        "summary": "Полное обновление информации о медработнике",
+        "operationId": "MedWorkers_UpdateMedWorker",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/medUpdateMedWorkerResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MedWorkersUpdateMedWorkerBody"
+            }
+          }
+        ],
+        "tags": [
+          "MedWorkers"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "MedCardPatchCardBody": {
+      "type": "object",
+      "properties": {
+        "has_nodules": {
+          "type": "boolean"
+        },
+        "diagnosis": {
+          "type": "string"
+        },
+        "patient": {
+          "$ref": "#/definitions/medPatient"
+        },
+        "medworker_id": {
+          "type": "string"
+        }
+      }
+    },
+    "MedCardPutCardBody": {
+      "type": "object",
+      "properties": {
+        "has_nodules": {
+          "type": "boolean"
+        },
+        "diagnosis": {
+          "type": "string"
+        },
+        "patient_id": {
+          "type": "string"
+        },
+        "medworker_id": {
+          "type": "string"
+        }
+      }
+    },
+    "MedPatientUpdatePatientBody": {
+      "type": "object",
+      "properties": {
+        "patient": {
+          "type": "object",
+          "properties": {
+            "first_name": {
+              "type": "string"
+            },
+            "last_name": {
+              "type": "string"
+            },
+            "father_name": {
+              "type": "string"
+            },
+            "medical_policy": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "title": "Email с валидацией по формату"
+            },
+            "is_active": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "MedWorkersPatchMedWorkerBody": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "fathersName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "medOrganization": {
+          "type": "string"
+        },
+        "job": {
+          "type": "string"
+        },
+        "isRemoteWorker": {
+          "type": "boolean"
+        },
+        "expertDetails": {
+          "type": "string"
+        }
+      },
+      "title": "TODO: Валидация"
+    },
+    "MedWorkersUpdateMedWorkerBody": {
+      "type": "object",
+      "properties": {
+        "first_name": {
+          "type": "string"
+        },
+        "fathers_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "med_organization": {
+          "type": "string"
+        },
+        "job": {
+          "type": "string"
+        },
+        "is_remote_worker": {
+          "type": "boolean"
+        },
+        "expert_details": {
+          "type": "string"
+        }
+      }
+    },
+    "medAddMedWorkerRequest": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "fathersName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "medOrganization": {
+          "type": "string"
+        },
+        "job": {
+          "type": "string"
+        },
+        "isRemoteWorker": {
+          "type": "boolean"
+        },
+        "expertDetails": {
+          "type": "string"
+        }
+      }
+    },
+    "medAddMedWorkerResponse": {
+      "type": "object",
+      "properties": {
+        "worker": {
+          "$ref": "#/definitions/medMedWorker"
+        }
+      }
+    },
+    "medCard": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "appointment_time": {
+          "type": "string"
+        },
+        "has_nodules": {
+          "type": "boolean"
+        },
+        "diagnosis": {
+          "type": "string"
+        },
+        "med_worker_id": {
+          "type": "string"
+        },
+        "patient_id": {
+          "type": "string"
+        }
+      }
+    },
+    "medCreatePatientRequest": {
+      "type": "object",
+      "properties": {
+        "patient": {
+          "$ref": "#/definitions/medPatient"
+        }
+      }
+    },
+    "medGetCardByIDResponse": {
+      "type": "object",
+      "properties": {
+        "postcard": {
+          "$ref": "#/definitions/medCard"
+        }
+      }
+    },
+    "medGetCardsResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "next": {
+          "type": "string"
+        },
+        "previous": {
+          "type": "string"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/medCard"
+          }
+        }
+      }
+    },
+    "medGetMedWorkerByIDResponse": {
+      "type": "object",
+      "properties": {
+        "worker": {
+          "$ref": "#/definitions/medMedWorker"
+        }
+      }
+    },
+    "medGetMedworkerListResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "next": {
+          "type": "string"
+        },
+        "previous": {
+          "type": "string"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/medMedWorker"
+          }
+        }
+      }
+    },
+    "medGetPatientsByMedWorkerResponse": {
+      "type": "object",
+      "properties": {
+        "cards": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/medCard"
+          }
+        },
+        "med_worker_id": {
+          "type": "string"
+        }
+      }
+    },
+    "medMedWorker": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "fathers_name": {
+          "type": "string"
+        },
+        "med_organization": {
+          "type": "string"
+        },
+        "job": {
+          "type": "string"
+        },
+        "is_remote_worker": {
+          "type": "boolean"
+        },
+        "expert_details": {
+          "type": "string"
+        }
+      }
+    },
+    "medPatchCardResponse": {
+      "type": "object",
+      "properties": {
+        "postcard": {
+          "$ref": "#/definitions/medCard"
+        }
+      }
+    },
+    "medPatient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "father_name": {
+          "type": "string"
+        },
+        "medical_policy": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email с валидацией по формату"
+        },
+        "is_active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "medPatientInfoResponse": {
+      "type": "object",
+      "properties": {
+        "patient": {
+          "$ref": "#/definitions/medPatient"
+        }
+      }
+    },
+    "medPatientListResponse": {
+      "type": "object",
+      "properties": {
+        "patients": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/medPatient"
+          }
+        }
+      }
+    },
+    "medPostCardRequest": {
+      "type": "object",
+      "properties": {
+        "has_nodules": {
+          "type": "boolean"
+        },
+        "diagnosis": {
+          "type": "string"
+        },
+        "patient_id": {
+          "type": "string"
+        },
+        "medworker_id": {
+          "type": "string"
+        }
+      }
+    },
+    "medPostCardResponse": {
+      "type": "object",
+      "properties": {
+        "postcard": {
+          "$ref": "#/definitions/medCard"
+        }
+      }
+    },
+    "medPutCardResponse": {
+      "type": "object",
+      "properties": {
+        "postcard": {
+          "$ref": "#/definitions/medCard"
+        }
+      }
+    },
+    "medUpdateMedWorkerResponse": {
+      "type": "object",
+      "properties": {
+        "worker": {
+          "$ref": "#/definitions/medMedWorker"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

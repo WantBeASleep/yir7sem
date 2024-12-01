@@ -1,46 +1,12 @@
 version: '3'
 
 tasks:
-  generate:
-    vars:
-      VENDOR_PROTOGEN: '{{joinPath .TASKFILE_DIR "vendor.protogen"}}'
-
-      PROTO_LIBS:
-        sh: find {{.VENDOR_PROTOGEN}} -mindepth 1 -maxdepth 1 -type d | xargs echo
-
-      SOURCE_FILES:
-        sh: find {{joinPath .USER_WORKING_DIR "api"}} -type f -name "*.proto" | xargs echo
-
-    cmds:
-      - for: { var: SOURCE_FILES }
-        cmd: >
-              protoc
-              -I {{dir .ITEM}}
-              {{range $PROTO_LIB := splitList " " .PROTO_LIBS}}-I {{$PROTO_LIB}} {{end}}
-              --go_out {{dir .ITEM}} --go_opt=paths=source_relative
-              --go-grpc_out {{dir .ITEM}} --go-grpc_opt=paths=source_relative
-              --grpc-gateway_out {{dir .ITEM}} --grpc-gateway_opt logtostderr=true,paths=source_relative
-              --openapiv2_out {{dir .ITEM}} --openapiv2_opt=logtostderr=true
-              {{.ITEM}}
-
   style:
     cmds:
-      - go fmt {{.USER_WORKING_DIR}}/...
-      - goimports -w {{.USER_WORKING_DIR}}
-
-  build:
-    deps: [generate]
-
-    vars:
-      SOURCE_FILES:
-        sh: find {{joinPath .USER_WORKING_DIR "cmd"}} -mindepth 1 -maxdepth 2 -type f | xargs
-
-    cmds:
-      - task: style
-      - for: { var: SOURCE_FILES }
-        cmd: go build -v -o {{joinPath .USER_WORKING_DIR "bin" (base (dir .ITEM))}} {{.ITEM}}
+      - go fmt ./...
+      - goimports -w .
+      - gofumpt -l -w .
 
   default:
     cmds:
-      - task: build
-      
+      - task: style
