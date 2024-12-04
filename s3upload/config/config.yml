@@ -1,4 +1,0 @@
-app:
-  env: DEV
-  host: localhost
-  grpc: 50056

@@ -1,20 +1,9 @@
-# ide
-.vscode
-.idea
+__pycache__
+.task
 
-# libs
+*.pth
+*.pkl
+*.lock
+
 vendor.protogen/*
 !vendor.protogen/*.md
-
-#bin
-bin
-
-# Temporary
-*__pycache__
-.data/
-*.lock
-*.task
-
-# ml
-*.pkl
-*.pth
