@@ -6,15 +6,8 @@
 vendor.protogen/*
 !vendor.protogen/*.md
 
-# bin
+#bin
 bin
-
-# py
-*.lock
-
-# ml
-*.pkl
-*.pth
 
 # private
 *.key

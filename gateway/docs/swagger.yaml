@@ -1,0 +1,46 @@
+basePath: /api/v1
+definitions:
+  med.Doctor:
+    properties:
+      desc:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: string
+      job:
+        type: string
+      org:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample API for demonstration.
+  title: Example API
+  version: "1.0"
+paths:
+  /doctor:
+    post:
+      description: Получает информацию о враче
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/med.Doctor'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Получить информацию о враче
+      tags:
+      - doctors
+swagger: "2.0"

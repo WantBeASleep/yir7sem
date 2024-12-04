@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+option go_package = "internal/generated/grpc/client/med";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service MedSrv {
+  rpc registerDoctor(RegisterDoctorIn) returns (google.protobuf.Empty);
+  rpc getDoctor(GetDoctorIn) returns (GetDoctorOut);
+  rpc updateDoctor(UpdateDoctorIn) returns (UpdateDoctorOut);
+
+  rpc createPatient(CreatePatientIn) returns (CreatePatientOut);
+  rpc getPatient(GetPatientIn) returns (GetPatientOut);
+  rpc getDoctorPatients(GetDoctorPatientsIn) returns (GetDoctorPatientsOut);
+  rpc updatePatient(UpdatePatientIn) returns (UpdatePatientOut);
+
+  rpc createCard(CreateCardIn) returns (google.protobuf.Empty);
+  rpc getCard(GetCardIn) returns (GetCardOut);
+  rpc updateCard(UpdateCardIn) returns (UpdateCardOut);
+}
+
+message Doctor {
+  string id = 100;
+  string fullname = 200;
+  string org = 300;
+  string job = 400;
+  optional string desc = 500;
+}
+
+// TODO: ввести entity, переписать тут desc (сделать его опциональным)
+message RegisterDoctorIn { Doctor doctor = 100; }
+
+message GetDoctorIn { string id = 100; }
+
+message GetDoctorOut { Doctor doctor = 100; }
+
+message UpdateDoctorIn {
+  string id = 100;
+  optional string org = 300;
+  optional string job = 400;
+  optional string desc = 500;
+}
+
+message UpdateDoctorOut { Doctor doctor = 100; }
+
+message Patient {
+  string id = 100;
+  string fullname = 200;
+  string email = 300;
+  string policy = 400;
+  bool active = 500;
+  bool malignancy = 600;
+  optional google.protobuf.Timestamp last_uzi_date = 700;
+}
+
+message CreatePatientIn {
+  string fullname = 200;
+  string email = 300;
+  string policy = 400;
+  bool active = 500;
+  bool malignancy = 600;
+}
+
+message CreatePatientOut { string id = 100; }
+
+message GetPatientIn { string id = 100; }
+
+message GetPatientOut { Patient patient = 100; }
+
+message GetDoctorPatientsIn { string doctor_id = 100; }
+
+message GetDoctorPatientsOut { repeated Patient patients = 100; }
+// TODO: перевести timestamp в других протиках
+message UpdatePatientIn {
+  string doctor_id = 100;
+  string id = 200;
+  optional bool active = 300;
+  optional bool malignancy = 400;
+  optional google.protobuf.Timestamp last_uzi_date = 500;
+}
+
+message UpdatePatientOut { Patient patient = 100; }
+
+message Card {
+  string doctor_id = 100;
+  string patient_id = 200;
+  optional string diagnosis = 300;
+}
+
+message CreateCardIn { Card card = 100; }
+
+message GetCardIn {
+  string doctor_id = 100;
+  string patient_id = 200;
+}
+
+message GetCardOut { Card Card = 100; }
+
+message CreateCardOut { Card card = 100; }
+
+message UpdateCardIn { Card card = 100; }
+
+message UpdateCardOut { Card card = 100; }

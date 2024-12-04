@@ -1,0 +1,70 @@
+version: '3'
+# //TODO: убрать мусор отсюдава
+
+vars:
+  VENDOR_PROTOGEN: '../vendor.protogen'
+
+env:
+  GOOSE_DRIVER: postgres
+  GOOSE_DBSTRING: postgres://postgres:1234@localhost:5432/authdb
+  DB_DSN: postgres://postgres:1234@localhost:5432/authdb
+
+tasks:
+  codegen:
+    vars:
+      proto_libs:
+        sh: find {{.VENDOR_PROTOGEN}} -mindepth 1 -maxdepth 1 -type d | xargs echo
+      # TODO: разделить на клиентов/сервис
+      proto_files: 
+        sh: find proto -type f -name "*.proto" | xargs echo
+
+    cmds: 
+      - for: {var: proto_files}
+        cmd: >
+            protoc
+            -I {{dir .ITEM}}
+            {{range $lib := splitList " " .proto_libs}}-I {{$lib}} {{end}}
+            --experimental_allow_proto3_optional
+            --go_out . --go-grpc_out .
+            {{.ITEM}}
+  style:
+    cmds:
+      - go fmt ./...
+      - goimports -w .
+      - gofumpt -l -w .
+
+  keygen:
+    cmds:
+      - task: style
+      - go build -v -o bin/keygen cmd/keygen/main.go
+      - ./bin/keygen
+
+  build:
+    cmds:
+      - task: codegen
+      - task: style
+      - go build -v -o bin/service cmd/service/main.go
+
+  run:
+    env:
+      JWT_KEY_PRIVATE:
+        sh: cat 'private_key.pem'
+      JWT_KEY_PUBLIC:
+        sh: cat 'public_key.pem'
+
+    cmds:
+      - task: build
+      - ./bin/service
+
+  migration-up:
+    cmds:
+      - goose -dir db/migrations up
+
+  migration-down:
+    cmds:
+      - goose -dir db/migrations down
+
+  default:
+    cmds:
+      - task: codegen
+      - task: style

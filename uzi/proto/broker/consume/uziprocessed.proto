@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option go_package = "internal/generated/broker/consume/uziprocessed";
+
+message UziProcessed {
+    message Node {
+        string id = 100;
+        double tirads_23 = 400;
+        double tirads_4 = 500;
+        double tirads_5 = 600;
+    }
+
+    message Segment {
+        string id = 100;
+        string node_id = 200;
+        string image_id = 300;
+        string contor = 400;
+        double tirads_23 = 500;
+        double tirads_4 = 600;
+        double tirads_5 = 700;
+    }
+
+    repeated Node nodes = 100;
+    repeated Segment segments = 200;
+}

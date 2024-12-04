@@ -1,0 +1,190 @@
+syntax = "proto3";
+
+option go_package = "internal/generated/grpc/service";
+
+import "google/protobuf/empty.proto";
+
+service UziSrv {
+  rpc getDeviceList(google.protobuf.Empty) returns (GetDeviceListOut);
+
+  rpc createUzi(CreateUziIn) returns (CreateUziOut);
+  rpc updateUzi(UpdateUziIn) returns (UpdateUziOut);
+  rpc updateEchographic(UpdateEchographicIn) returns (UpdateEchographicOut);
+  rpc getUzi(GetUziIn) returns (GetUziOut);
+
+  rpc getUziImages(GetUziImagesIn) returns (GetUziImagesOut);
+  rpc getImageSegmentsWithNodes(GetImageSegmentsWithNodesIn)
+      returns (GetImageSegmentsWithNodesOut);
+
+  rpc createSegment(CreateSegmentIn) returns (CreateSegmentOut);
+  rpc deleteSegment(DeleteSegmentIn) returns (google.protobuf.Empty);
+  rpc updateSegment(UpdateSegmentIn) returns (UpdateSegmentOut);
+
+  rpc createNode(CreateNodeIn) returns (CreateNodeOut);
+  rpc deleteNode(DeleteNodeIn) returns (google.protobuf.Empty);
+  rpc updateNode(UpdateNodeIn) returns (UpdateNodeOut);
+}
+
+// COMMON
+message Id { string id = 100; }
+
+// DEVICE
+
+message Device {
+  int64 id = 100;
+  string name = 200;
+}
+
+message GetDeviceListOut { repeated Device devices = 100; }
+
+message Echographic {
+  string id = 100;
+  optional string contors = 200;
+  optional double left_lobe_length = 300;
+  optional double left_lobe_width = 400;
+  optional double left_lobe_thick = 500;
+  optional double left_lobe_volum = 600;
+  optional double right_lobe_length = 700;
+  optional double right_lobe_width = 800;
+  optional double right_lobe_thick = 900;
+  optional double right_lobe_volum = 1000;
+  optional double gland_volum = 1100;
+  optional double isthmus = 1200;
+  optional string struct = 1300;
+  optional string echogenicity = 1400;
+  optional string regional_lymph = 1500;
+  optional string vascularization = 1600;
+  optional string location = 1700;
+  optional string additional = 1800;
+  optional string conclusion = 1900;
+}
+
+// Обусловлено что ВСЕ параметры меняются
+message UpdateEchographicIn {
+  Echographic echographic = 100;
+}
+
+message UpdateEchographicOut { Echographic echographic = 400; }
+
+// UZI
+
+message Uzi {
+  string id = 100;
+  string projection = 300;
+  bool checked = 400;
+  Echographic echographic = 500;
+  string patient_id = 600;
+  int64 device_id = 700;
+  string create_at = 800;
+}
+
+message CreateUziIn {
+  string projection = 100;
+  string patient_id = 200;
+  int64 device_id = 300;
+}
+
+message CreateUziOut { string id = 100; }
+
+message UpdateUziIn {
+  string id = 100;
+  optional string projection = 200;
+  optional bool checked = 300;
+}
+
+message UpdateUziOut { Uzi uzi = 100; }
+
+message GetUziIn { string id = 100; }
+
+message GetUziOut { Uzi uzi = 100; }
+
+// IMAGE
+
+message Image {
+  string id = 100;
+  int64 page = 200;
+};
+
+message GetUziImagesIn { string uzi_id = 100; }
+
+message GetUziImagesOut { repeated Image images = 100; }
+
+// SEGMENT
+
+message Segment {
+  string id = 100;
+  string node_id = 200;
+  string image_id = 300;
+  string contor = 400;
+  double tirads_23 = 500;
+  double tirads_4 = 600;
+  double tirads_5 = 700;
+}
+
+message CreateSegmentIn {
+  string node_id = 100;
+  string image_id = 200;
+  string contor = 300;
+  double tirads_23 = 400;
+  double tirads_4 = 500;
+  double tirads_5 = 600;
+}
+
+message CreateSegmentOut { string id = 100; }
+
+message DeleteSegmentIn { string id = 100; }
+
+message UpdateSegmentIn {
+  string id = 100;
+  optional string contor = 300;
+  optional double tirads_23 = 400;
+  optional double tirads_4 = 500;
+  optional double tirads_5 = 600;
+}
+
+message UpdateSegmentOut { Segment segment = 100; }
+
+// NODE
+
+message Node {
+  string id = 100;
+  bool ai = 200;
+  double tirads_23 = 400;
+  double tirads_4 = 500;
+  double tirads_5 = 600;
+}
+
+message CreateNodeIn {
+  message NestedSegment {
+    string image_id = 300;
+    string contor = 400;
+    double tirads_23 = 500;
+    double tirads_4 = 600;
+    double tirads_5 = 700;
+  }
+
+  repeated NestedSegment segments = 200;
+  double tirads_23 = 300;
+  double tirads_4 = 400;
+  double tirads_5 = 500;
+}
+
+message CreateNodeOut { string id = 100; }
+
+message DeleteNodeIn { string id = 100; }
+
+message UpdateNodeIn {
+  string id = 100;
+  optional double tirads_23 = 200;
+  optional double tirads_4 = 300;
+  optional double tirads_5 = 400;
+}
+
+message UpdateNodeOut { Node node = 100; }
+
+message GetImageSegmentsWithNodesIn { string id = 100; }
+
+message GetImageSegmentsWithNodesOut {
+  repeated Node nodes = 100;
+  repeated Segment segments = 200;
+}

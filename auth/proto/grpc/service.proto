@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option go_package = "internal/generated/grpc/service";
+
+service AuthSrv {
+  rpc register(RegisterIn) returns (RegisterOut);
+  rpc login(LoginIn) returns (LoginOut);
+  rpc refresh(RefreshIn) returns (RefreshOut);
+}
+
+message RegisterIn {
+  string email = 100;
+  string password = 200;
+}
+
+message RegisterOut {
+    string id = 100;
+}
+
+message LoginIn {
+    string email = 100;
+    string password = 200; 
+}
+
+message LoginOut {
+    string access_token = 100;
+    string refresh_token = 200;
+}
+
+message RefreshIn {
+    string refresh_token = 100;
+}
+
+message RefreshOut {
+    string access_token = 100;
+    string refresh_token = 200;
+}
