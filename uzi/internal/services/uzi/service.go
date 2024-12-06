@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"yir/uzi/internal/domain"
-	"yir/uzi/internal/repository"
-	"yir/uzi/internal/repository/entity"
+	"uzi/internal/domain"
+	"uzi/internal/repository"
+	"uzi/internal/repository/entity"
 
 	"github.com/google/uuid"
 )

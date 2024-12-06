@@ -3,9 +3,9 @@ package doctor
 import (
 	"context"
 
-	"yir/med/internal/domain"
-	pb "yir/med/internal/generated/grpc/service"
-	"yir/med/internal/services/doctor"
+	"med/internal/domain"
+	pb "med/internal/generated/grpc/service"
+	"med/internal/services/doctor"
 
 	"github.com/golang/protobuf/ptypes/empty"
 

@@ -1,7 +1,7 @@
 package card
 
 import (
-	"yir/med/internal/domain"
+	"med/internal/domain"
 )
 
 type UpdateCard struct {

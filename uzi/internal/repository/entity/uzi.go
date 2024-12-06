@@ -3,7 +3,7 @@ package entity
 import (
 	"time"
 
-	"yir/uzi/internal/domain"
+	"uzi/internal/domain"
 
 	"github.com/google/uuid"
 )

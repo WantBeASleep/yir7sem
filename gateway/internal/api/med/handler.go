@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	grpcadapters "yir/gateway/internal/adapters/grpc"
-	pb "yir/gateway/internal/generated/grpc/client/med"
+	grpcadapters "gateway/internal/adapters/grpc"
+	pb "gateway/internal/generated/grpc/client/med"
 )
 
 type Handler struct {

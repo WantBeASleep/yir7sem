@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"yir/uzi/internal/domain"
+	"uzi/internal/domain"
 
 	minio "github.com/minio/minio-go/v7"
 )

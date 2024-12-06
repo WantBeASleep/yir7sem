@@ -3,9 +3,9 @@ package card
 import (
 	"context"
 
-	"yir/med/internal/domain"
-	pb "yir/med/internal/generated/grpc/service"
-	"yir/med/internal/services/card"
+	"med/internal/domain"
+	pb "med/internal/generated/grpc/service"
+	"med/internal/services/card"
 
 	"github.com/golang/protobuf/ptypes/empty"
 

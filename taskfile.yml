@@ -1,0 +1,10 @@
+version: "3"
+
+vars:
+  services: [gateway, auth, med, uzi]
+
+tasks:
+  inherit-pkg:
+    cmds:
+      - for: { var: services }
+        cmd: rm -rf {{.ITEM}}/pkg && cp -r pkg {{.ITEM}}/pkg

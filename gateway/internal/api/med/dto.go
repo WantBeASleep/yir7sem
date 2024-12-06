@@ -1,5 +1,6 @@
 package med
 
+// TODO: uuid
 type doctor struct {
 	Id       string  `json:"id"`
 	Fullname *string `json:"fullname"`

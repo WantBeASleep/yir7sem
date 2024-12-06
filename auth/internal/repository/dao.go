@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"yir/pkg/daolib"
+	"auth/pkg/daolib"
 
 	"github.com/jmoiron/sqlx"
 )

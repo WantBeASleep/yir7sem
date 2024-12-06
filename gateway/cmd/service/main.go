@@ -5,30 +5,30 @@ import (
 	"net/http"
 	"os"
 
-	_ "yir/gateway/docs"
+	_ "gateway/docs"
 
 	"github.com/gorilla/mux"
 	"github.com/minio/minio-go/v7"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"google.golang.org/grpc"
 
-	"yir/gateway/internal/config"
-	"yir/gateway/internal/repository"
-	"yir/pkg/brokerlib"
-	pkgconfig "yir/pkg/config"
-	"yir/pkg/grpclib"
-	"yir/pkg/loglib"
+	"gateway/internal/config"
+	"gateway/internal/repository"
+	"gateway/pkg/brokerlib"
+	pkgconfig "gateway/pkg/config"
+	"gateway/pkg/grpclib"
+	"gateway/pkg/loglib"
 
-	brokeradapters "yir/gateway/internal/adapters/broker"
+	brokeradapters "gateway/internal/adapters/broker"
 
-	grpcadapters "yir/gateway/internal/adapters/grpc"
-	medgrpcadapter "yir/gateway/internal/adapters/grpc/med"
-	uzigrpcadapter "yir/gateway/internal/adapters/grpc/uzi"
+	grpcadapters "gateway/internal/adapters/grpc"
+	medgrpcadapter "gateway/internal/adapters/grpc/med"
+	uzigrpcadapter "gateway/internal/adapters/grpc/uzi"
 
-	medhandler "yir/gateway/internal/api/med"
-	uzihandler "yir/gateway/internal/api/uzi"
+	medhandler "gateway/internal/api/med"
+	uzihandler "gateway/internal/api/uzi"
 
-	"yir/gateway/internal/middleware"
+	"gateway/internal/middleware"
 
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -118,7 +118,7 @@ func run() (exitCode int) {
 
 	medHandler := medhandler.New(grpcadapter)
 	uziHandler := uzihandler.New(grpcadapter, brokeradapter, dao)
-// TODO: пробросить ошибки с логированием на верхнем уровне
+	// TODO: пробросить ошибки с логированием на верхнем уровне
 	mdlwrs := middleware.New(pubKey)
 
 	r := mux.NewRouter()
@@ -138,6 +138,12 @@ func run() (exitCode int) {
 
 	medRouter.HandleFunc("/doctors", medHandler.GetDoctor).Methods("GET")
 
+	uziRouter.HandleFunc("/echographics/{id}", uziHandler.PatchEchographics).Methods("PATCH")
+
+	uziRouter.HandleFunc("/images/{id}/nodes-segments", uziHandler.GetUziNodeSegments).Methods("GET")
+	uziRouter.HandleFunc("/uzis/{id}/images", uziHandler.GetUziImages).Methods("GET")
+	uziRouter.HandleFunc("/uzis/{id}", uziHandler.GetUzi).Methods("GET")
+	uziRouter.HandleFunc("/uzis/{id}", uziHandler.PatchUzi).Methods("PATCH")
 	uziRouter.HandleFunc("/uzis", uziHandler.PostUzi).Methods("POST")
 
 	slog.Info("start serve", slog.String("url", cfg.App.Url))

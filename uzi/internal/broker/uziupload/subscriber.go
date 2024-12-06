@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log/slog"
 
-	"yir/pkg/brokerlib"
-	pb "yir/uzi/internal/generated/broker/consume/uziupload"
-	"yir/uzi/internal/services/image"
+	pb "uzi/internal/generated/broker/consume/uziupload"
+	"uzi/internal/services/image"
+	"uzi/pkg/brokerlib"
 
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"

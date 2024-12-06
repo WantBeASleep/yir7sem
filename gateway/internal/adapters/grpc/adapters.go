@@ -1,9 +1,9 @@
 package grpc
 
 import (
-	"yir/gateway/internal/adapters/grpc/auth"
-	"yir/gateway/internal/adapters/grpc/med"
-	"yir/gateway/internal/adapters/grpc/uzi"
+	"gateway/internal/adapters/grpc/auth"
+	"gateway/internal/adapters/grpc/med"
+	"gateway/internal/adapters/grpc/uzi"
 )
 
 type Adapter struct {

@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"yir/pkg/ctxlib"
+	"gateway/pkg/ctxlib"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"

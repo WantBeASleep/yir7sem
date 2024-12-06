@@ -3,8 +3,8 @@ package entity
 import (
 	"database/sql"
 
-	"yir/med/internal/domain"
-	"yir/pkg/gtclib"
+	"med/internal/domain"
+	"med/pkg/gtclib"
 
 	"github.com/google/uuid"
 )

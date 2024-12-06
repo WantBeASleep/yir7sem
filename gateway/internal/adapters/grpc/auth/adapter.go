@@ -1,7 +1,7 @@
 package auth
 
 import (
-	pb "yir/gateway/internal/generated/grpc/client/auth"
+	pb "gateway/internal/generated/grpc/client/auth"
 
 	"google.golang.org/grpc"
 )

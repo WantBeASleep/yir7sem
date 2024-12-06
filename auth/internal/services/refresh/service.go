@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"yir/auth/internal/repository"
-	"yir/auth/internal/repository/entity"
-	"yir/auth/internal/services/tokenizer"
+	"auth/internal/repository"
+	"auth/internal/repository/entity"
+	"auth/internal/services/tokenizer"
 
 	"github.com/google/uuid"
 )

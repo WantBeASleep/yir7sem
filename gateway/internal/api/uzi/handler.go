@@ -1,18 +1,23 @@
 package uzi
 
+// TODO: большая проблема: то что рисуем на выход в сваггер != тому что туда реально уходит (уходит GRPC)
+
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"path/filepath"
 	"strconv"
 
-	brokeradapters "yir/gateway/internal/adapters/broker"
-	grpcadapters "yir/gateway/internal/adapters/grpc"
-	"yir/gateway/internal/domain"
+	brokeradapters "gateway/internal/adapters/broker"
+	grpcadapters "gateway/internal/adapters/grpc"
+	"gateway/internal/domain"
 
-	// uziuploadpb "yir/gateway/internal/generated/broker/produce/uziupload"
-	uzipb "yir/gateway/internal/generated/grpc/client/uzi"
-	"yir/gateway/internal/repository"
+	uziuploadpb "gateway/internal/generated/broker/produce/uziupload"
+	uzipb "gateway/internal/generated/grpc/client/uzi"
+	"gateway/internal/repository"
+
+	"github.com/gorilla/mux"
 )
 
 type Handler struct {
@@ -86,10 +91,205 @@ func (h *Handler) PostUzi(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: нужна тотальная сага тут
-	// if err := h.brokeradapter.SendUziUpload(&uziuploadpb.UziUpload{UziId: uziResp.Id}); err != nil {
-	// 	http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
-	// 	return
-	// }
+	if err := h.brokeradapter.SendUziUpload(&uziuploadpb.UziUpload{UziId: uziResp.Id}); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	w.WriteHeader(200)
+}
+
+// TODO: проверить крайние случае, если что то не приходит например(неправильный id)
+// TODO: убрать echographic из ответа на обновление
+// PatchUzi Обновляет узи
+//
+//	@Summary		Обновляет узи
+//	@Description	Обновляет узи
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string		true	"access_token"
+//	@Param			id		path		string		true	"uzi_id"
+//	@Param			body	body		PatchUziIn	true	"обновляемые значения"
+//	@Success		200		{object}	PatchUziOut	"uzi"
+//	@Failure		500		{string}	string		"Internal Server Error"
+//	@Router			/uzi/uzis/{id} [patch]
+func (h *Handler) PatchUzi(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	var req PatchUziIn
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	resp, err := h.grpcadapter.UziAdapter.UpdateUzi(ctx, &uzipb.UpdateUziIn{
+		Id:         id,
+		Projection: req.Projection,
+		Checked:    req.Checked,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp.Uzi); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	w.WriteHeader(200)
+}
+
+// PatchEchographics Обновляет эхографику
+//
+//	@Summary		Обновляет эхографику
+//	@Description	Обновляет эхографику
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string					true	"access_token"
+//	@Param			id		path		string					true	"uzi_id"
+//	@Param			body	body		PatchEchographicsIn		true	"обновляемые значения"
+//	@Success		200		{object}	PatchEchographicsOut	"echographic"
+//	@Failure		500		{string}	string					"Internal Server Error"
+//	@Router			/uzi/echographics/{id} [patch]
+func (h *Handler) PatchEchographics(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	var req PatchEchographicsIn
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	resp, err := h.grpcadapter.UziAdapter.UpdateEchographic(ctx, &uzipb.UpdateEchographicIn{
+		Echographic: &uzipb.Echographic{
+			Id:              id,
+			LeftLobeLength:  req.LeftLobeLength,
+			LeftLobeWidth:   req.LeftLobeWidth,
+			LeftLobeThick:   req.LeftLobeThick,
+			LeftLobeVolum:   req.LeftLobeVolum,
+			RightLobeLength: req.RightLobeLength,
+			RightLobeWidth:  req.RightLobeWidth,
+			RightLobeThick:  req.RightLobeThick,
+			RightLobeVolum:  req.RightLobeVolum,
+			GlandVolum:      req.GlandVolum,
+			Isthmus:         req.Isthmus,
+			Struct:          req.Struct,
+			Echogenicity:    req.Echogenicity,
+			RegionalLymph:   req.RegionalLymph,
+			Vascularization: req.Vascularization,
+			Location:        req.Location,
+			Additional:      req.Additional,
+			Conclusion:      req.Conclusion,
+		},
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp.Echographic); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	w.WriteHeader(200)
+}
+
+// GetUzi получает uzi
+//
+//	@Summary		получает uiz
+//	@Description	получает uiz
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string		true	"access_token"
+//	@Param			id		path		string		true	"uzi_id"
+//	@Success		200		{object}	GetUziOut	"uzi"
+//	@Failure		500		{string}	string		"Internal Server Error"
+//	@Router			/uzi/uzi/{id} [get]
+func (h *Handler) GetUzi(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	resp, err := h.grpcadapter.UziAdapter.GetUzi(ctx, &uzipb.GetUziIn{Id: id})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+	// TODO: понять почему тут узи возвращается без эхографикой, а тут с
+	// TODO: подумать над content-tpye в ответе(посмотреть в каком порядке выставлять функции для ответа)
+	if err := json.NewEncoder(w).Encode(resp.Uzi); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	w.WriteHeader(200)
+}
+
+// GetUziImages получает id картинок uzi
+//
+//	@Summary		получает списк id кадров uzi
+//	@Description	получает списк id кадров uzi
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string			true	"access_token"
+//	@Param			id		path		string			true	"uzi_id"
+//	@Success		200		{object}	GetUziImagesOut	"images"
+//	@Failure		500		{string}	string			"Internal Server Error"
+//	@Router			/uzi/uzis/{id}/images [get]
+func (h *Handler) GetUziImages(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	resp, err := h.grpcadapter.UziAdapter.GetUziImages(ctx, &uzipb.GetUziImagesIn{UziId: id})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp.Images); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	w.WriteHeader(200)
+}
+
+// GetUziNodeSegments получит ноды и сегменты на указанном изображении
+//
+//	@Summary		получит ноды и сегменты на указанном изображении
+//	@Description	получит ноды и сегменты на указанном изображении
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string					true	"access_token"
+//	@Param			id		path		string					true	"image_id"
+//	@Success		200		{object}	GetUziNodeSegmentsOut	"nodes&&segments"
+//	@Failure		500		{string}	string					"Internal Server Error"
+//	@Router			/uzi/images/{id}/nodes-segments [get]
+func (h *Handler) GetUziNodeSegments(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	resp, err := h.grpcadapter.UziAdapter.GetImageSegmentsWithNodes(
+		ctx,
+		&uzipb.GetImageSegmentsWithNodesIn{Id: id},
+	)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
 
 	w.WriteHeader(200)
 }

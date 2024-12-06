@@ -1,7 +1,7 @@
 package uzi
 
 import (
-	pb "yir/gateway/internal/generated/grpc/client/uzi"
+	pb "gateway/internal/generated/grpc/client/uzi"
 
 	"google.golang.org/grpc"
 )

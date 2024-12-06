@@ -3,9 +3,9 @@ package uzi
 import (
 	"context"
 
-	"yir/uzi/internal/domain"
-	pb "yir/uzi/internal/generated/grpc/service"
-	"yir/uzi/internal/services/uzi"
+	"uzi/internal/domain"
+	pb "uzi/internal/generated/grpc/service"
+	"uzi/internal/services/uzi"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"

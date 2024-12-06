@@ -3,9 +3,9 @@ package broker
 import (
 	"fmt"
 
-	"yir/pkg/brokerlib"
+	"gateway/pkg/brokerlib"
 
-	uziuploadpb "yir/gateway/internal/generated/broker/produce/uziupload"
+	uziuploadpb "gateway/internal/generated/broker/produce/uziupload"
 
 	"google.golang.org/protobuf/proto"
 )

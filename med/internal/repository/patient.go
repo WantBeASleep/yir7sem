@@ -3,8 +3,8 @@ package repository
 import (
 	"fmt"
 
-	"yir/med/internal/repository/entity"
-	"yir/pkg/daolib"
+	"med/internal/repository/entity"
+	"med/pkg/daolib"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"

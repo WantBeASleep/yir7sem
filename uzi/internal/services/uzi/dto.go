@@ -1,7 +1,7 @@
 package uzi
 
 import (
-	"yir/uzi/internal/domain"
+	"uzi/internal/domain"
 )
 
 type UpdateUzi struct {

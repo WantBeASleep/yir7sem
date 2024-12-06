@@ -1,7 +1,7 @@
 package med
 
 import (
-	pb "yir/gateway/internal/generated/grpc/client/med"
+	pb "gateway/internal/generated/grpc/client/med"
 
 	"google.golang.org/grpc"
 )

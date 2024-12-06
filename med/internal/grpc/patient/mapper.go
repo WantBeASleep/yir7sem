@@ -1,9 +1,9 @@
 package patient
 
 import (
-	"yir/med/internal/domain"
-	pb "yir/med/internal/generated/grpc/service"
-	"yir/pkg/gtclib"
+	"med/internal/domain"
+	pb "med/internal/generated/grpc/service"
+	"med/pkg/gtclib"
 )
 
 func domainToPb(d *domain.Patient) *pb.Patient {

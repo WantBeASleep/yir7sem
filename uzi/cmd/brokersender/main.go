@@ -1,8 +1,8 @@
 package main
 
 import (
-	"yir/pkg/brokerlib"
-	pb "yir/uzi/internal/generated/broker/consume/uziupload"
+	pb "uzi/internal/generated/broker/consume/uziupload"
+	"uzi/pkg/brokerlib"
 
 	"google.golang.org/protobuf/proto"
 )

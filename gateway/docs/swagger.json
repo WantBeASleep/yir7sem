@@ -44,6 +44,141 @@
                 }
             }
         },
+        "/uzi/echographics/{id}": {
+            "patch": {
+                "description": "Обновляет эхографику",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "uzi"
+                ],
+                "summary": "Обновляет эхографику",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "uzi_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "обновляемые значения",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/uzi.PatchEchographicsIn"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "echographic",
+                        "schema": {
+                            "$ref": "#/definitions/uzi.PatchEchographicsOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/uzi/images/{id}/nodes-segments": {
+            "get": {
+                "description": "получит ноды и сегменты на указанном изображении",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "uzi"
+                ],
+                "summary": "получит ноды и сегменты на указанном изображении",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "image_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "nodes\u0026\u0026segments",
+                        "schema": {
+                            "$ref": "#/definitions/uzi.GetUziNodeSegmentsOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/uzi/uzi/{id}": {
+            "get": {
+                "description": "получает uiz",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "uzi"
+                ],
+                "summary": "получает uiz",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "uzi_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "uzi",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_uzi.GetUziOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/uzi/uzis": {
             "post": {
                 "description": "Загружает узи на обработку",
@@ -106,9 +241,258 @@
                     }
                 }
             }
+        },
+        "/uzi/uzis/{id}": {
+            "patch": {
+                "description": "Обновляет узи",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "uzi"
+                ],
+                "summary": "Обновляет узи",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "uzi_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "обновляемые значения",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/uzi.PatchUziIn"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "uzi",
+                        "schema": {
+                            "$ref": "#/definitions/uzi.PatchUziOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/uzi/uzis/{id}/images": {
+            "get": {
+                "description": "получает списк id кадров uzi",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "uzi"
+                ],
+                "summary": "получает списк id кадров uzi",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "uzi_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "images",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_uzi.GetUziImagesOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "internal_api_uzi.Echographic": {
+            "type": "object",
+            "properties": {
+                "additional": {
+                    "type": "string"
+                },
+                "conclusion": {
+                    "type": "string"
+                },
+                "contors": {
+                    "type": "string"
+                },
+                "echogenicity": {
+                    "type": "string"
+                },
+                "gland_volum": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isthmus": {
+                    "type": "number"
+                },
+                "left_lobe_length": {
+                    "type": "number"
+                },
+                "left_lobe_thick": {
+                    "type": "number"
+                },
+                "left_lobe_volum": {
+                    "type": "number"
+                },
+                "left_lobe_width": {
+                    "type": "number"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "regional_lymph": {
+                    "type": "string"
+                },
+                "right_lobe_length": {
+                    "type": "number"
+                },
+                "right_lobe_thick": {
+                    "type": "number"
+                },
+                "right_lobe_volum": {
+                    "type": "number"
+                },
+                "right_lobe_width": {
+                    "type": "number"
+                },
+                "struct": {
+                    "type": "string"
+                },
+                "vascularization": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_uzi.GetUziImagesOut": {
+            "type": "object",
+            "properties": {
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_api_uzi.Image"
+                    }
+                }
+            }
+        },
+        "internal_api_uzi.GetUziOut": {
+            "type": "object",
+            "properties": {
+                "checked": {
+                    "type": "boolean"
+                },
+                "create_at": {
+                    "type": "string"
+                },
+                "device_id": {
+                    "type": "integer"
+                },
+                "echographic": {
+                    "$ref": "#/definitions/internal_api_uzi.Echographic"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "patient_id": {
+                    "type": "string"
+                },
+                "projection": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_uzi.Image": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_api_uzi.Node": {
+            "type": "object",
+            "properties": {
+                "ai": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "tirads23": {
+                    "type": "number"
+                },
+                "tirads4": {
+                    "type": "number"
+                },
+                "tirads5": {
+                    "type": "number"
+                }
+            }
+        },
+        "internal_api_uzi.Segment": {
+            "type": "object",
+            "properties": {
+                "contor": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_id": {
+                    "type": "string"
+                },
+                "node_id": {
+                    "type": "string"
+                },
+                "tirads23": {
+                    "type": "number"
+                },
+                "tirads4": {
+                    "type": "number"
+                },
+                "tirads5": {
+                    "type": "number"
+                }
+            }
+        },
         "med.Doctor": {
             "type": "object",
             "properties": {
@@ -125,6 +509,181 @@
                     "type": "string"
                 },
                 "org": {
+                    "type": "string"
+                }
+            }
+        },
+        "uzi.GetUziNodeSegmentsOut": {
+            "type": "object",
+            "properties": {
+                "nodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_api_uzi.Node"
+                    }
+                },
+                "segments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_api_uzi.Segment"
+                    }
+                }
+            }
+        },
+        "uzi.PatchEchographicsIn": {
+            "type": "object",
+            "properties": {
+                "additional": {
+                    "type": "string"
+                },
+                "conclusion": {
+                    "type": "string"
+                },
+                "contors": {
+                    "type": "string"
+                },
+                "echogenicity": {
+                    "type": "string"
+                },
+                "gland_volum": {
+                    "type": "number"
+                },
+                "isthmus": {
+                    "type": "number"
+                },
+                "left_lobe_length": {
+                    "type": "number"
+                },
+                "left_lobe_thick": {
+                    "type": "number"
+                },
+                "left_lobe_volum": {
+                    "type": "number"
+                },
+                "left_lobe_width": {
+                    "type": "number"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "regional_lymph": {
+                    "type": "string"
+                },
+                "right_lobe_length": {
+                    "type": "number"
+                },
+                "right_lobe_thick": {
+                    "type": "number"
+                },
+                "right_lobe_volum": {
+                    "type": "number"
+                },
+                "right_lobe_width": {
+                    "type": "number"
+                },
+                "struct": {
+                    "type": "string"
+                },
+                "vascularization": {
+                    "type": "string"
+                }
+            }
+        },
+        "uzi.PatchEchographicsOut": {
+            "type": "object",
+            "properties": {
+                "additional": {
+                    "type": "string"
+                },
+                "conclusion": {
+                    "type": "string"
+                },
+                "contors": {
+                    "type": "string"
+                },
+                "echogenicity": {
+                    "type": "string"
+                },
+                "gland_volum": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isthmus": {
+                    "type": "number"
+                },
+                "left_lobe_length": {
+                    "type": "number"
+                },
+                "left_lobe_thick": {
+                    "type": "number"
+                },
+                "left_lobe_volum": {
+                    "type": "number"
+                },
+                "left_lobe_width": {
+                    "type": "number"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "regional_lymph": {
+                    "type": "string"
+                },
+                "right_lobe_length": {
+                    "type": "number"
+                },
+                "right_lobe_thick": {
+                    "type": "number"
+                },
+                "right_lobe_volum": {
+                    "type": "number"
+                },
+                "right_lobe_width": {
+                    "type": "number"
+                },
+                "struct": {
+                    "type": "string"
+                },
+                "vascularization": {
+                    "type": "string"
+                }
+            }
+        },
+        "uzi.PatchUziIn": {
+            "type": "object",
+            "properties": {
+                "checked": {
+                    "type": "boolean"
+                },
+                "projection": {
+                    "type": "string"
+                }
+            }
+        },
+        "uzi.PatchUziOut": {
+            "type": "object",
+            "properties": {
+                "checked": {
+                    "type": "boolean"
+                },
+                "create_at": {
+                    "type": "string"
+                },
+                "device_id": {
+                    "type": "integer"
+                },
+                "echographic": {
+                    "$ref": "#/definitions/internal_api_uzi.Echographic"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "patient_id": {
+                    "type": "string"
+                },
+                "projection": {
                     "type": "string"
                 }
             }

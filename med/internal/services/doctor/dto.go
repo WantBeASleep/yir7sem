@@ -1,7 +1,7 @@
 package doctor
 
 import (
-	"yir/med/internal/domain"
+	"med/internal/domain"
 )
 
 type UpdateDoctor struct {

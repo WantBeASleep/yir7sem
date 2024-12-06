@@ -3,13 +3,13 @@ package device
 import (
 	"context"
 
-	"yir/uzi/internal/services/device"
+	"uzi/internal/services/device"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "yir/uzi/internal/generated/grpc/service"
+	pb "uzi/internal/generated/grpc/service"
 )
 
 type DeviceHandler interface {

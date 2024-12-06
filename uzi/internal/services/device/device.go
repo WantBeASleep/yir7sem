@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"yir/uzi/internal/domain"
-	"yir/uzi/internal/repository"
-	"yir/uzi/internal/repository/entity"
+	"uzi/internal/domain"
+	"uzi/internal/repository"
+	"uzi/internal/repository/entity"
 )
 
 type Service interface {

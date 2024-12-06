@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"yir/auth/internal/repository"
-	"yir/auth/internal/repository/entity"
-	"yir/auth/internal/services/password"
-	"yir/auth/internal/services/tokenizer"
+	"auth/internal/repository"
+	"auth/internal/repository/entity"
+	"auth/internal/services/password"
+	"auth/internal/services/tokenizer"
 )
 
 type Service interface {

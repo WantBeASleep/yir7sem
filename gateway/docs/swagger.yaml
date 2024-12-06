@@ -1,5 +1,107 @@
 basePath: /api/v1
 definitions:
+  internal_api_uzi.Echographic:
+    properties:
+      additional:
+        type: string
+      conclusion:
+        type: string
+      contors:
+        type: string
+      echogenicity:
+        type: string
+      gland_volum:
+        type: number
+      id:
+        type: string
+      isthmus:
+        type: number
+      left_lobe_length:
+        type: number
+      left_lobe_thick:
+        type: number
+      left_lobe_volum:
+        type: number
+      left_lobe_width:
+        type: number
+      location:
+        type: string
+      regional_lymph:
+        type: string
+      right_lobe_length:
+        type: number
+      right_lobe_thick:
+        type: number
+      right_lobe_volum:
+        type: number
+      right_lobe_width:
+        type: number
+      struct:
+        type: string
+      vascularization:
+        type: string
+    type: object
+  internal_api_uzi.GetUziImagesOut:
+    properties:
+      images:
+        items:
+          $ref: '#/definitions/internal_api_uzi.Image'
+        type: array
+    type: object
+  internal_api_uzi.GetUziOut:
+    properties:
+      checked:
+        type: boolean
+      create_at:
+        type: string
+      device_id:
+        type: integer
+      echographic:
+        $ref: '#/definitions/internal_api_uzi.Echographic'
+      id:
+        type: string
+      patient_id:
+        type: string
+      projection:
+        type: string
+    type: object
+  internal_api_uzi.Image:
+    properties:
+      id:
+        type: string
+      page:
+        type: integer
+    type: object
+  internal_api_uzi.Node:
+    properties:
+      ai:
+        type: boolean
+      id:
+        type: string
+      tirads4:
+        type: number
+      tirads5:
+        type: number
+      tirads23:
+        type: number
+    type: object
+  internal_api_uzi.Segment:
+    properties:
+      contor:
+        type: string
+      id:
+        type: string
+      image_id:
+        type: string
+      node_id:
+        type: string
+      tirads4:
+        type: number
+      tirads5:
+        type: number
+      tirads23:
+        type: number
+    type: object
   med.Doctor:
     properties:
       desc:
@@ -11,6 +113,121 @@ definitions:
       job:
         type: string
       org:
+        type: string
+    type: object
+  uzi.GetUziNodeSegmentsOut:
+    properties:
+      nodes:
+        items:
+          $ref: '#/definitions/internal_api_uzi.Node'
+        type: array
+      segments:
+        items:
+          $ref: '#/definitions/internal_api_uzi.Segment'
+        type: array
+    type: object
+  uzi.PatchEchographicsIn:
+    properties:
+      additional:
+        type: string
+      conclusion:
+        type: string
+      contors:
+        type: string
+      echogenicity:
+        type: string
+      gland_volum:
+        type: number
+      isthmus:
+        type: number
+      left_lobe_length:
+        type: number
+      left_lobe_thick:
+        type: number
+      left_lobe_volum:
+        type: number
+      left_lobe_width:
+        type: number
+      location:
+        type: string
+      regional_lymph:
+        type: string
+      right_lobe_length:
+        type: number
+      right_lobe_thick:
+        type: number
+      right_lobe_volum:
+        type: number
+      right_lobe_width:
+        type: number
+      struct:
+        type: string
+      vascularization:
+        type: string
+    type: object
+  uzi.PatchEchographicsOut:
+    properties:
+      additional:
+        type: string
+      conclusion:
+        type: string
+      contors:
+        type: string
+      echogenicity:
+        type: string
+      gland_volum:
+        type: number
+      id:
+        type: string
+      isthmus:
+        type: number
+      left_lobe_length:
+        type: number
+      left_lobe_thick:
+        type: number
+      left_lobe_volum:
+        type: number
+      left_lobe_width:
+        type: number
+      location:
+        type: string
+      regional_lymph:
+        type: string
+      right_lobe_length:
+        type: number
+      right_lobe_thick:
+        type: number
+      right_lobe_volum:
+        type: number
+      right_lobe_width:
+        type: number
+      struct:
+        type: string
+      vascularization:
+        type: string
+    type: object
+  uzi.PatchUziIn:
+    properties:
+      checked:
+        type: boolean
+      projection:
+        type: string
+    type: object
+  uzi.PatchUziOut:
+    properties:
+      checked:
+        type: boolean
+      create_at:
+        type: string
+      device_id:
+        type: integer
+      echographic:
+        $ref: '#/definitions/internal_api_uzi.Echographic'
+      id:
+        type: string
+      patient_id:
+        type: string
+      projection:
         type: string
     type: object
 host: localhost:8080
@@ -43,6 +260,96 @@ paths:
       summary: Получить информацию о враче
       tags:
       - doctors
+  /uzi/echographics/{id}:
+    patch:
+      description: Обновляет эхографику
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: uzi_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: обновляемые значения
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/uzi.PatchEchographicsIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: echographic
+          schema:
+            $ref: '#/definitions/uzi.PatchEchographicsOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Обновляет эхографику
+      tags:
+      - uzi
+  /uzi/images/{id}/nodes-segments:
+    get:
+      description: получит ноды и сегменты на указанном изображении
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: image_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: nodes&&segments
+          schema:
+            $ref: '#/definitions/uzi.GetUziNodeSegmentsOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: получит ноды и сегменты на указанном изображении
+      tags:
+      - uzi
+  /uzi/uzi/{id}:
+    get:
+      description: получает uiz
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: uzi_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: uzi
+          schema:
+            $ref: '#/definitions/internal_api_uzi.GetUziOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: получает uiz
+      tags:
+      - uzi
   /uzi/uzis:
     post:
       description: Загружает узи на обработку
@@ -84,6 +391,68 @@ paths:
           schema:
             type: string
       summary: Загружает узи на обработку
+      tags:
+      - uzi
+  /uzi/uzis/{id}:
+    patch:
+      description: Обновляет узи
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: uzi_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: обновляемые значения
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/uzi.PatchUziIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: uzi
+          schema:
+            $ref: '#/definitions/uzi.PatchUziOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Обновляет узи
+      tags:
+      - uzi
+  /uzi/uzis/{id}/images:
+    get:
+      description: получает списк id кадров uzi
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: uzi_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: images
+          schema:
+            $ref: '#/definitions/internal_api_uzi.GetUziImagesOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: получает списк id кадров uzi
       tags:
       - uzi
 swagger: "2.0"

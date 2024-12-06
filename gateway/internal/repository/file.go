@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"yir/gateway/internal/domain"
+	"gateway/internal/domain"
 
 	minio "github.com/minio/minio-go/v7"
 )

@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"yir/uzi/internal/domain"
-	"yir/uzi/internal/repository"
-	"yir/uzi/internal/repository/entity"
-	"yir/uzi/internal/services/splitter"
+	"uzi/internal/domain"
+	"uzi/internal/repository"
+	"uzi/internal/repository/entity"
+	"uzi/internal/services/splitter"
 
 	"github.com/google/uuid"
 )

@@ -3,8 +3,8 @@ package uzi
 import (
 	"time"
 
-	"yir/uzi/internal/domain"
-	pb "yir/uzi/internal/generated/grpc/service"
+	"uzi/internal/domain"
+	pb "uzi/internal/generated/grpc/service"
 )
 
 func domainUziToPbUzi(d *domain.Uzi) *pb.Uzi {

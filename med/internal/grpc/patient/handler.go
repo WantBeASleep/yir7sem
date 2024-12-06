@@ -3,10 +3,10 @@ package patient
 import (
 	"context"
 
-	"yir/med/internal/domain"
-	pb "yir/med/internal/generated/grpc/service"
-	"yir/med/internal/services/patient"
-	"yir/pkg/gtclib"
+	"med/internal/domain"
+	pb "med/internal/generated/grpc/service"
+	"med/internal/services/patient"
+	"med/pkg/gtclib"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"

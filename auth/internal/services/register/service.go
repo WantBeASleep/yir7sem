@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"yir/auth/internal/domain"
-	"yir/auth/internal/repository"
-	"yir/auth/internal/repository/entity"
-	"yir/auth/internal/services/password"
+	"auth/internal/domain"
+	"auth/internal/repository"
+	"auth/internal/repository/entity"
+	"auth/internal/services/password"
 
 	"github.com/google/uuid"
 )
