@@ -1,6 +1,6 @@
 package segment
 
-import "yirv2/uzi/internal/domain"
+import "yir/uzi/internal/domain"
 
 // TODO: починить баг при запросе со всеми полями nil
 type UpdateSegment struct {

@@ -15,7 +15,7 @@ type SubscriberConfig struct {
 
 type SubscriberStrategy interface {
 	GetConfig() SubscriberConfig
-	ProcessMessage(ctx context.Context, message any) error
+	ProcessMessage(ctx context.Context, message []byte) error
 }
 
 type SubscriberHandler interface {

@@ -3,8 +3,8 @@ package refresh
 import (
 	"context"
 
-	pb "yirv2/auth/internal/generated/grpc/service"
-	"yirv2/auth/internal/services/refresh"
+	pb "yir/auth/internal/generated/grpc/service"
+	"yir/auth/internal/services/refresh"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

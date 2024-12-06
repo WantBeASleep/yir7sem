@@ -1,8 +1,8 @@
 package device
 
 import (
-	"yirv2/uzi/internal/domain"
-	pb "yirv2/uzi/internal/generated/grpc/service"
+	"yir/uzi/internal/domain"
+	pb "yir/uzi/internal/generated/grpc/service"
 )
 
 func domainDeviceToPbDevice(d *domain.Device) *pb.Device {

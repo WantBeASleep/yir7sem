@@ -5,23 +5,32 @@ import (
 	"net/http"
 	"os"
 
-	_ "yirv2/gateway/docs"
+	_ "yir/gateway/docs"
 
 	"github.com/gorilla/mux"
+	"github.com/minio/minio-go/v7"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"google.golang.org/grpc"
 
-	"yirv2/gateway/internal/config"
-	pkgconfig "yirv2/pkg/config"
-	"yirv2/pkg/grpclib"
-	"yirv2/pkg/loglib"
+	"yir/gateway/internal/config"
+	"yir/gateway/internal/repository"
+	"yir/pkg/brokerlib"
+	pkgconfig "yir/pkg/config"
+	"yir/pkg/grpclib"
+	"yir/pkg/loglib"
 
-	"yirv2/gateway/internal/adapters"
-	medadapter "yirv2/gateway/internal/adapters/med"
+	brokeradapters "yir/gateway/internal/adapters/broker"
 
-	medhandler "yirv2/gateway/internal/api/med"
+	grpcadapters "yir/gateway/internal/adapters/grpc"
+	medgrpcadapter "yir/gateway/internal/adapters/grpc/med"
+	uzigrpcadapter "yir/gateway/internal/adapters/grpc/uzi"
 
-	"yirv2/gateway/internal/middleware"
+	medhandler "yir/gateway/internal/api/med"
+	uzihandler "yir/gateway/internal/api/uzi"
+
+	"yir/gateway/internal/middleware"
+
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 const (
@@ -56,27 +65,61 @@ func run() (exitCode int) {
 		return failExitCode
 	}
 
+	client, err := minio.New(cfg.S3.Endpoint, &minio.Options{
+		Secure: false,
+		Creds:  credentials.NewStaticV4(cfg.S3.Access_Token, cfg.S3.Secret_Token, ""),
+	})
+	if err != nil {
+		slog.Error("init s3", "err", err)
+		return failExitCode
+	}
+
+	dao := repository.NewRepository(client, "uzi")
+
+	// TODO: обернуть в интерфейсы продьюсера/консьюмера
+
+	producer, err := brokerlib.NewProducer(cfg.Broker.Addrs)
+	if err != nil {
+		slog.Error("init broker producer", "err", err)
+		return failExitCode
+	}
+
+	brokeradapter := brokeradapters.New(producer)
+
+	// TODO: поновыносить по папкам весь этот мусор
 	medConn, err := grpc.NewClient(
 		cfg.Adapters.MedUrl,
 		grpc.WithInsecure(),
 		grpc.WithChainUnaryInterceptor(grpclib.ClientCallLogger),
 	)
 	if err != nil {
-		slog.Error("init authConn", "err", err)
+		slog.Error("init medConn", "err", err)
 		return failExitCode
 	}
 
-	medAdapter := medadapter.New(medConn)
+	uziConn, err := grpc.NewClient(
+		cfg.Adapters.UziUrl,
+		grpc.WithInsecure(),
+		grpc.WithChainUnaryInterceptor(grpclib.ClientCallLogger),
+	)
+	if err != nil {
+		slog.Error("init uziConn", "err", err)
+		return failExitCode
+	}
 
-	adapter := adapters.New(
+	medAdapter := medgrpcadapter.New(medConn)
+	uziAdapter := uzigrpcadapter.New(uziConn)
+
+	grpcadapter := grpcadapters.New(
 		nil,
 		medAdapter,
-		nil,
+		uziAdapter,
 	)
 
-	medHandler := medhandler.New(adapter)
-
-	jwtMdlwr := middleware.NewJWTMiddleware(pubKey)
+	medHandler := medhandler.New(grpcadapter)
+	uziHandler := uzihandler.New(grpcadapter, brokeradapter, dao)
+// TODO: пробросить ошибки с логированием на верхнем уровне
+	mdlwrs := middleware.New(pubKey)
 
 	r := mux.NewRouter()
 
@@ -88,9 +131,14 @@ func run() (exitCode int) {
 	apiRouter := r.PathPrefix("/api").Subrouter()
 
 	medRouter := apiRouter.PathPrefix("/med").Subrouter()
-	medRouter.Use(jwtMdlwr.JwtMiddleware)
+	uziRouter := apiRouter.PathPrefix("/uzi").Subrouter()
+
+	medRouter.Use(mdlwrs.Log, mdlwrs.Jwt)
+	uziRouter.Use(mdlwrs.Log, mdlwrs.Jwt)
 
 	medRouter.HandleFunc("/doctors", medHandler.GetDoctor).Methods("GET")
+
+	uziRouter.HandleFunc("/uzis", uziHandler.PostUzi).Methods("POST")
 
 	slog.Info("start serve", slog.String("url", cfg.App.Url))
 	if err := http.ListenAndServe(cfg.App.Url, r); err != nil {

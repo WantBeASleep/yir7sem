@@ -1,8 +1,8 @@
 package card
 
 import (
-	"yirv2/med/internal/domain"
-	pb "yirv2/med/internal/generated/grpc/service"
+	"yir/med/internal/domain"
+	pb "yir/med/internal/generated/grpc/service"
 )
 
 func domainToPb(d *domain.Card) *pb.Card {

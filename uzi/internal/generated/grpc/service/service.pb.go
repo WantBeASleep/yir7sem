@@ -10,9 +10,9 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	empty "github.com/golang/protobuf/ptypes/empty"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 const (
@@ -2293,7 +2293,7 @@ var file_service_proto_goTypes = []any{
 	(*GetImageSegmentsWithNodesIn)(nil),  // 28: GetImageSegmentsWithNodesIn
 	(*GetImageSegmentsWithNodesOut)(nil), // 29: GetImageSegmentsWithNodesOut
 	(*CreateNodeIn_NestedSegment)(nil),   // 30: CreateNodeIn.NestedSegment
-	(*empty.Empty)(nil),                  // 31: google.protobuf.Empty
+	(*emptypb.Empty)(nil),                // 31: google.protobuf.Empty
 }
 var file_service_proto_depIdxs = []int32{
 	1,  // 0: GetDeviceListOut.devices:type_name -> Device

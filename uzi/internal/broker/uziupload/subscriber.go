@@ -4,12 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 
-	"yirv2/pkg/brokerlib"
-	pb "yirv2/uzi/internal/generated/broker/consume/uziupload"
-	"yirv2/uzi/internal/services/image"
+	"yir/pkg/brokerlib"
+	pb "yir/uzi/internal/generated/broker/consume/uziupload"
+	"yir/uzi/internal/services/image"
 
 	"github.com/google/uuid"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -36,13 +38,15 @@ func (h *subscriber) GetConfig() brokerlib.SubscriberConfig {
 	}
 }
 
-func (h *subscriber) ProcessMessage(ctx context.Context, msg any) error {
-	payload, ok := msg.(*pb.UziUpload)
-	if !ok {
+func (h *subscriber) ProcessMessage(ctx context.Context, msg []byte) error {
+	slog.InfoContext(ctx, "new event", slog.String("topic", "uziupload"))
+	var event pb.UziUpload
+	if err := proto.Unmarshal(msg, &event); err != nil {
+		slog.Error("наебали с типом")
 		return errors.New("wrong msg type. uziupload required")
 	}
 
-	if err := h.imageSrv.SplitUzi(ctx, uuid.MustParse(payload.UziId)); err != nil {
+	if err := h.imageSrv.SplitUzi(ctx, uuid.MustParse(event.UziId)); err != nil {
 		return fmt.Errorf("process uziupload: %w", err)
 	}
 	return nil

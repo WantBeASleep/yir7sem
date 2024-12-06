@@ -1,5 +1,0 @@
-app:
-  url: localhost:50055
-
-db:
-  dsn: postgres://postgres:1234@localhost:5432/meddb

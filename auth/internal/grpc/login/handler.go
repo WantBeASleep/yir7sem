@@ -3,8 +3,8 @@ package login
 import (
 	"context"
 
-	pb "yirv2/auth/internal/generated/grpc/service"
-	"yirv2/auth/internal/services/login"
+	pb "yir/auth/internal/generated/grpc/service"
+	"yir/auth/internal/services/login"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

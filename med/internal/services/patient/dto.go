@@ -3,7 +3,7 @@ package patient
 import (
 	"time"
 
-	"yirv2/med/internal/domain"
+	"yir/med/internal/domain"
 )
 
 type UpdatePatient struct {

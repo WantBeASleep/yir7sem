@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"yirv2/uzi/internal/domain"
-	"yirv2/uzi/internal/repository"
-	"yirv2/uzi/internal/repository/entity"
-	"yirv2/uzi/internal/services/splitter"
+	"yir/uzi/internal/domain"
+	"yir/uzi/internal/repository"
+	"yir/uzi/internal/repository/entity"
+	"yir/uzi/internal/services/splitter"
 
 	"github.com/google/uuid"
 )
@@ -102,7 +102,7 @@ func (s *service) SplitUzi(ctx context.Context, uziID uuid.UUID) error {
 		return fmt.Errorf("split img: %w", err)
 	}
 
-	images := make([]domain.Image, 0, len(splitted))
+	images := make([]domain.Image, len(splitted))
 	for i := range images {
 		images[i].UziID = uziID
 		images[i].Page = i + 1
@@ -120,6 +120,5 @@ func (s *service) SplitUzi(ctx context.Context, uziID uuid.UUID) error {
 		}
 	}
 
-	//
 	return nil
 }

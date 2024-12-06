@@ -4,7 +4,7 @@ import (
 	"context"
 	"log/slog"
 
-	"yirv2/pkg/ctxlib"
+	"yir/pkg/ctxlib"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc"

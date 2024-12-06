@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"os"
 
-	"yirv2/pkg/ctxlib"
+	"yir/pkg/ctxlib"
 )
 
 type config struct {

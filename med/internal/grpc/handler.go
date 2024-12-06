@@ -1,10 +1,10 @@
 package grpc
 
 import (
-	"yirv2/med/internal/generated/grpc/service"
-	"yirv2/med/internal/grpc/card"
-	"yirv2/med/internal/grpc/doctor"
-	"yirv2/med/internal/grpc/patient"
+	"yir/med/internal/generated/grpc/service"
+	"yir/med/internal/grpc/card"
+	"yir/med/internal/grpc/doctor"
+	"yir/med/internal/grpc/patient"
 )
 
 type Handler struct {

@@ -3,8 +3,8 @@ package repository
 import (
 	"fmt"
 
-	"yirv2/pkg/daolib"
-	"yirv2/uzi/internal/repository/entity"
+	"yir/pkg/daolib"
+	"yir/uzi/internal/repository/entity"
 )
 
 const deviceTable = "device"

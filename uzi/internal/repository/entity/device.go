@@ -1,6 +1,6 @@
 package entity
 
-import "yirv2/uzi/internal/domain"
+import "yir/uzi/internal/domain"
 
 type Device struct {
 	Id   int    `db:"id"`

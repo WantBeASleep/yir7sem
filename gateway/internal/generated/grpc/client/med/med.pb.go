@@ -10,10 +10,10 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	empty "github.com/golang/protobuf/ptypes/empty"
-	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -367,13 +367,13 @@ type Patient struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id          string               `protobuf:"bytes,100,opt,name=id,proto3" json:"id,omitempty"`
-	Fullname    string               `protobuf:"bytes,200,opt,name=fullname,proto3" json:"fullname,omitempty"`
-	Email       string               `protobuf:"bytes,300,opt,name=email,proto3" json:"email,omitempty"`
-	Policy      string               `protobuf:"bytes,400,opt,name=policy,proto3" json:"policy,omitempty"`
-	Active      bool                 `protobuf:"varint,500,opt,name=active,proto3" json:"active,omitempty"`
-	Malignancy  bool                 `protobuf:"varint,600,opt,name=malignancy,proto3" json:"malignancy,omitempty"`
-	LastUziDate *timestamp.Timestamp `protobuf:"bytes,700,opt,name=last_uzi_date,json=lastUziDate,proto3,oneof" json:"last_uzi_date,omitempty"`
+	Id          string                 `protobuf:"bytes,100,opt,name=id,proto3" json:"id,omitempty"`
+	Fullname    string                 `protobuf:"bytes,200,opt,name=fullname,proto3" json:"fullname,omitempty"`
+	Email       string                 `protobuf:"bytes,300,opt,name=email,proto3" json:"email,omitempty"`
+	Policy      string                 `protobuf:"bytes,400,opt,name=policy,proto3" json:"policy,omitempty"`
+	Active      bool                   `protobuf:"varint,500,opt,name=active,proto3" json:"active,omitempty"`
+	Malignancy  bool                   `protobuf:"varint,600,opt,name=malignancy,proto3" json:"malignancy,omitempty"`
+	LastUziDate *timestamppb.Timestamp `protobuf:"bytes,700,opt,name=last_uzi_date,json=lastUziDate,proto3,oneof" json:"last_uzi_date,omitempty"`
 }
 
 func (x *Patient) Reset() {
@@ -450,7 +450,7 @@ func (x *Patient) GetMalignancy() bool {
 	return false
 }
 
-func (x *Patient) GetLastUziDate() *timestamp.Timestamp {
+func (x *Patient) GetLastUziDate() *timestamppb.Timestamp {
 	if x != nil {
 		return x.LastUziDate
 	}
@@ -777,11 +777,11 @@ type UpdatePatientIn struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	DoctorId    string               `protobuf:"bytes,100,opt,name=doctor_id,json=doctorId,proto3" json:"doctor_id,omitempty"`
-	Id          string               `protobuf:"bytes,200,opt,name=id,proto3" json:"id,omitempty"`
-	Active      *bool                `protobuf:"varint,300,opt,name=active,proto3,oneof" json:"active,omitempty"`
-	Malignancy  *bool                `protobuf:"varint,400,opt,name=malignancy,proto3,oneof" json:"malignancy,omitempty"`
-	LastUziDate *timestamp.Timestamp `protobuf:"bytes,500,opt,name=last_uzi_date,json=lastUziDate,proto3,oneof" json:"last_uzi_date,omitempty"`
+	DoctorId    string                 `protobuf:"bytes,100,opt,name=doctor_id,json=doctorId,proto3" json:"doctor_id,omitempty"`
+	Id          string                 `protobuf:"bytes,200,opt,name=id,proto3" json:"id,omitempty"`
+	Active      *bool                  `protobuf:"varint,300,opt,name=active,proto3,oneof" json:"active,omitempty"`
+	Malignancy  *bool                  `protobuf:"varint,400,opt,name=malignancy,proto3,oneof" json:"malignancy,omitempty"`
+	LastUziDate *timestamppb.Timestamp `protobuf:"bytes,500,opt,name=last_uzi_date,json=lastUziDate,proto3,oneof" json:"last_uzi_date,omitempty"`
 }
 
 func (x *UpdatePatientIn) Reset() {
@@ -844,7 +844,7 @@ func (x *UpdatePatientIn) GetMalignancy() bool {
 	return false
 }
 
-func (x *UpdatePatientIn) GetLastUziDate() *timestamp.Timestamp {
+func (x *UpdatePatientIn) GetLastUziDate() *timestamppb.Timestamp {
 	if x != nil {
 		return x.LastUziDate
 	}
@@ -1423,30 +1423,30 @@ func file_med_proto_rawDescGZIP() []byte {
 
 var file_med_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_med_proto_goTypes = []any{
-	(*Doctor)(nil),               // 0: Doctor
-	(*RegisterDoctorIn)(nil),     // 1: RegisterDoctorIn
-	(*GetDoctorIn)(nil),          // 2: GetDoctorIn
-	(*GetDoctorOut)(nil),         // 3: GetDoctorOut
-	(*UpdateDoctorIn)(nil),       // 4: UpdateDoctorIn
-	(*UpdateDoctorOut)(nil),      // 5: UpdateDoctorOut
-	(*Patient)(nil),              // 6: Patient
-	(*CreatePatientIn)(nil),      // 7: CreatePatientIn
-	(*CreatePatientOut)(nil),     // 8: CreatePatientOut
-	(*GetPatientIn)(nil),         // 9: GetPatientIn
-	(*GetPatientOut)(nil),        // 10: GetPatientOut
-	(*GetDoctorPatientsIn)(nil),  // 11: GetDoctorPatientsIn
-	(*GetDoctorPatientsOut)(nil), // 12: GetDoctorPatientsOut
-	(*UpdatePatientIn)(nil),      // 13: UpdatePatientIn
-	(*UpdatePatientOut)(nil),     // 14: UpdatePatientOut
-	(*Card)(nil),                 // 15: Card
-	(*CreateCardIn)(nil),         // 16: CreateCardIn
-	(*GetCardIn)(nil),            // 17: GetCardIn
-	(*GetCardOut)(nil),           // 18: GetCardOut
-	(*CreateCardOut)(nil),        // 19: CreateCardOut
-	(*UpdateCardIn)(nil),         // 20: UpdateCardIn
-	(*UpdateCardOut)(nil),        // 21: UpdateCardOut
-	(*timestamp.Timestamp)(nil),  // 22: google.protobuf.Timestamp
-	(*empty.Empty)(nil),          // 23: google.protobuf.Empty
+	(*Doctor)(nil),                // 0: Doctor
+	(*RegisterDoctorIn)(nil),      // 1: RegisterDoctorIn
+	(*GetDoctorIn)(nil),           // 2: GetDoctorIn
+	(*GetDoctorOut)(nil),          // 3: GetDoctorOut
+	(*UpdateDoctorIn)(nil),        // 4: UpdateDoctorIn
+	(*UpdateDoctorOut)(nil),       // 5: UpdateDoctorOut
+	(*Patient)(nil),               // 6: Patient
+	(*CreatePatientIn)(nil),       // 7: CreatePatientIn
+	(*CreatePatientOut)(nil),      // 8: CreatePatientOut
+	(*GetPatientIn)(nil),          // 9: GetPatientIn
+	(*GetPatientOut)(nil),         // 10: GetPatientOut
+	(*GetDoctorPatientsIn)(nil),   // 11: GetDoctorPatientsIn
+	(*GetDoctorPatientsOut)(nil),  // 12: GetDoctorPatientsOut
+	(*UpdatePatientIn)(nil),       // 13: UpdatePatientIn
+	(*UpdatePatientOut)(nil),      // 14: UpdatePatientOut
+	(*Card)(nil),                  // 15: Card
+	(*CreateCardIn)(nil),          // 16: CreateCardIn
+	(*GetCardIn)(nil),             // 17: GetCardIn
+	(*GetCardOut)(nil),            // 18: GetCardOut
+	(*CreateCardOut)(nil),         // 19: CreateCardOut
+	(*UpdateCardIn)(nil),          // 20: UpdateCardIn
+	(*UpdateCardOut)(nil),         // 21: UpdateCardOut
+	(*timestamppb.Timestamp)(nil), // 22: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),         // 23: google.protobuf.Empty
 }
 var file_med_proto_depIdxs = []int32{
 	0,  // 0: RegisterDoctorIn.doctor:type_name -> Doctor

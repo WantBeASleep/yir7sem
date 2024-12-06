@@ -3,24 +3,29 @@ package middleware
 import (
 	"crypto/rsa"
 	"fmt"
+	"log/slog"
 	"net/http"
 
+	"yir/pkg/ctxlib"
+
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
-type JWTMiddleware struct {
+type middlewares struct {
 	publicKey *rsa.PublicKey
 }
 
-func NewJWTMiddleware(
+func New(
 	publicKey *rsa.PublicKey,
-) *JWTMiddleware {
-	return &JWTMiddleware{
+) *middlewares {
+	return &middlewares{
 		publicKey: publicKey,
 	}
 }
 
-func (m *JWTMiddleware) JwtMiddleware(next http.Handler) http.Handler {
+// распарсит токен, положит в хедер x-user_id
+func (m *middlewares) Jwt(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenString := r.Header.Get("token")
 		if tokenString == "" {
@@ -50,5 +55,18 @@ func (m *JWTMiddleware) JwtMiddleware(next http.Handler) http.Handler {
 		}
 
 		next.ServeHTTP(w, r)
+	})
+}
+
+// залогирует + сделать x-request_id
+func (m *middlewares) Log(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestID := uuid.New()
+		// TODO: подумать над какой то глобавльной переменной x-request_id
+		ctx := ctxlib.PublicSet(r.Context(), "x-request_id", requestID.String())
+
+		slog.InfoContext(ctx, "New request", slog.String("path", r.URL.Path))
+
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

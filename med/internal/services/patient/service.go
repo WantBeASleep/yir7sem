@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"yirv2/med/internal/domain"
-	"yirv2/med/internal/repository"
-	"yirv2/med/internal/repository/entity"
+	"yir/med/internal/domain"
+	"yir/med/internal/repository"
+	"yir/med/internal/repository/entity"
 
 	"github.com/google/uuid"
 )

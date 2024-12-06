@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/doctor": {
+        "/med/doctors": {
             "post": {
                 "description": "Получает информацию о враче",
                 "produces": [
@@ -39,6 +39,69 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/med.Doctor"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/uzi/uzis": {
+            "post": {
+                "description": "Загружает узи на обработку",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "uzi"
+                ],
+                "summary": "Загружает узи на обработку",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "uzi file. (обязательно с .tiff/.png)",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "проекция узи",
+                        "name": "projection",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id пациента",
+                        "name": "patient_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id узи апапапапарата",
+                        "name": "device_id",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "molodec",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "500": {

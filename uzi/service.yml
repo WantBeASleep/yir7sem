@@ -1,7 +1,7 @@
 app:
   # TODO: сделать разные окружения
   # env: DEV
-  url: localhost:50055
+  url: localhost:50060
   # TODO: глянуть зачем нужно
   # host: localhost
   # port: 50060

@@ -1,7 +1,7 @@
 package splitter
 
 import (
-	"yirv2/uzi/internal/domain"
+	"yir/uzi/internal/domain"
 )
 
 type pngSplitter struct{}

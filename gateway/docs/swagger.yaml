@@ -20,7 +20,7 @@ info:
   title: Example API
   version: "1.0"
 paths:
-  /doctor:
+  /med/doctors:
     post:
       description: Получает информацию о враче
       parameters:
@@ -43,4 +43,47 @@ paths:
       summary: Получить информацию о враче
       tags:
       - doctors
+  /uzi/uzis:
+    post:
+      description: Загружает узи на обработку
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: uzi file. (обязательно с .tiff/.png)
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: проекция узи
+        in: formData
+        name: projection
+        required: true
+        type: string
+      - description: id пациента
+        in: formData
+        name: patient_id
+        required: true
+        type: string
+      - description: id узи апапапапарата
+        in: formData
+        name: device_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: molodec
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Загружает узи на обработку
+      tags:
+      - uzi
 swagger: "2.0"

@@ -9,10 +9,10 @@ package uzi
 import (
 	context "context"
 
-	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -40,7 +40,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UziSrvClient interface {
-	GetDeviceList(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*GetDeviceListOut, error)
+	GetDeviceList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetDeviceListOut, error)
 	CreateUzi(ctx context.Context, in *CreateUziIn, opts ...grpc.CallOption) (*CreateUziOut, error)
 	UpdateUzi(ctx context.Context, in *UpdateUziIn, opts ...grpc.CallOption) (*UpdateUziOut, error)
 	UpdateEchographic(ctx context.Context, in *UpdateEchographicIn, opts ...grpc.CallOption) (*UpdateEchographicOut, error)
@@ -48,10 +48,10 @@ type UziSrvClient interface {
 	GetUziImages(ctx context.Context, in *GetUziImagesIn, opts ...grpc.CallOption) (*GetUziImagesOut, error)
 	GetImageSegmentsWithNodes(ctx context.Context, in *GetImageSegmentsWithNodesIn, opts ...grpc.CallOption) (*GetImageSegmentsWithNodesOut, error)
 	CreateSegment(ctx context.Context, in *CreateSegmentIn, opts ...grpc.CallOption) (*CreateSegmentOut, error)
-	DeleteSegment(ctx context.Context, in *DeleteSegmentIn, opts ...grpc.CallOption) (*empty.Empty, error)
+	DeleteSegment(ctx context.Context, in *DeleteSegmentIn, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateSegment(ctx context.Context, in *UpdateSegmentIn, opts ...grpc.CallOption) (*UpdateSegmentOut, error)
 	CreateNode(ctx context.Context, in *CreateNodeIn, opts ...grpc.CallOption) (*CreateNodeOut, error)
-	DeleteNode(ctx context.Context, in *DeleteNodeIn, opts ...grpc.CallOption) (*empty.Empty, error)
+	DeleteNode(ctx context.Context, in *DeleteNodeIn, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateNode(ctx context.Context, in *UpdateNodeIn, opts ...grpc.CallOption) (*UpdateNodeOut, error)
 }
 
@@ -63,7 +63,7 @@ func NewUziSrvClient(cc grpc.ClientConnInterface) UziSrvClient {
 	return &uziSrvClient{cc}
 }
 
-func (c *uziSrvClient) GetDeviceList(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*GetDeviceListOut, error) {
+func (c *uziSrvClient) GetDeviceList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetDeviceListOut, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetDeviceListOut)
 	err := c.cc.Invoke(ctx, UziSrv_GetDeviceList_FullMethodName, in, out, cOpts...)
@@ -143,9 +143,9 @@ func (c *uziSrvClient) CreateSegment(ctx context.Context, in *CreateSegmentIn, o
 	return out, nil
 }
 
-func (c *uziSrvClient) DeleteSegment(ctx context.Context, in *DeleteSegmentIn, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *uziSrvClient) DeleteSegment(ctx context.Context, in *DeleteSegmentIn, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(empty.Empty)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, UziSrv_DeleteSegment_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -173,9 +173,9 @@ func (c *uziSrvClient) CreateNode(ctx context.Context, in *CreateNodeIn, opts ..
 	return out, nil
 }
 
-func (c *uziSrvClient) DeleteNode(ctx context.Context, in *DeleteNodeIn, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *uziSrvClient) DeleteNode(ctx context.Context, in *DeleteNodeIn, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(empty.Empty)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, UziSrv_DeleteNode_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -197,7 +197,7 @@ func (c *uziSrvClient) UpdateNode(ctx context.Context, in *UpdateNodeIn, opts ..
 // All implementations must embed UnimplementedUziSrvServer
 // for forward compatibility.
 type UziSrvServer interface {
-	GetDeviceList(context.Context, *empty.Empty) (*GetDeviceListOut, error)
+	GetDeviceList(context.Context, *emptypb.Empty) (*GetDeviceListOut, error)
 	CreateUzi(context.Context, *CreateUziIn) (*CreateUziOut, error)
 	UpdateUzi(context.Context, *UpdateUziIn) (*UpdateUziOut, error)
 	UpdateEchographic(context.Context, *UpdateEchographicIn) (*UpdateEchographicOut, error)
@@ -205,10 +205,10 @@ type UziSrvServer interface {
 	GetUziImages(context.Context, *GetUziImagesIn) (*GetUziImagesOut, error)
 	GetImageSegmentsWithNodes(context.Context, *GetImageSegmentsWithNodesIn) (*GetImageSegmentsWithNodesOut, error)
 	CreateSegment(context.Context, *CreateSegmentIn) (*CreateSegmentOut, error)
-	DeleteSegment(context.Context, *DeleteSegmentIn) (*empty.Empty, error)
+	DeleteSegment(context.Context, *DeleteSegmentIn) (*emptypb.Empty, error)
 	UpdateSegment(context.Context, *UpdateSegmentIn) (*UpdateSegmentOut, error)
 	CreateNode(context.Context, *CreateNodeIn) (*CreateNodeOut, error)
-	DeleteNode(context.Context, *DeleteNodeIn) (*empty.Empty, error)
+	DeleteNode(context.Context, *DeleteNodeIn) (*emptypb.Empty, error)
 	UpdateNode(context.Context, *UpdateNodeIn) (*UpdateNodeOut, error)
 	mustEmbedUnimplementedUziSrvServer()
 }
@@ -220,7 +220,7 @@ type UziSrvServer interface {
 // pointer dereference when methods are called.
 type UnimplementedUziSrvServer struct{}
 
-func (UnimplementedUziSrvServer) GetDeviceList(context.Context, *empty.Empty) (*GetDeviceListOut, error) {
+func (UnimplementedUziSrvServer) GetDeviceList(context.Context, *emptypb.Empty) (*GetDeviceListOut, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDeviceList not implemented")
 }
 func (UnimplementedUziSrvServer) CreateUzi(context.Context, *CreateUziIn) (*CreateUziOut, error) {
@@ -244,7 +244,7 @@ func (UnimplementedUziSrvServer) GetImageSegmentsWithNodes(context.Context, *Get
 func (UnimplementedUziSrvServer) CreateSegment(context.Context, *CreateSegmentIn) (*CreateSegmentOut, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSegment not implemented")
 }
-func (UnimplementedUziSrvServer) DeleteSegment(context.Context, *DeleteSegmentIn) (*empty.Empty, error) {
+func (UnimplementedUziSrvServer) DeleteSegment(context.Context, *DeleteSegmentIn) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSegment not implemented")
 }
 func (UnimplementedUziSrvServer) UpdateSegment(context.Context, *UpdateSegmentIn) (*UpdateSegmentOut, error) {
@@ -253,7 +253,7 @@ func (UnimplementedUziSrvServer) UpdateSegment(context.Context, *UpdateSegmentIn
 func (UnimplementedUziSrvServer) CreateNode(context.Context, *CreateNodeIn) (*CreateNodeOut, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNode not implemented")
 }
-func (UnimplementedUziSrvServer) DeleteNode(context.Context, *DeleteNodeIn) (*empty.Empty, error) {
+func (UnimplementedUziSrvServer) DeleteNode(context.Context, *DeleteNodeIn) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteNode not implemented")
 }
 func (UnimplementedUziSrvServer) UpdateNode(context.Context, *UpdateNodeIn) (*UpdateNodeOut, error) {
@@ -281,7 +281,7 @@ func RegisterUziSrvServer(s grpc.ServiceRegistrar, srv UziSrvServer) {
 }
 
 func _UziSrv_GetDeviceList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(empty.Empty)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -293,7 +293,7 @@ func _UziSrv_GetDeviceList_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: UziSrv_GetDeviceList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UziSrvServer).GetDeviceList(ctx, req.(*empty.Empty))
+		return srv.(UziSrvServer).GetDeviceList(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

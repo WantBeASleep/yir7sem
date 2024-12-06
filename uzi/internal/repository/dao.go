@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"yirv2/pkg/daolib"
+	"yir/pkg/daolib"
 
 	"github.com/jmoiron/sqlx"
 	minio "github.com/minio/minio-go/v7"

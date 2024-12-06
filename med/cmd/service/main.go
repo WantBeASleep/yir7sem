@@ -5,23 +5,23 @@ import (
 	"net"
 	"os"
 
-	"yirv2/med/internal/config"
-	pkgconfig "yirv2/pkg/config"
-	"yirv2/pkg/grpclib"
-	"yirv2/pkg/loglib"
+	"yir/med/internal/config"
+	pkgconfig "yir/pkg/config"
+	"yir/pkg/grpclib"
+	"yir/pkg/loglib"
 
-	"yirv2/med/internal/repository"
+	"yir/med/internal/repository"
 
-	cardsrv "yirv2/med/internal/services/card"
-	doctorsrv "yirv2/med/internal/services/doctor"
-	patientsrv "yirv2/med/internal/services/patient"
+	cardsrv "yir/med/internal/services/card"
+	doctorsrv "yir/med/internal/services/doctor"
+	patientsrv "yir/med/internal/services/patient"
 
-	pb "yirv2/med/internal/generated/grpc/service"
-	grpchandler "yirv2/med/internal/grpc"
+	pb "yir/med/internal/generated/grpc/service"
+	grpchandler "yir/med/internal/grpc"
 
-	cardhandler "yirv2/med/internal/grpc/card"
-	doctorhandler "yirv2/med/internal/grpc/doctor"
-	patienthandler "yirv2/med/internal/grpc/patient"
+	cardhandler "yir/med/internal/grpc/card"
+	doctorhandler "yir/med/internal/grpc/doctor"
+	patienthandler "yir/med/internal/grpc/patient"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"

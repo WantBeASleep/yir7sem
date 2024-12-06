@@ -3,12 +3,12 @@ package image
 import (
 	"context"
 
-	pb "yirv2/uzi/internal/generated/grpc/service"
-	"yirv2/uzi/internal/services/image"
+	pb "yir/uzi/internal/generated/grpc/service"
+	"yir/uzi/internal/services/image"
 
 	// TODO: вынести в отдельный пакет маппреы
-	nodemapper "yirv2/uzi/internal/grpc/node"
-	segmentmapper "yirv2/uzi/internal/grpc/segment"
+	nodemapper "yir/uzi/internal/grpc/node"
+	segmentmapper "yir/uzi/internal/grpc/segment"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"

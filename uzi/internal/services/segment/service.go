@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"yirv2/uzi/internal/domain"
-	"yirv2/uzi/internal/repository"
-	"yirv2/uzi/internal/repository/entity"
+	"yir/uzi/internal/domain"
+	"yir/uzi/internal/repository"
+	"yir/uzi/internal/repository/entity"
 
 	"github.com/google/uuid"
 )

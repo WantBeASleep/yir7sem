@@ -3,8 +3,8 @@ package splitter
 import (
 	"fmt"
 
-	"yirv2/pkg/slicer"
-	"yirv2/uzi/internal/domain"
+	"yir/pkg/slicer"
+	"yir/uzi/internal/domain"
 
 	"github.com/chai2010/tiff"
 )

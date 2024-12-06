@@ -3,9 +3,9 @@ package register
 import (
 	"context"
 
-	"yirv2/auth/internal/domain"
-	pb "yirv2/auth/internal/generated/grpc/service"
-	"yirv2/auth/internal/services/register"
+	"yir/auth/internal/domain"
+	pb "yir/auth/internal/generated/grpc/service"
+	"yir/auth/internal/services/register"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

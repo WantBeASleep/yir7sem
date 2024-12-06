@@ -1,12 +1,12 @@
 package grpc
 
 import (
-	"yirv2/uzi/internal/generated/grpc/service"
-	"yirv2/uzi/internal/grpc/device"
-	"yirv2/uzi/internal/grpc/image"
-	"yirv2/uzi/internal/grpc/node"
-	"yirv2/uzi/internal/grpc/segment"
-	"yirv2/uzi/internal/grpc/uzi"
+	"yir/uzi/internal/generated/grpc/service"
+	"yir/uzi/internal/grpc/device"
+	"yir/uzi/internal/grpc/image"
+	"yir/uzi/internal/grpc/node"
+	"yir/uzi/internal/grpc/segment"
+	"yir/uzi/internal/grpc/uzi"
 )
 
 type Handler struct {

@@ -27,7 +27,7 @@ func PublicGet(ctx context.Context, key string) any {
 		return nil
 	}
 
-	return data
+	return data[key]
 }
 
 func PublicGetAll(ctx context.Context) map[string]any {
@@ -55,5 +55,5 @@ func PrivateGet(ctx context.Context, key string) any {
 		return nil
 	}
 
-	return data
+	return data[key]
 }

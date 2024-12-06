@@ -4,13 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 
-	"yirv2/pkg/brokerlib"
-	"yirv2/uzi/internal/domain"
-	pb "yirv2/uzi/internal/generated/broker/consume/uziprocessed"
-	"yirv2/uzi/internal/services/node"
+	"yir/pkg/brokerlib"
+	"yir/uzi/internal/domain"
+	pb "yir/uzi/internal/generated/broker/consume/uziprocessed"
+	"yir/uzi/internal/services/node"
 
 	"github.com/google/uuid"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -37,16 +39,18 @@ func (h *subscriber) GetConfig() brokerlib.SubscriberConfig {
 	}
 }
 
-func (h *subscriber) ProcessMessage(ctx context.Context, msg any) error {
-	payload, ok := msg.(*pb.UziProcessed)
-	if !ok {
+func (h *subscriber) ProcessMessage(ctx context.Context, msg []byte) error {
+	slog.InfoContext(ctx, "new event", slog.String("topic", "uziprocessed"))
+	var event pb.UziProcessed
+	if err := proto.Unmarshal(msg, &event); err != nil {
+		slog.Error("наебали с типом")
 		return errors.New("wrong msg type. uziprocessed required")
 	}
 
-	nodes := make([]domain.Node, 0, len(payload.Nodes))
-	segments := make([]domain.Segment, 0, len(payload.Segments))
+	nodes := make([]domain.Node, 0, len(event.Nodes))
+	segments := make([]domain.Segment, 0, len(event.Segments))
 
-	for _, v := range payload.Nodes {
+	for _, v := range event.Nodes {
 		nodes = append(nodes, domain.Node{
 			Id:       uuid.MustParse(v.Id),
 			Tirads23: v.Tirads_23,
@@ -55,7 +59,7 @@ func (h *subscriber) ProcessMessage(ctx context.Context, msg any) error {
 		})
 	}
 
-	for _, v := range payload.Segments {
+	for _, v := range event.Segments {
 		segments = append(segments, domain.Segment{
 			Id:       uuid.MustParse(v.Id),
 			ImageID:  uuid.MustParse(v.ImageId),

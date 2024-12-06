@@ -10,8 +10,9 @@ env:
   S3_ENDPOINT: localhost:9000
   S3_TOKEN_ACCESS: BLAD0h1rTDPG70DQ7PUd
   S3_TOKEN_SECRET: qtbVnWFWlu7hpIGt8A3HPYpOPiHF6cECHzaicigz
-  BROKER_ADDRS: 9092
-  ADAPTERS_MEDURL: localhost:50055
+  BROKER_ADDRS: localhost:19092
+  ADAPTERS_MEDURL: localhost:50050
+  ADAPTERS_UZIURL: localhost:50060
   JWT_KEY_PUBLIC:
     sh: cat 'public_key.pem'
 

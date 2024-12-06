@@ -1,10 +1,10 @@
 package grpc
 
 import (
-	"yirv2/auth/internal/generated/grpc/service"
-	"yirv2/auth/internal/grpc/login"
-	"yirv2/auth/internal/grpc/refresh"
-	"yirv2/auth/internal/grpc/register"
+	"yir/auth/internal/generated/grpc/service"
+	"yir/auth/internal/grpc/login"
+	"yir/auth/internal/grpc/refresh"
+	"yir/auth/internal/grpc/register"
 )
 
 type Handler struct {

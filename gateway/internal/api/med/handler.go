@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"net/http"
 
-	"yirv2/gateway/internal/adapters"
-	pb "yirv2/gateway/internal/generated/grpc/client/med"
+	grpcadapters "yir/gateway/internal/adapters/grpc"
+	pb "yir/gateway/internal/generated/grpc/client/med"
 )
 
 type Handler struct {
-	adapter adapters.Adapter
+	adapter grpcadapters.Adapter
 }
 
 func New(
-	adapter adapters.Adapter,
+	adapter grpcadapters.Adapter,
 ) *Handler {
 	return &Handler{
 		adapter: adapter,
@@ -30,7 +30,7 @@ func New(
 //	@Param			token	header		string	true	"access_token"
 //	@Success		200		{object}	med.Doctor
 //	@Failure		500		{string}	string	"Internal Server Error"
-//	@Router			/doctor [post]
+//	@Router			/med/doctors [post]
 func (h *Handler) GetDoctor(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
