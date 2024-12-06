@@ -8,7 +8,10 @@ _лучше подгружать через `.env`_
 |GOOSE_DBSTRING| postgres dsn  | dsn postres sql для миграций |
 | JWT_KEY_PRIVATE   | `rsa256`   | ключ шифрования   |
 | JWT_KEY_PUBLIC    | `rsa256`   | ключ шифрования   |
+|JWT_TOKEN_AC_TIME| время (5m) | время действия access токена |
+|JWT_TOKEN_RE_TIME| время (24h) | время действия refresh токена |
 |DB_DSN| postgres dsn | dsn для postgres sql |
+|APP_URL| localhost:50055 | grpc url |
 
 
 

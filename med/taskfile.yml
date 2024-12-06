@@ -4,9 +4,7 @@ version: '3'
 vars:
   VENDOR_PROTOGEN: '../vendor.protogen'
 
-env:
-  GOOSE_DRIVER: postgres
-  GOOSE_DBSTRING: postgres://postgres:1234@localhost:5432/meddb
+dotenv: [".env"]
 
 tasks:
   codegen:
@@ -49,8 +47,3 @@ tasks:
   migration-down:
     cmds:
       - goose -dir db/migrations down
-
-  default:
-    cmds:
-      - task: codegen
-      - task: style
