@@ -1,12 +1,36 @@
-name: redpanda-quickstart
-networks:
-  redpanda_network:
-    driver: bridge
+name: yir
+  
 volumes:
-  redpanda-0: null
-  redpanda-1: null
-  redpanda-2: null
+  redpanda-0: 
+  minio-s3:
+  postgres:
+
 services:
+  postgres:
+    container_name: postgres
+    image: postgres:alpine
+    env_file:
+      - .env.example
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    restart: always
+
+  minio:
+    container_name: minio-s3
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+      - MINIO_SERVER_URL=http://localhost:9000
+    volumes:
+      - minio-s3:/data
+    command: server --address 0.0.0.0:9000 --console-address 0.0.0.0:9001 /data
   ##################
   # Redpanda Brokers #
   ##################
@@ -37,8 +61,6 @@ services:
     container_name: redpanda-0
     volumes:
       - redpanda-0:/var/lib/redpanda/data
-    networks:
-      - redpanda_network
     ports:
       - 18081:18081
       - 18082:18082
@@ -50,8 +72,6 @@ services:
   console:
     container_name: redpanda-console
     image: docker.redpanda.com/redpandadata/console:v2.8.0
-    networks:
-      - redpanda_network
     entrypoint: /bin/sh
     command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console -config.filepath=${CONFIG_FILEPATH:-/tmp/config.yml}'
     volumes:
