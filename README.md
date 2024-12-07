@@ -19,6 +19,7 @@
 _psql db: authdb, meddb, uzidb_. Создаются при инициализации docker volume. Миграции накатываются при запуске контейнера. __ПОРТ 5433__
 
 __КАК ЗАПУСТИТЬ?__
+0) добыть веса для нейронки (Г-52 Пн-Вт 13:00 - 13:15) и положить ml_service/internal/ml_model/models/cross и all
 1) docker compose --profile deps up -d
 2) создать бакет в минио + access + secret key
     + зайти на localhost:9000
