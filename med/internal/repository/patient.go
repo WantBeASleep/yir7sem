@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"fmt"
-
 	"med/internal/repository/entity"
 	"pkg/daolib"
 
@@ -51,7 +49,7 @@ func (q *patientQuery) InsertPatient(patient entity.Patient) error {
 
 	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return fmt.Errorf("insert patient: %w", err)
+		return err
 	}
 
 	return nil
@@ -75,7 +73,7 @@ func (q *patientQuery) GetPatientByPK(id uuid.UUID) (entity.Patient, error) {
 
 	var patient entity.Patient
 	if err := q.Runner().Getx(q.Context(), &patient, query); err != nil {
-		return entity.Patient{}, fmt.Errorf("get patient: %w", err)
+		return entity.Patient{}, err
 	}
 
 	return patient, nil
@@ -100,7 +98,7 @@ func (q *patientQuery) GetPatientsByDoctorID(id uuid.UUID) ([]entity.Patient, er
 
 	var patient []entity.Patient
 	if err := q.Runner().Selectx(q.Context(), &patient, query); err != nil {
-		return nil, fmt.Errorf("get patients by doctor id: %w", err)
+		return nil, err
 	}
 
 	return patient, nil
@@ -120,7 +118,7 @@ func (q *patientQuery) UpdatePatient(patient entity.Patient) (int64, error) {
 
 	res, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return 0, fmt.Errorf("update patient: %w", err)
+		return 0, err
 	}
 
 	return res.RowsAffected()

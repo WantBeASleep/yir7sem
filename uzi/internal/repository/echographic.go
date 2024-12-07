@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"fmt"
-
 	"pkg/daolib"
+
 	"uzi/internal/repository/entity"
 
 	sq "github.com/Masterminds/squirrel"
@@ -74,7 +73,7 @@ func (q *echographicQuery) InsertEchographic(echographic entity.Echographic) err
 
 	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return fmt.Errorf("insert echographic: %w", err)
+		return err
 	}
 
 	return nil
@@ -110,7 +109,7 @@ func (q *echographicQuery) GetEchographicByPK(id uuid.UUID) (entity.Echographic,
 
 	var echographic entity.Echographic
 	if err := q.Runner().Getx(q.Context(), &echographic, query); err != nil {
-		return entity.Echographic{}, fmt.Errorf("get echographic: %w", err)
+		return entity.Echographic{}, err
 	}
 
 	return echographic, nil
@@ -145,7 +144,7 @@ func (q *echographicQuery) UpdateEchographic(echographic entity.Echographic) (in
 
 	rows, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return 0, fmt.Errorf("update node: %w", err)
+		return 0, err
 	}
 
 	return rows.RowsAffected()

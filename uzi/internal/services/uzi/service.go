@@ -35,7 +35,7 @@ func New(
 func (s *service) CreateUzi(ctx context.Context, uzi domain.Uzi) (uuid.UUID, error) {
 	ctx, err := s.dao.BeginTx(ctx)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("start transaction: %w", err)
+		return uuid.Nil, fmt.Errorf("begin transaction: %w", err)
 	}
 
 	uzi.Id = uuid.New()
@@ -62,12 +62,12 @@ func (s *service) CreateUzi(ctx context.Context, uzi domain.Uzi) (uuid.UUID, err
 func (s *service) GetUziByID(ctx context.Context, id uuid.UUID) (domain.Uzi, domain.Echographic, error) {
 	uzi, err := s.dao.NewUziQuery(ctx).GetUziByPK(id)
 	if err != nil {
-		return domain.Uzi{}, domain.Echographic{}, fmt.Errorf("get uzi: %w", err)
+		return domain.Uzi{}, domain.Echographic{}, fmt.Errorf("get uzi by pk: %w", err)
 	}
 
 	echographic, err := s.dao.NewEchographicQuery(ctx).GetEchographicByPK(id)
 	if err != nil {
-		return domain.Uzi{}, domain.Echographic{}, fmt.Errorf("get echographic: %w", err)
+		return domain.Uzi{}, domain.Echographic{}, fmt.Errorf("get echographic by pk: %w", err)
 	}
 
 	return uzi.ToDomain(), echographic.ToDomain(), nil
@@ -76,7 +76,7 @@ func (s *service) GetUziByID(ctx context.Context, id uuid.UUID) (domain.Uzi, dom
 func (s *service) UpdateUzi(ctx context.Context, id uuid.UUID, update UpdateUzi) (domain.Uzi, error) {
 	uzi, _, err := s.GetUziByID(ctx, id)
 	if err != nil {
-		return domain.Uzi{}, fmt.Errorf("get uzi: %w", err)
+		return domain.Uzi{}, fmt.Errorf("get uzi by id: %w", err)
 	}
 	update.Update(&uzi)
 
@@ -90,7 +90,7 @@ func (s *service) UpdateUzi(ctx context.Context, id uuid.UUID, update UpdateUzi)
 func (s *service) UpdateEchographic(ctx context.Context, id uuid.UUID, update UpdateEchographic) (domain.Echographic, error) {
 	_, echographic, err := s.GetUziByID(ctx, id)
 	if err != nil {
-		return domain.Echographic{}, fmt.Errorf("get uzi: %w", err)
+		return domain.Echographic{}, fmt.Errorf("get uzi by id: %w", err)
 	}
 	update.Update(&echographic)
 

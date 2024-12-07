@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"pkg/daolib"
 
 	"auth/internal/repository/entity"
@@ -45,7 +44,7 @@ func (q *userQuery) InsertUser(user entity.User) error {
 
 	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return fmt.Errorf("insert user: %w", err)
+		return err
 	}
 
 	return nil
@@ -66,7 +65,7 @@ func (q *userQuery) GetUserByPK(id uuid.UUID) (entity.User, error) {
 
 	var user entity.User
 	if err := q.Runner().Getx(q.Context(), &user, query); err != nil {
-		return entity.User{}, fmt.Errorf("get user by id: %w", err)
+		return entity.User{}, err
 	}
 
 	return user, nil
@@ -87,7 +86,7 @@ func (q *userQuery) GetUserByEmail(email string) (entity.User, error) {
 
 	var user entity.User
 	if err := q.Runner().Getx(q.Context(), &user, query); err != nil {
-		return entity.User{}, fmt.Errorf("get user by email: %w", err)
+		return entity.User{}, err
 	}
 
 	return user, nil
@@ -106,7 +105,7 @@ func (q *userQuery) UpdateUser(user entity.User) (int64, error) {
 
 	res, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return 0, fmt.Errorf("update user: %w", err)
+		return 0, err
 	}
 
 	return res.RowsAffected()

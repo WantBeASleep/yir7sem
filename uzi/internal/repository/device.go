@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"fmt"
-
 	"pkg/daolib"
+
 	"uzi/internal/repository/entity"
 )
 
@@ -31,7 +30,7 @@ func (q *deviceQuery) GetDeviceList() ([]entity.Device, error) {
 
 	var devices []entity.Device
 	if err := q.Runner().Selectx(q.Context(), &devices, query); err != nil {
-		return nil, fmt.Errorf("get device list: %w", err)
+		return nil, err
 	}
 
 	return devices, nil

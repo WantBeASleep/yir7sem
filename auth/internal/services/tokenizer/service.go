@@ -61,7 +61,7 @@ func (s *service) GeneratePair(ctx context.Context, data map[string]any) (string
 func (s *service) ParseClaims(ctx context.Context, token string) (map[string]any, error) {
 	parsed, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) { return s.publicKey, nil })
 	if err != nil || !parsed.Valid {
-		return nil, fmt.Errorf("parsed token: %w", err)
+		return nil, err
 	}
 
 	claims, ok := parsed.Claims.(jwt.MapClaims)

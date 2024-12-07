@@ -4,6 +4,7 @@ package brokerlib
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"pkg/ctxlib"
 
 	"github.com/IBM/sarama"
@@ -41,8 +42,11 @@ func (h *handler) ConsumeClaim(s sarama.ConsumerGroupSession, c sarama.ConsumerG
 		ctx = ctxlib.PublicSet(ctx, "x-request_kind", "broker event")
 		ctx = ctxlib.PublicSet(ctx, "x-event_topic", c.Topic())
 
+		slog.InfoContext(ctx, "New event request")
+
 		if err := h.sub.ProcessMessage(ctx, msg.Value); err != nil {
-			return fmt.Errorf("processing msg: %w", err)
+			slog.ErrorContext(ctx, "Event end with error", slog.Any("error", err))
+			slog.WarnContext(ctx, "End with error, event but commited")
 		}
 		s.MarkMessage(msg, "")
 		s.Commit()

@@ -1,7 +1,7 @@
 package config
 
 type Config struct {
-	App    App 
+	App    App
 	DB     DB
 	S3     S3
 	Broker Broker

@@ -3,6 +3,7 @@ package login
 import (
 	"context"
 	"fmt"
+	"errors"
 
 	"auth/internal/repository"
 	"auth/internal/repository/entity"
@@ -36,7 +37,7 @@ func (s *service) Login(ctx context.Context, email, password string) (string, st
 	userQuery := s.dao.NewUserQuery(ctx)
 	userDB, err := userQuery.GetUserByEmail(email)
 	if err != nil {
-		return "", "", fmt.Errorf("get user: %w", err)
+		return "", "", fmt.Errorf("get user by email: %w", err)
 	}
 	user := userDB.ToDomain()
 
@@ -51,7 +52,7 @@ func (s *service) Login(ctx context.Context, email, password string) (string, st
 	}
 
 	if hash != user.Password {
-		return "", "", fmt.Errorf("hash not equal") // TODO: починить 500тки, возвращать норм ошибки
+		return "", "", errors.New("hash not equal") // TODO: починить 500тки, возвращать норм ошибки
 	}
 
 	access, refresh, err := s.tokenaizerSrv.GeneratePair(

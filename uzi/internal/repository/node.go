@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"fmt"
-
 	"pkg/daolib"
+
 	"uzi/internal/repository/entity"
 
 	sq "github.com/Masterminds/squirrel"
@@ -48,7 +47,7 @@ func (q *nodeQuery) InsertNode(node entity.Node) error {
 
 	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return fmt.Errorf("insert node: %w", err)
+		return err
 	}
 
 	return nil
@@ -70,7 +69,7 @@ func (q *nodeQuery) GetNodeByPK(id uuid.UUID) (entity.Node, error) {
 
 	var node entity.Node
 	if err := q.Runner().Getx(q.Context(), &node, query); err != nil {
-		return entity.Node{}, fmt.Errorf("get node: %w", err)
+		return entity.Node{}, err
 	}
 
 	return node, nil
@@ -94,7 +93,7 @@ func (q *nodeQuery) GetNodesByImageID(id uuid.UUID) ([]entity.Node, error) {
 
 	var uzi []entity.Node
 	if err := q.Runner().Selectx(q.Context(), &uzi, query); err != nil {
-		return nil, fmt.Errorf("get node by image_id: %w", err)
+		return nil, err
 	}
 
 	return uzi, nil
@@ -115,7 +114,7 @@ func (q *nodeQuery) UpdateNode(node entity.Node) (int64, error) {
 
 	rows, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return 0, fmt.Errorf("update node: %w", err)
+		return 0, err
 	}
 
 	return rows.RowsAffected()
@@ -130,7 +129,7 @@ func (q *nodeQuery) DeleteNodeByPK(id uuid.UUID) error {
 
 	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return fmt.Errorf("delete node: %w", err)
+		return err
 	}
 
 	return nil

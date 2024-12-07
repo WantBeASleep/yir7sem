@@ -35,7 +35,7 @@ func New(
 func (s *service) CreateNode(ctx context.Context, node domain.Node, segments []domain.Segment) (uuid.UUID, error) {
 	ctx, err := s.dao.BeginTx(ctx)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("start transaction: %w", err)
+		return uuid.Nil, fmt.Errorf("begin transaction: %w", err)
 	}
 
 	node.Id = uuid.New()
@@ -68,7 +68,7 @@ func (s *service) CreateNode(ctx context.Context, node domain.Node, segments []d
 func (s *service) InsertAiNodeWithSegments(ctx context.Context, nodes []domain.Node, segments []domain.Segment) error {
 	ctx, err := s.dao.BeginTx(ctx)
 	if err != nil {
-		return fmt.Errorf("start transaction: %w", err)
+		return fmt.Errorf("begin transaction: %w", err)
 	}
 
 	nodeQuery := s.dao.NewNodeQuery(ctx)
@@ -112,7 +112,7 @@ func (s *service) UpdateNode(ctx context.Context, id uuid.UUID, update UpdateNod
 func (s *service) DeleteNode(ctx context.Context, id uuid.UUID) error {
 	ctx, err := s.dao.BeginTx(ctx)
 	if err != nil {
-		return fmt.Errorf("start transaction: %w", err)
+		return fmt.Errorf("begin transaction: %w", err)
 	}
 
 	if _, err := s.dao.NewSegmentQuery(ctx).DeleteSegmentByUziID(id); err != nil {

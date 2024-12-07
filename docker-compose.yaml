@@ -17,6 +17,8 @@ services:
     ports:
       - "5433:5432"
     restart: always
+    profiles:
+      - deps
 
   minio:
     container_name: minio-s3
@@ -31,6 +33,9 @@ services:
     volumes:
       - minio-s3:/data
     command: server --address 0.0.0.0:9000 --console-address 0.0.0.0:9001 /data
+    profiles:
+      - deps
+
   ##################
   # Redpanda Brokers #
   ##################
@@ -66,6 +71,8 @@ services:
       - 18082:18082
       - 19092:19092
       - 19644:9644
+    profiles:
+      - deps
   ####################
   # Redpanda Console #
   ####################
@@ -92,6 +99,8 @@ services:
       - 8081:8080
     depends_on:
       - redpanda-0
+    profiles:
+      - deps
 
   ml_service:
     container_name: ml_service
@@ -100,6 +109,8 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - redpanda-0
+    profiles:
+      - deps
 
   auth_service:
     container_name: auth_service
@@ -112,4 +123,6 @@ services:
       - 50055:50040
     depends_on:
       - postgres
+    profiles:
+      - app
     

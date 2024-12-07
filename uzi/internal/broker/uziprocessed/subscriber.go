@@ -4,9 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
-
 	"pkg/brokerlib"
+
 	"uzi/internal/domain"
 	pb "uzi/internal/generated/broker/consume/uziprocessed"
 	"uzi/internal/services/node"
@@ -40,10 +39,8 @@ func (h *subscriber) GetConfig() brokerlib.SubscriberConfig {
 }
 
 func (h *subscriber) ProcessMessage(ctx context.Context, msg []byte) error {
-	slog.InfoContext(ctx, "new event", slog.String("topic", "uziprocessed"))
 	var event pb.UziProcessed
 	if err := proto.Unmarshal(msg, &event); err != nil {
-		slog.Error("наебали с типом")
 		return errors.New("wrong msg type. uziprocessed required")
 	}
 

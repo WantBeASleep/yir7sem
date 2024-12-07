@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"fmt"
-
 	"med/internal/repository/entity"
 	"pkg/daolib"
 
@@ -43,7 +41,7 @@ func (q *cardQuery) InsertCard(card entity.Card) error {
 
 	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return fmt.Errorf("insert card: %w", err)
+		return err
 	}
 
 	return nil
@@ -64,7 +62,7 @@ func (q *cardQuery) GetCardByPK(doctorID uuid.UUID, patientID uuid.UUID) (entity
 
 	var card entity.Card
 	if err := q.Runner().Getx(q.Context(), &card, query); err != nil {
-		return entity.Card{}, fmt.Errorf("get card: %w", err)
+		return entity.Card{}, err
 	}
 
 	return card, nil
@@ -83,7 +81,7 @@ func (q *cardQuery) CheckCardExists(doctorID uuid.UUID, patientID uuid.UUID) (bo
 
 	var exists bool
 	if err := q.Runner().Getx(q.Context(), &exists, query); err != nil {
-		return false, fmt.Errorf("check card exists by pk: %w", err)
+		return false, err
 	}
 
 	return exists, nil
@@ -102,7 +100,7 @@ func (q *cardQuery) UpdateCard(card entity.Card) (int64, error) {
 
 	res, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return 0, fmt.Errorf("update card: %w", err)
+		return 0, err
 	}
 
 	return res.RowsAffected()

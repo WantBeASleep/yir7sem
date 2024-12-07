@@ -3,6 +3,7 @@ package refresh
 import (
 	"context"
 	"fmt"
+	"errors"
 
 	"auth/internal/repository"
 	"auth/internal/repository/entity"
@@ -38,23 +39,23 @@ func (s *service) Refresh(ctx context.Context, token string) (string, string, er
 
 	userIDStr, ok := claims["x-user_id"].(string)
 	if !ok {
-		return "", "", fmt.Errorf("fake token (w/o x-user_id)")
+		return "", "", errors.New("fake token (w/o x-user_id)")
 	}
 	userID, err := uuid.Parse(userIDStr)
 	if err != nil {
-		return "", "", fmt.Errorf("parse token: %w", err)
+		return "", "", errors.New("parse userID from token")
 	}
 
 	userQuery := s.dao.NewUserQuery(ctx)
 
 	userDB, err := userQuery.GetUserByPK(userID)
 	if err != nil {
-		return "", "", fmt.Errorf("get user: %w", err)
+		return "", "", fmt.Errorf("get user by pk: %w", err)
 	}
 	user := userDB.ToDomain()
 
 	if token != *user.Token {
-		return "", "", fmt.Errorf("fake refresh token") // TODO: починить 500тки, возвращать норм ошибки
+		return "", "", errors.New("tokens not equal") // TODO: починить 500тки, возвращать норм ошибки
 	}
 
 	// TODO: подумать над паттерном композит
@@ -63,7 +64,7 @@ func (s *service) Refresh(ctx context.Context, token string) (string, string, er
 		map[string]any{"x-user_id": user.Id},
 	)
 	if err != nil {
-		return "", "", fmt.Errorf("get tokens: %w", err)
+		return "", "", fmt.Errorf("generate tokens pair: %w", err)
 	}
 
 	user.Token = &refresh

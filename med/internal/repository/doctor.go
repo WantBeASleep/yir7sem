@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"fmt"
-
 	"med/internal/repository/entity"
 	"pkg/daolib"
 
@@ -46,7 +44,7 @@ func (q *doctorQuery) InsertDoctor(doctor entity.Doctor) error {
 
 	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return fmt.Errorf("insert doctor: %w", err)
+		return err
 	}
 
 	return nil
@@ -68,7 +66,7 @@ func (q *doctorQuery) GetDoctorByPK(id uuid.UUID) (entity.Doctor, error) {
 
 	var doctor entity.Doctor
 	if err := q.Runner().Getx(q.Context(), &doctor, query); err != nil {
-		return entity.Doctor{}, fmt.Errorf("get doctor: %w", err)
+		return entity.Doctor{}, err
 	}
 
 	return doctor, nil
@@ -88,7 +86,7 @@ func (q *doctorQuery) UpdateDoctor(doctor entity.Doctor) (int64, error) {
 
 	res, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return 0, fmt.Errorf("update doctor: %w", err)
+		return 0, err
 	}
 
 	return res.RowsAffected()

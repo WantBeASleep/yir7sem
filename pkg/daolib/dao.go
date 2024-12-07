@@ -3,7 +3,6 @@ package daolib
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -37,7 +36,7 @@ func (d *dao) BeginTx(ctx context.Context, opts ...TxOption) (txCtx context.Cont
 
 	tx, err := d.db.BeginTxx(ctx, txopts)
 	if err != nil {
-		return nil, fmt.Errorf("begin transaction: %w", err)
+		return nil, err
 	}
 	return context.WithValue(ctx, txCtxKey, tx), nil
 }
@@ -48,7 +47,7 @@ func (d *dao) RollbackTx(ctx context.Context) error {
 	}
 
 	if err := d.getSqlxTx(ctx).Rollback(); err != nil {
-		return fmt.Errorf("rollback tx: %w", err)
+		return err
 	}
 	return nil
 }
@@ -59,7 +58,7 @@ func (d *dao) CommitTx(ctx context.Context) error {
 	}
 
 	if err := d.getSqlxTx(ctx).Commit(); err != nil {
-		return fmt.Errorf("commit tx: %w", err)
+		return err
 	}
 	return nil
 }

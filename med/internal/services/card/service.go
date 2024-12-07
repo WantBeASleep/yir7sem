@@ -43,7 +43,7 @@ func (s *service) CreateCard(ctx context.Context, card domain.Card) error {
 func (s *service) GetCard(ctx context.Context, doctorID, patientID uuid.UUID) (domain.Card, error) {
 	card, err := s.dao.NewCardQuery(ctx).GetCardByPK(doctorID, patientID)
 	if err != nil {
-		return domain.Card{}, fmt.Errorf("insert card: %w", err)
+		return domain.Card{}, fmt.Errorf("get card by id: %w", err)
 	}
 
 	return card.ToDomain(), nil
@@ -54,7 +54,7 @@ func (s *service) UpdateCard(ctx context.Context, doctorID, patientID uuid.UUID,
 
 	exists, err := cardQuery.CheckCardExists(doctorID, patientID)
 	if err != nil {
-		return domain.Card{}, fmt.Errorf("insert card: %w", err)
+		return domain.Card{}, fmt.Errorf("check card exists: %w", err)
 	}
 	if !exists {
 		return domain.Card{}, errors.New("card doesn't exists")
@@ -62,12 +62,12 @@ func (s *service) UpdateCard(ctx context.Context, doctorID, patientID uuid.UUID,
 
 	card, err := s.GetCard(ctx, doctorID, patientID)
 	if err != nil {
-		return domain.Card{}, fmt.Errorf("insert card: %w", err)
+		return domain.Card{}, fmt.Errorf("get card: %w", err)
 	}
 	update.Update(&card)
 
 	if _, err := cardQuery.UpdateCard(entity.Card{}.FromDomain(card)); err != nil {
-		return domain.Card{}, fmt.Errorf("insert card: %w", err)
+		return domain.Card{}, fmt.Errorf("update card: %w", err)
 	}
 
 	return card, nil

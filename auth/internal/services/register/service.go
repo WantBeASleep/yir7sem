@@ -42,7 +42,7 @@ func (s *service) Register(ctx context.Context, user domain.User) (uuid.UUID, er
 	user.Password = pass
 
 	if err := s.dao.NewUserQuery(ctx).InsertUser(entity.User{}.FromDomain(user)); err != nil {
-		return uuid.Nil, fmt.Errorf("insert new user: %w", err)
+		return uuid.Nil, fmt.Errorf("insert user: %w", err)
 	}
 
 	return user.Id, nil

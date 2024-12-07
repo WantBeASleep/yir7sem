@@ -99,7 +99,7 @@ func (s *service) SplitUzi(ctx context.Context, uziID uuid.UUID) error {
 	splitterSrv := splitter.New()
 	splitted, err := splitterSrv.SplitToPng(file)
 	if err != nil {
-		return fmt.Errorf("split img: %w", err)
+		return fmt.Errorf("split img to png: %w", err)
 	}
 
 	images := make([]domain.Image, len(splitted))

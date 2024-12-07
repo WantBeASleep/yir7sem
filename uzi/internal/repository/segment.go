@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"fmt"
-
 	"pkg/daolib"
+
 	"uzi/internal/repository/entity"
 
 	sq "github.com/Masterminds/squirrel"
@@ -54,7 +53,7 @@ func (q *segmentQuery) InsertSegment(segment entity.Segment) error {
 
 	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return fmt.Errorf("insert segment: %w", err)
+		return err
 	}
 
 	return nil
@@ -78,7 +77,7 @@ func (q *segmentQuery) GetSegmentByPK(id uuid.UUID) (entity.Segment, error) {
 
 	var segments entity.Segment
 	if err := q.Runner().Getx(q.Context(), &segments, query); err != nil {
-		return entity.Segment{}, fmt.Errorf("get segments by pk: %w", err)
+		return entity.Segment{}, err
 	}
 
 	return segments, nil
@@ -102,7 +101,7 @@ func (q *segmentQuery) GetSegmentsByNodeID(id uuid.UUID) ([]entity.Segment, erro
 
 	var segments []entity.Segment
 	if err := q.Runner().Selectx(q.Context(), &segments, query); err != nil {
-		return nil, fmt.Errorf("get segments by uzi_id: %w", err)
+		return nil, err
 	}
 
 	return segments, nil
@@ -126,7 +125,7 @@ func (q *segmentQuery) GetSegmentsByImageID(id uuid.UUID) ([]entity.Segment, err
 
 	var segments []entity.Segment
 	if err := q.Runner().Selectx(q.Context(), &segments, query); err != nil {
-		return nil, fmt.Errorf("get segments by image_id: %w", err)
+		return nil, err
 	}
 
 	return segments, nil
@@ -146,7 +145,7 @@ func (q *segmentQuery) UpdateSegment(segment entity.Segment) (int64, error) {
 
 	rows, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return 0, fmt.Errorf("update segment: %w", err)
+		return 0, err
 	}
 
 	return rows.RowsAffected()
@@ -161,7 +160,7 @@ func (q *segmentQuery) DeleteSegmentByPK(id uuid.UUID) error {
 
 	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return fmt.Errorf("delete segment: %w", err)
+		return err
 	}
 
 	return nil
@@ -176,7 +175,7 @@ func (q *segmentQuery) DeleteSegmentByUziID(id uuid.UUID) (int64, error) {
 
 	rows, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return 0, fmt.Errorf("delete segment by uzi_id: %w", err)
+		return 0, err
 	}
 
 	return rows.RowsAffected()

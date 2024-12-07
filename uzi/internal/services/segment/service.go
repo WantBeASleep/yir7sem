@@ -43,7 +43,7 @@ func (s *service) UpdateSegment(ctx context.Context, id uuid.UUID, update Update
 	segmentQuery := s.dao.NewSegmentQuery(ctx)
 	segmentDB, err := segmentQuery.GetSegmentByPK(id)
 	if err != nil {
-		return domain.Segment{}, fmt.Errorf("get segment: %w", err)
+		return domain.Segment{}, fmt.Errorf("get segment by pk: %w", err)
 	}
 	segment := segmentDB.ToDomain()
 	update.Update(&segment)
@@ -59,7 +59,7 @@ func (s *service) UpdateSegment(ctx context.Context, id uuid.UUID, update Update
 func (s *service) DeleteSegment(ctx context.Context, id uuid.UUID) error {
 	ctx, err := s.dao.BeginTx(ctx)
 	if err != nil {
-		return fmt.Errorf("start transaction: %w", err)
+		return fmt.Errorf("begin transaction: %w", err)
 	}
 
 	segmentQuery := s.dao.NewSegmentQuery(ctx)
@@ -67,7 +67,7 @@ func (s *service) DeleteSegment(ctx context.Context, id uuid.UUID) error {
 	segment, err := segmentQuery.GetSegmentByPK(id)
 	if err != nil {
 		rollbackErr := s.dao.RollbackTx(ctx)
-		return fmt.Errorf("get segment: %w", errors.Join(err, rollbackErr))
+		return fmt.Errorf("get segment by pk: %w", errors.Join(err, rollbackErr))
 	}
 
 	if err := segmentQuery.DeleteSegmentByPK(id); err != nil {
@@ -78,14 +78,14 @@ func (s *service) DeleteSegment(ctx context.Context, id uuid.UUID) error {
 	remainingSegments, err := segmentQuery.GetSegmentsByNodeID(segment.NodeID)
 	if err != nil {
 		rollbackErr := s.dao.RollbackTx(ctx)
-		return fmt.Errorf("get segment by uzi_id: %w", errors.Join(err, rollbackErr))
+		return fmt.Errorf("get segment by node_id: %w", errors.Join(err, rollbackErr))
 	}
 
 	// у node не осталось сегментов, удаляем
 	if len(remainingSegments) == 0 {
 		if err := s.dao.NewNodeQuery(ctx).DeleteNodeByPK(segment.NodeID); err != nil {
 			rollbackErr := s.dao.RollbackTx(ctx)
-			return fmt.Errorf("delete node wo segments: %w", errors.Join(err, rollbackErr))
+			return fmt.Errorf("delete node by id: %w", errors.Join(err, rollbackErr))
 		}
 	}
 

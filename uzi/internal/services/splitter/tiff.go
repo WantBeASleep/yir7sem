@@ -2,8 +2,8 @@ package splitter
 
 import (
 	"fmt"
-
 	"pkg/slicer"
+
 	"uzi/internal/domain"
 
 	"github.com/chai2010/tiff"
@@ -22,7 +22,7 @@ func (tiffSplitter) splitToPng(f domain.File) ([]domain.File, error) {
 	for _, img := range imgs {
 		reader, err := convertToPng(img)
 		if err != nil {
-			return nil, fmt.Errorf("convert img: %w", err)
+			return nil, fmt.Errorf("convert to png: %w", err)
 		}
 		res = append(res, reader)
 	}

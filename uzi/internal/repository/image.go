@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"fmt"
-
 	"pkg/daolib"
+
 	"uzi/internal/repository/entity"
 
 	sq "github.com/Masterminds/squirrel"
@@ -44,7 +43,7 @@ func (q *imageQuery) InsertImages(images []entity.Image) error {
 
 	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return fmt.Errorf("insert node: %w", err)
+		return err
 	}
 
 	return err
@@ -63,7 +62,7 @@ func (q *imageQuery) GetImagesByUziID(uziID uuid.UUID) ([]entity.Image, error) {
 
 	var images []entity.Image
 	if err := q.Runner().Selectx(q.Context(), &images, query); err != nil {
-		return nil, fmt.Errorf("get image by uzi_id: %w", err)
+		return nil, err
 	}
 
 	return images, nil

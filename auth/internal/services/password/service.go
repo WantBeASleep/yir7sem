@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 
 	"github.com/brianvoe/gofakeit/v7"
@@ -39,7 +40,7 @@ func (s *service) Hash(ctx context.Context, password, salt string) (string, erro
 		passlen,
 	)
 	if err != nil {
-		return "", fmt.Errorf("hash pass: %v", err)
+		return "", err
 	}
 
 	hash := hex.EncodeToString(hexHash)
@@ -48,7 +49,7 @@ func (s *service) Hash(ctx context.Context, password, salt string) (string, erro
 
 func (s *service) GetSalt(ctx context.Context, hash string) (string, error) {
 	if len(hash) <= 64 {
-		return "", fmt.Errorf("not out hash pass")
+		return "", errors.New("pass is too short, not out hashing")
 	}
 
 	return hash[64:], nil

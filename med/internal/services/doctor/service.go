@@ -40,7 +40,7 @@ func (s *service) RegisterDoctor(ctx context.Context, doctor domain.Doctor) erro
 func (s *service) GetDoctor(ctx context.Context, id uuid.UUID) (domain.Doctor, error) {
 	doctor, err := s.dao.NewDoctorQuery(ctx).GetDoctorByPK(id)
 	if err != nil {
-		return domain.Doctor{}, fmt.Errorf("update doctor: %w", err)
+		return domain.Doctor{}, fmt.Errorf("get doctor by pk: %w", err)
 	}
 
 	return doctor.ToDomain(), nil

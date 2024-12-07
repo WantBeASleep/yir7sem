@@ -39,7 +39,7 @@ func (s *service) SplitToPng(file domain.File) ([]domain.File, error) {
 
 	bufs, err := splitter.splitToPng(file)
 	if err != nil {
-		return nil, fmt.Errorf("split img: %w", err)
+		return nil, err
 	}
 
 	return bufs, nil

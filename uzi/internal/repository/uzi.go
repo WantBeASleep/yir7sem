@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"fmt"
-
 	"pkg/daolib"
+
 	"uzi/internal/repository/entity"
 
 	sq "github.com/Masterminds/squirrel"
@@ -49,7 +48,7 @@ func (q *uziQuery) InsertUzi(uzi entity.Uzi) error {
 
 	_, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return fmt.Errorf("insert uzi: %w", err)
+		return err
 	}
 
 	return nil
@@ -72,7 +71,7 @@ func (q *uziQuery) GetUziByPK(id uuid.UUID) (entity.Uzi, error) {
 
 	var uzi entity.Uzi
 	if err := q.Runner().Getx(q.Context(), &uzi, query); err != nil {
-		return entity.Uzi{}, fmt.Errorf("get uzi: %w", err)
+		return entity.Uzi{}, err
 	}
 
 	return uzi, nil
@@ -97,7 +96,7 @@ func (q *uziQuery) CheckExist(id uuid.UUID) (bool, error) {
 
 	var exists bool
 	if err := q.Runner().Getx(q.Context(), &exists, query); err != nil {
-		return false, fmt.Errorf("check exists uzi: %w", err)
+		return false, err
 	}
 
 	return exists, nil
@@ -116,7 +115,7 @@ func (q *uziQuery) UpdateUzi(uzi entity.Uzi) (int64, error) {
 
 	rows, err := q.Runner().Execx(q.Context(), query)
 	if err != nil {
-		return 0, fmt.Errorf("update uzi: %w", err)
+		return 0, err
 	}
 
 	return rows.RowsAffected()

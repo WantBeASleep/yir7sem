@@ -3,6 +3,7 @@ package patient
 import (
 	"context"
 	"fmt"
+	"errors"
 
 	"med/internal/domain"
 	"med/internal/repository"
@@ -73,7 +74,7 @@ func (s *service) UpdatePatient(
 		return domain.Patient{}, fmt.Errorf("check existing card")
 	}
 	if !exists {
-		return domain.Patient{}, fmt.Errorf("doctor doesn't have access to this card")
+		return domain.Patient{}, errors.New("card doctor-patient doesnt exists")
 	}
 
 	patient, err := s.GetPatient(ctx, patientID)
