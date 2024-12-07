@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package yir.uzi.kafka;
+
+option go_package = "yir/uzi/api/broker;broker";
+
+message uziUpload { string id = 100; }
+
+message UziProcessed {
+  message Node {
+      string id = 100;
+      double tirads_23 = 400;
+      double tirads_4 = 500;
+      double tirads_5 = 600;
+  }
+
+  message Segment {
+      string id = 100;
+      string node_id = 200;
+      string image_id = 300;
+      string contor = 400;
+      double tirads_23 = 500;
+      double tirads_4 = 600;
+      double tirads_5 = 700;
+  }
+
+  repeated Node nodes = 100;
+  repeated Segment segments = 200;
+}
+
+message uziSplitted {
+  string uzi_id = 100;
+  repeated string pages_id = 200;
+}

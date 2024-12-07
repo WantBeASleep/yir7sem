@@ -9,10 +9,10 @@ package service
 import (
 	context "context"
 
-	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -37,14 +37,14 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MedSrvClient interface {
-	RegisterDoctor(ctx context.Context, in *RegisterDoctorIn, opts ...grpc.CallOption) (*empty.Empty, error)
+	RegisterDoctor(ctx context.Context, in *RegisterDoctorIn, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetDoctor(ctx context.Context, in *GetDoctorIn, opts ...grpc.CallOption) (*GetDoctorOut, error)
 	UpdateDoctor(ctx context.Context, in *UpdateDoctorIn, opts ...grpc.CallOption) (*UpdateDoctorOut, error)
 	CreatePatient(ctx context.Context, in *CreatePatientIn, opts ...grpc.CallOption) (*CreatePatientOut, error)
 	GetPatient(ctx context.Context, in *GetPatientIn, opts ...grpc.CallOption) (*GetPatientOut, error)
 	GetDoctorPatients(ctx context.Context, in *GetDoctorPatientsIn, opts ...grpc.CallOption) (*GetDoctorPatientsOut, error)
 	UpdatePatient(ctx context.Context, in *UpdatePatientIn, opts ...grpc.CallOption) (*UpdatePatientOut, error)
-	CreateCard(ctx context.Context, in *CreateCardIn, opts ...grpc.CallOption) (*empty.Empty, error)
+	CreateCard(ctx context.Context, in *CreateCardIn, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetCard(ctx context.Context, in *GetCardIn, opts ...grpc.CallOption) (*GetCardOut, error)
 	UpdateCard(ctx context.Context, in *UpdateCardIn, opts ...grpc.CallOption) (*UpdateCardOut, error)
 }
@@ -57,9 +57,9 @@ func NewMedSrvClient(cc grpc.ClientConnInterface) MedSrvClient {
 	return &medSrvClient{cc}
 }
 
-func (c *medSrvClient) RegisterDoctor(ctx context.Context, in *RegisterDoctorIn, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *medSrvClient) RegisterDoctor(ctx context.Context, in *RegisterDoctorIn, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(empty.Empty)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, MedSrv_RegisterDoctor_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -127,9 +127,9 @@ func (c *medSrvClient) UpdatePatient(ctx context.Context, in *UpdatePatientIn, o
 	return out, nil
 }
 
-func (c *medSrvClient) CreateCard(ctx context.Context, in *CreateCardIn, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *medSrvClient) CreateCard(ctx context.Context, in *CreateCardIn, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(empty.Empty)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, MedSrv_CreateCard_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -161,14 +161,14 @@ func (c *medSrvClient) UpdateCard(ctx context.Context, in *UpdateCardIn, opts ..
 // All implementations must embed UnimplementedMedSrvServer
 // for forward compatibility.
 type MedSrvServer interface {
-	RegisterDoctor(context.Context, *RegisterDoctorIn) (*empty.Empty, error)
+	RegisterDoctor(context.Context, *RegisterDoctorIn) (*emptypb.Empty, error)
 	GetDoctor(context.Context, *GetDoctorIn) (*GetDoctorOut, error)
 	UpdateDoctor(context.Context, *UpdateDoctorIn) (*UpdateDoctorOut, error)
 	CreatePatient(context.Context, *CreatePatientIn) (*CreatePatientOut, error)
 	GetPatient(context.Context, *GetPatientIn) (*GetPatientOut, error)
 	GetDoctorPatients(context.Context, *GetDoctorPatientsIn) (*GetDoctorPatientsOut, error)
 	UpdatePatient(context.Context, *UpdatePatientIn) (*UpdatePatientOut, error)
-	CreateCard(context.Context, *CreateCardIn) (*empty.Empty, error)
+	CreateCard(context.Context, *CreateCardIn) (*emptypb.Empty, error)
 	GetCard(context.Context, *GetCardIn) (*GetCardOut, error)
 	UpdateCard(context.Context, *UpdateCardIn) (*UpdateCardOut, error)
 	mustEmbedUnimplementedMedSrvServer()
@@ -181,7 +181,7 @@ type MedSrvServer interface {
 // pointer dereference when methods are called.
 type UnimplementedMedSrvServer struct{}
 
-func (UnimplementedMedSrvServer) RegisterDoctor(context.Context, *RegisterDoctorIn) (*empty.Empty, error) {
+func (UnimplementedMedSrvServer) RegisterDoctor(context.Context, *RegisterDoctorIn) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterDoctor not implemented")
 }
 func (UnimplementedMedSrvServer) GetDoctor(context.Context, *GetDoctorIn) (*GetDoctorOut, error) {
@@ -202,7 +202,7 @@ func (UnimplementedMedSrvServer) GetDoctorPatients(context.Context, *GetDoctorPa
 func (UnimplementedMedSrvServer) UpdatePatient(context.Context, *UpdatePatientIn) (*UpdatePatientOut, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePatient not implemented")
 }
-func (UnimplementedMedSrvServer) CreateCard(context.Context, *CreateCardIn) (*empty.Empty, error) {
+func (UnimplementedMedSrvServer) CreateCard(context.Context, *CreateCardIn) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCard not implemented")
 }
 func (UnimplementedMedSrvServer) GetCard(context.Context, *GetCardIn) (*GetCardOut, error) {

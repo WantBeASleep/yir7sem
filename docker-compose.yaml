@@ -13,12 +13,17 @@ services:
       - .env.example
     volumes:
       - postgres:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
+      - ./init-scripts/sql:/docker-entrypoint-initdb.d
     ports:
       - "5433:5432"
     restart: always
     profiles:
       - deps
+      - app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 5s
+      retries: 5
 
   minio:
     container_name: minio-s3
@@ -27,14 +32,19 @@ services:
       - "9000:9000"
       - "9001:9001"
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin
-      - MINIO_SERVER_URL=http://localhost:9000
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_SERVER_URL: http://localhost:9000
+      MINIO_ACCESS_KEY: NZjt6KmuHQRU7IitYUiW   
+      MINIO_SECRET_KEY: ql9DoBMKyqMxQm8j5LQuKwnn68KFsGqn5jGbL7uL    
     volumes:
       - minio-s3:/data
+      - ./init-mc.sh:/docker-entrypoint-init.d/init-mc.sh:ro
     command: server --address 0.0.0.0:9000 --console-address 0.0.0.0:9001 /data
     profiles:
       - deps
+      - app
+    restart: always
 
   ##################
   # Redpanda Brokers #
@@ -66,6 +76,7 @@ services:
     container_name: redpanda-0
     volumes:
       - redpanda-0:/var/lib/redpanda/data
+      - ./init-panda.sh:/docker-entrypoint-init.d/init.sh:ro
     ports:
       - 18081:18081
       - 18082:18082
@@ -73,6 +84,7 @@ services:
       - 19644:9644
     profiles:
       - deps
+      - app
   ####################
   # Redpanda Console #
   ####################
@@ -101,6 +113,7 @@ services:
       - redpanda-0
     profiles:
       - deps
+      - app
 
   ml_service:
     container_name: ml_service
@@ -110,36 +123,7 @@ services:
     depends_on:
       - redpanda-0
     profiles:
-      - deps
-
-  # uzi_service:
-  #   container_name: uzi_service
-  #   build:
-  #     context: ./uzi/
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./uzi/.env-docker
-  #   ports:
-  #     - 50060:50055
-  #   depends_on:
-  #     - postgres
-  #     - minio
-  #   profiles:
-  #     - deps
-
-  med_service:
-    container_name: med_service
-    build:
-      context: ./med/
-      dockerfile: Dockerfile
-    env_file:
-      - ./uzi/.env-docker
-    ports:
-      - 50050:50055
-    depends_on:
-      - postgres
-    profiles:
-      - deps
+      - app
 
   auth_service:
     container_name: auth_service
@@ -149,9 +133,58 @@ services:
     env_file:
       - ./auth/.env-docker
     ports:
-      - 50055:50040
+      - 50050:50055
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    profiles:
+      - app
+
+  med_service:
+    container_name: med_service
+    build:
+      context: ./med/
+      dockerfile: Dockerfile
+    env_file:
+      - ./med/.env-docker
+    ports:
+      - 50051:50055
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - app
+
+  uzi_service:
+    container_name: uzi_service
+    build:
+      context: ./uzi/
+      dockerfile: Dockerfile
+    env_file:
+      - ./uzi/.env-docker
+    ports:
+      - 50052:50055
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
     profiles:
       - app
     
+  gateway:
+    container_name: gateway
+    build:
+      context: ./gateway/
+      dockerfile: Dockerfile
+    env_file:
+      - ./gateway/.env-docker
+    ports:
+      - 8080:8080
+    depends_on:
+      - redpanda-0
+      - uzi_service
+      - med_service
+      - auth_service
+    profiles:
+      - app

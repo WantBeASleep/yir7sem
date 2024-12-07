@@ -4,7 +4,8 @@ import (
 	"crypto/rsa"
 	"log/slog"
 	"net/http"
-	"pkg/ctxlib"
+
+	"github.com/WantBeASleep/goooool/ctxlib"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"

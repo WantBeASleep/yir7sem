@@ -2,7 +2,8 @@ package entity
 
 import (
 	"database/sql"
-	"pkg/gtclib"
+
+	"github.com/WantBeASleep/goooool/gtclib"
 
 	"med/internal/domain"
 

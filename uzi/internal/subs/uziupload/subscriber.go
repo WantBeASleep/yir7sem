@@ -4,7 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"pkg/brokerlib"
+
+	"github.com/WantBeASleep/goooool/brokerlib"
 
 	pb "uzi/internal/generated/broker/consume/uziupload"
 	"uzi/internal/services/image"

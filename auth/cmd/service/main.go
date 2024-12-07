@@ -4,11 +4,13 @@ import (
 	"log/slog"
 	"net"
 	"os"
-	"pkg/grpclib"
-	"pkg/loglib"
+
+	"github.com/WantBeASleep/goooool/grpclib"
+	"github.com/WantBeASleep/goooool/loglib"
 
 	"auth/internal/config"
-	pkgconfig "pkg/config"
+
+	pkgconfig "github.com/WantBeASleep/goooool/config"
 
 	"auth/internal/repository"
 

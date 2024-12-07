@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"pkg/gtclib"
+
+	"github.com/WantBeASleep/goooool/gtclib"
 
 	adapters "gateway/internal/adapters"
 	pb "gateway/internal/generated/grpc/client/med"

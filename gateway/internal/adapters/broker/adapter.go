@@ -2,7 +2,8 @@ package broker
 
 import (
 	"fmt"
-	"pkg/brokerlib"
+
+	"github.com/WantBeASleep/goooool/brokerlib"
 
 	pb "gateway/internal/generated/broker/produce/uziupload"
 

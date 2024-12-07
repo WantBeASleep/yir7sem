@@ -1,17 +1,11 @@
-FROM golang:alpine AS builder
+FROM golang:alpine
 
 WORKDIR /service
+
 COPY . .
 
-RUN GOBIN=$(pwd)/bin go install github.com/pressly/goose/v3/cmd/goose@latest
 RUN go build -o bin/service cmd/service/main.go
-
-FROM alpine:latest
-
-WORKDIR /service
-
-COPY --from=builder /service/bin/service /service/db /service/bin/goose /service/
 
 EXPOSE 8080
 
-CMD [ "./goose -dir db/migrations up && ./service" ]
+CMD [ "./bin/service" ]

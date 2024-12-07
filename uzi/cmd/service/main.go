@@ -6,11 +6,12 @@ import (
 	"log/slog"
 	"net"
 	"os"
-	"pkg/brokerlib"
-	"pkg/grpclib"
-	"pkg/loglib"
 
-	pkgconfig "pkg/config"
+	"github.com/WantBeASleep/goooool/brokerlib"
+	"github.com/WantBeASleep/goooool/grpclib"
+	"github.com/WantBeASleep/goooool/loglib"
+
+	pkgconfig "github.com/WantBeASleep/goooool/config"
 
 	"uzi/internal/config"
 

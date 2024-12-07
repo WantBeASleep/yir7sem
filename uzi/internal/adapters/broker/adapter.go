@@ -2,7 +2,8 @@ package broker
 
 import (
 	"fmt"
-	"pkg/brokerlib"
+
+	"github.com/WantBeASleep/goooool/brokerlib"
 
 	uzicompletepb "uzi/internal/generated/broker/produce/uzicomplete"
 	uzisplittedpb "uzi/internal/generated/broker/produce/uzisplitted"

@@ -3,7 +3,7 @@ version: "3"
 vars:
   VENDOR_PROTOGEN: "../vendor.protogen"
 
-dotenv: [".env"]
+dotenv: [".env-docker"]
 #TODO: написать проверки в коде при подключении ко всему (к S3 и т.д)
 
 tasks:

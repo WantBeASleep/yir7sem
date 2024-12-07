@@ -1,7 +1,7 @@
 package patient
 
 import (
-	"pkg/gtclib"
+	"github.com/WantBeASleep/goooool/gtclib"
 
 	"med/internal/domain"
 	pb "med/internal/generated/grpc/service"

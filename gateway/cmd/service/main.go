@@ -4,9 +4,10 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"pkg/brokerlib"
-	"pkg/grpclib"
-	"pkg/loglib"
+
+	"github.com/WantBeASleep/goooool/brokerlib"
+	"github.com/WantBeASleep/goooool/grpclib"
+	"github.com/WantBeASleep/goooool/loglib"
 
 	_ "gateway/docs"
 
@@ -18,7 +19,7 @@ import (
 	"gateway/internal/config"
 	"gateway/internal/repository"
 
-	pkgconfig "pkg/config"
+	pkgconfig "github.com/WantBeASleep/goooool/config"
 
 	adapters "gateway/internal/adapters"
 	brokeradapters "gateway/internal/adapters/broker"

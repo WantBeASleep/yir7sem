@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"pkg/daolib"
+	"github.com/WantBeASleep/goooool/daolib"
 
 	"med/internal/repository/entity"
 

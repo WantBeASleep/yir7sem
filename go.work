@@ -1,9 +1,0 @@
-go 1.23.4
-
-use (
-    ./pkg
-    ./auth
-    ./med
-    ./uzi
-    ./gateway
-)

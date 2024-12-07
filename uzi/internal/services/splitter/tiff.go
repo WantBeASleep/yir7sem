@@ -2,7 +2,8 @@ package splitter
 
 import (
 	"fmt"
-	"pkg/slicer"
+
+	"github.com/WantBeASleep/goooool/slicer"
 
 	"uzi/internal/domain"
 

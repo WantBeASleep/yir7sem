@@ -15,7 +15,6 @@ bin
 # ml
 *.pkl
 *.pth
-ml_service*
 
 # private
 *.key

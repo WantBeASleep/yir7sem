@@ -1,7 +1,7 @@
 package main
 
 import (
-	"pkg/brokerlib"
+	"github.com/WantBeASleep/goooool/brokerlib"
 
 	pb "uzi/internal/generated/broker/produce/uzisplitted"
 
