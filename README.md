@@ -7,14 +7,14 @@
 Приведенная схема отражает список сервисов.
 
 `docker`:
-    + 8080 - api-gateway
-    + 8080/docs - swagger
-    + 8081 - redpanda console (kafka, не накликайте ничего)
-    + 9000 - s3
-        - log, pss: minioadmin:minioadmin
-    + 50050 - grpc auth service
-    + 50051 - grpc med service
-    + 50052 - grpc uzi service
+* 8080 - api-gateway
+* 8080/docs - swagger
+* 8081 - redpanda console (kafka, не накликайте ничего)
+* 9000 - s3
+    - log, pss: minioadmin:minioadmin
+* 50050 - grpc auth service
+* 50051 - grpc med service
+* 50052 - grpc uzi service
 
 _psql db: authdb, meddb, uzidb_. Создаются при инициализации docker volume. Миграции накатываются при запуске контейнера. __ПОРТ 5433__
 
