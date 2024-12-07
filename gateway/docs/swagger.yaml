@@ -1,5 +1,171 @@
 basePath: /api/v1
 definitions:
+  internal_api_auth.LoginIn:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  internal_api_auth.LoginOut:
+    properties:
+      access_key:
+        type: string
+      refresh_key:
+        type: string
+    type: object
+  internal_api_auth.RefreshOut:
+    properties:
+      access_key:
+        type: string
+      refresh_key:
+        type: string
+    type: object
+  internal_api_auth.RegisterIn:
+    properties:
+      desc:
+        type: string
+      email:
+        type: string
+      fullname:
+        type: string
+      job:
+        type: string
+      org:
+        type: string
+      password:
+        type: string
+    type: object
+  internal_api_auth.RegisterOut:
+    properties:
+      id:
+        type: string
+    type: object
+  internal_api_med.GetCardOut:
+    properties:
+      diagnosis:
+        type: string
+      doctor_id:
+        type: string
+      patient_id:
+        type: string
+    type: object
+  internal_api_med.GetDoctorOut:
+    properties:
+      desc:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      job:
+        type: string
+      org:
+        type: string
+    type: object
+  internal_api_med.GetDoctorPatientsOut:
+    properties:
+      patients:
+        items:
+          $ref: '#/definitions/internal_api_med.Patient'
+        type: array
+    type: object
+  internal_api_med.GetPatientOut:
+    properties:
+      active:
+        type: boolean
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      last_uzi_date:
+        type: string
+      malignancy:
+        type: boolean
+      policy:
+        type: string
+    type: object
+  internal_api_med.Patient:
+    properties:
+      active:
+        type: boolean
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      last_uzi_date:
+        type: string
+      malignancy:
+        type: boolean
+      policy:
+        type: string
+    type: object
+  internal_api_med.UpdateCardIn:
+    properties:
+      diagnosis:
+        type: string
+    type: object
+  internal_api_med.UpdateCardOut:
+    properties:
+      diagnosis:
+        type: string
+      doctor_id:
+        type: string
+      patient_id:
+        type: string
+    type: object
+  internal_api_med.UpdateDoctorIn:
+    properties:
+      desc:
+        type: string
+      job:
+        type: string
+      org:
+        type: string
+    type: object
+  internal_api_med.UpdateDoctorOut:
+    properties:
+      desc:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      job:
+        type: string
+      org:
+        type: string
+    type: object
+  internal_api_med.UpdatePatientIn:
+    properties:
+      active:
+        type: boolean
+      last_uzi_date:
+        type: string
+      malignancy:
+        type: boolean
+    type: object
+  internal_api_med.UpdatePatientOut:
+    properties:
+      active:
+        type: boolean
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      last_uzi_date:
+        type: string
+      malignancy:
+        type: boolean
+      policy:
+        type: string
+    type: object
   internal_api_uzi.Device:
     properties:
       id:
@@ -66,17 +232,36 @@ definitions:
       tirads23:
         type: number
     type: object
-  med.Doctor:
+  med.PostCardIn:
     properties:
-      desc:
+      diagnosis:
         type: string
-      fullname:
+      patient_id:
         type: string
+    type: object
+  med.PostCardOut:
+    properties:
+      doctor_id:
+        type: string
+      patient_id:
+        type: string
+    type: object
+  med.PostPatientIn:
+    properties:
+      active:
+        type: boolean
+      email:
+        type: string
+      full_name:
+        type: string
+      malignancy:
+        type: boolean
+      policy:
+        type: string
+    type: object
+  med.PostPatientOut:
+    properties:
       id:
-        type: string
-      job:
-        type: string
-      org:
         type: string
     type: object
   uzi.GetEchographicsOut:
@@ -344,8 +529,169 @@ info:
   title: Example API
   version: "1.0"
 paths:
-  /med/doctors:
+  /auth/login:
     post:
+      description: Получить JWT ключи
+      parameters:
+      - description: почта, пароль
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_auth.LoginIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: key pairs
+          schema:
+            $ref: '#/definitions/internal_api_auth.LoginOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Получить JWT ключи
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      description: Получить JWT ключи
+      parameters:
+      - description: refresh token
+        in: header
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: key pairs
+          schema:
+            $ref: '#/definitions/internal_api_auth.RefreshOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Получить JWT ключи
+      tags:
+      - auth
+  /auth/register:
+    post:
+      description: Зарегистрирует пользователя (врача)
+      parameters:
+      - description: регистрационные данные
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_auth.RegisterIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user_id
+          schema:
+            $ref: '#/definitions/internal_api_auth.RegisterOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Зарегистрирует пользователя (врача)
+      tags:
+      - auth
+  /med/card:
+    post:
+      description: создать карту
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: данные карты
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.PostCardIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: id карты
+          schema:
+            $ref: '#/definitions/med.PostCardOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: создать карту
+      tags:
+      - med
+  /med/card/{id}:
+    get:
+      description: Получить карту
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: patient_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_med.GetCardOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Получить карту
+      tags:
+      - med
+    patch:
+      description: обновить карту
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: patient_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: обновляемые значения
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_med.UpdateCardIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: карта
+          schema:
+            $ref: '#/definitions/internal_api_med.UpdateCardOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: обновить карту
+      tags:
+      - med
+  /med/doctors:
+    get:
       description: Получает информацию о враче
       parameters:
       - description: access_token
@@ -359,14 +705,155 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/med.Doctor'
+            $ref: '#/definitions/internal_api_med.GetDoctorOut'
         "500":
           description: Internal Server Error
           schema:
             type: string
       summary: Получить информацию о враче
       tags:
-      - doctors
+      - med
+    patch:
+      description: Обновить врача
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: обновляемые значения
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_med.UpdateDoctorIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: врач
+          schema:
+            $ref: '#/definitions/internal_api_med.UpdateDoctorOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Обновить врача
+      tags:
+      - med
+  /med/doctors/patients:
+    get:
+      description: Получить пациентов врача
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: пациенты
+          schema:
+            $ref: '#/definitions/internal_api_med.GetDoctorPatientsOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Получить пациентов врача
+      tags:
+      - med
+  /med/patient:
+    post:
+      description: создать пациента
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: данные пациента
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/med.PostPatientIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: id пациента
+          schema:
+            $ref: '#/definitions/med.PostPatientOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: создать пациента
+      tags:
+      - med
+  /med/patient/{id}:
+    get:
+      description: Получить пациента
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: patient_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_med.GetPatientOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Получить пациента
+      tags:
+      - med
+    patch:
+      description: обновляет поля пациента
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: patient_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: обновляемые значения
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_med.UpdatePatientIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: пациент
+          schema:
+            $ref: '#/definitions/internal_api_med.UpdatePatientOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: обновляет поля пациента
+      tags:
+      - med
   /uzi/devices:
     get:
       description: получит список uzi апппапапратов

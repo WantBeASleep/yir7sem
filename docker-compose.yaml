@@ -112,6 +112,35 @@ services:
     profiles:
       - deps
 
+  # uzi_service:
+  #   container_name: uzi_service
+  #   build:
+  #     context: ./uzi/
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - ./uzi/.env-docker
+  #   ports:
+  #     - 50060:50055
+  #   depends_on:
+  #     - postgres
+  #     - minio
+  #   profiles:
+  #     - deps
+
+  med_service:
+    container_name: med_service
+    build:
+      context: ./med/
+      dockerfile: Dockerfile
+    env_file:
+      - ./uzi/.env-docker
+    ports:
+      - 50050:50055
+    depends_on:
+      - postgres
+    profiles:
+      - deps
+
   auth_service:
     container_name: auth_service
     build:

@@ -9,14 +9,258 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
-        "/med/doctors": {
+        "/auth/login": {
             "post": {
+                "description": "Получить JWT ключи",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Получить JWT ключи",
+                "parameters": [
+                    {
+                        "description": "почта, пароль",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_auth.LoginIn"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "key pairs",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_auth.LoginOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "description": "Получить JWT ключи",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Получить JWT ключи",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "refresh token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "key pairs",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_auth.RefreshOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Зарегистрирует пользователя (врача)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Зарегистрирует пользователя (врача)",
+                "parameters": [
+                    {
+                        "description": "регистрационные данные",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_auth.RegisterIn"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "user_id",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_auth.RegisterOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/card": {
+            "post": {
+                "description": "создать карту",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "med"
+                ],
+                "summary": "создать карту",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "данные карты",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.PostCardIn"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "id карты",
+                        "schema": {
+                            "$ref": "#/definitions/med.PostCardOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/card/{id}": {
+            "get": {
+                "description": "Получить карту",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "med"
+                ],
+                "summary": "Получить карту",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "patient_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_med.GetCardOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "обновить карту",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "med"
+                ],
+                "summary": "обновить карту",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "patient_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "обновляемые значения",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_med.UpdateCardIn"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "карта",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_med.UpdateCardOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/doctors": {
+            "get": {
                 "description": "Получает информацию о враче",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "doctors"
+                    "med"
                 ],
                 "summary": "Получить информацию о враче",
                 "parameters": [
@@ -32,7 +276,219 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/med.Doctor"
+                            "$ref": "#/definitions/internal_api_med.GetDoctorOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Обновить врача",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "med"
+                ],
+                "summary": "Обновить врача",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "обновляемые значения",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_med.UpdateDoctorIn"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "врач",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_med.UpdateDoctorOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/doctors/patients": {
+            "get": {
+                "description": "Получить пациентов врача",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "med"
+                ],
+                "summary": "Получить пациентов врача",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "пациенты",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_med.GetDoctorPatientsOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/patient": {
+            "post": {
+                "description": "создать пациента",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "med"
+                ],
+                "summary": "создать пациента",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "данные пациента",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/med.PostPatientIn"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "id пациента",
+                        "schema": {
+                            "$ref": "#/definitions/med.PostPatientOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/med/patient/{id}": {
+            "get": {
+                "description": "Получить пациента",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "med"
+                ],
+                "summary": "Получить пациента",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "patient_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_med.GetPatientOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "обновляет поля пациента",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "med"
+                ],
+                "summary": "обновляет поля пациента",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "patient_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "обновляемые значения",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_med.UpdatePatientIn"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "пациент",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_med.UpdatePatientOut"
                         }
                     },
                     "500": {
@@ -631,6 +1087,263 @@
         }
     },
     "definitions": {
+        "internal_api_auth.LoginIn": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_auth.LoginOut": {
+            "type": "object",
+            "properties": {
+                "access_key": {
+                    "type": "string"
+                },
+                "refresh_key": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_auth.RefreshOut": {
+            "type": "object",
+            "properties": {
+                "access_key": {
+                    "type": "string"
+                },
+                "refresh_key": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_auth.RegisterIn": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "fullname": {
+                    "type": "string"
+                },
+                "job": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_auth.RegisterOut": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_med.GetCardOut": {
+            "type": "object",
+            "properties": {
+                "diagnosis": {
+                    "type": "string"
+                },
+                "doctor_id": {
+                    "type": "string"
+                },
+                "patient_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_med.GetDoctorOut": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "job": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_med.GetDoctorPatientsOut": {
+            "type": "object",
+            "properties": {
+                "patients": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_api_med.Patient"
+                    }
+                }
+            }
+        },
+        "internal_api_med.GetPatientOut": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_uzi_date": {
+                    "type": "string"
+                },
+                "malignancy": {
+                    "type": "boolean"
+                },
+                "policy": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_med.Patient": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_uzi_date": {
+                    "type": "string"
+                },
+                "malignancy": {
+                    "type": "boolean"
+                },
+                "policy": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_med.UpdateCardIn": {
+            "type": "object",
+            "properties": {
+                "diagnosis": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_med.UpdateCardOut": {
+            "type": "object",
+            "properties": {
+                "diagnosis": {
+                    "type": "string"
+                },
+                "doctor_id": {
+                    "type": "string"
+                },
+                "patient_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_med.UpdateDoctorIn": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "job": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_med.UpdateDoctorOut": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "job": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_med.UpdatePatientIn": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "last_uzi_date": {
+                    "type": "string"
+                },
+                "malignancy": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "internal_api_med.UpdatePatientOut": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_uzi_date": {
+                    "type": "string"
+                },
+                "malignancy": {
+                    "type": "boolean"
+                },
+                "policy": {
+                    "type": "string"
+                }
+            }
+        },
         "internal_api_uzi.Device": {
             "type": "object",
             "properties": {
@@ -733,22 +1446,52 @@
                 }
             }
         },
-        "med.Doctor": {
+        "med.PostCardIn": {
             "type": "object",
             "properties": {
-                "desc": {
+                "diagnosis": {
                     "type": "string"
                 },
-                "fullname": {
+                "patient_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.PostCardOut": {
+            "type": "object",
+            "properties": {
+                "doctor_id": {
                     "type": "string"
                 },
+                "patient_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.PostPatientIn": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "malignancy": {
+                    "type": "boolean"
+                },
+                "policy": {
+                    "type": "string"
+                }
+            }
+        },
+        "med.PostPatientOut": {
+            "type": "object",
+            "properties": {
                 "id": {
-                    "type": "string"
-                },
-                "job": {
-                    "type": "string"
-                },
-                "org": {
                     "type": "string"
                 }
             }

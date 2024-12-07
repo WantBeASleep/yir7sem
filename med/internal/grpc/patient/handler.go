@@ -2,11 +2,11 @@ package patient
 
 import (
 	"context"
+	"pkg/gtclib"
 
 	"med/internal/domain"
 	pb "med/internal/generated/grpc/service"
 	"med/internal/services/patient"
-	"pkg/gtclib"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"

@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"med/internal/repository/entity"
 	"pkg/daolib"
+
+	"med/internal/repository/entity"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"

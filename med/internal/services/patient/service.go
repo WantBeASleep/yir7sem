@@ -2,8 +2,8 @@ package patient
 
 import (
 	"context"
-	"fmt"
 	"errors"
+	"fmt"
 
 	"med/internal/domain"
 	"med/internal/repository"

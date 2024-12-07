@@ -2,8 +2,8 @@ package refresh
 
 import (
 	"context"
-	"fmt"
 	"errors"
+	"fmt"
 
 	"auth/internal/repository"
 	"auth/internal/repository/entity"

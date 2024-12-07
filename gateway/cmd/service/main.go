@@ -22,9 +22,11 @@ import (
 
 	adapters "gateway/internal/adapters"
 	brokeradapters "gateway/internal/adapters/broker"
+	authgrpcadapter "gateway/internal/adapters/grpc/auth"
 	medgrpcadapter "gateway/internal/adapters/grpc/med"
 	uzigrpcadapter "gateway/internal/adapters/grpc/uzi"
 
+	authhandler "gateway/internal/api/auth"
 	medhandler "gateway/internal/api/med"
 	uzihandler "gateway/internal/api/uzi"
 
@@ -103,18 +105,31 @@ func run() (exitCode int) {
 		return failExitCode
 	}
 
+	authConn, err := grpc.NewClient(
+		cfg.Adapters.AuthUrl,
+		grpc.WithInsecure(),
+		grpc.WithChainUnaryInterceptor(grpclib.ClientCallLogger),
+	)
+	if err != nil {
+		slog.Error("init uziConn", "err", err)
+		return failExitCode
+	}
+
 	medAdapter := medgrpcadapter.New(medConn)
 	uziAdapter := uzigrpcadapter.New(uziConn)
+	authAdapter := authgrpcadapter.New(authConn)
 
 	adapter := adapters.New(
-		nil,
+		authAdapter,
 		medAdapter,
 		uziAdapter,
 		brokeradapter,
 	)
 
+	authHandler := authhandler.New(adapter)
 	medHandler := medhandler.New(adapter)
 	uziHandler := uzihandler.New(adapter, dao)
+
 	// TODO: пробросить ошибки с логированием на верхнем уровне
 	mdlwrs := middleware.New(pubKey)
 
@@ -127,13 +142,30 @@ func run() (exitCode int) {
 
 	apiRouter := r.PathPrefix("/api").Subrouter()
 
+	authRouter := apiRouter.PathPrefix("/auth").Subrouter()
+	authRouter.Use(mdlwrs.Log)
+
+	authRouter.HandleFunc("/register", authHandler.Register).Methods("POST")
+	authRouter.HandleFunc("/login", authHandler.Login).Methods("POST")
+	authRouter.HandleFunc("/refresh", authHandler.Refresh).Methods("POST")
+
 	medRouter := apiRouter.PathPrefix("/med").Subrouter()
-	uziRouter := apiRouter.PathPrefix("/uzi").Subrouter()
-
 	medRouter.Use(mdlwrs.Log, mdlwrs.Jwt)
-	uziRouter.Use(mdlwrs.Log, mdlwrs.Jwt)
 
+	medRouter.HandleFunc("/card/{id}", medHandler.UpdateCard).Methods("PATCH")
+	medRouter.HandleFunc("/card/{id}", medHandler.GetCard).Methods("GET")
+	medRouter.HandleFunc("/card", medHandler.PostCard).Methods("POST")
+
+	medRouter.HandleFunc("/patient/{id}", medHandler.UpdatePatient).Methods("PATCH")
+	medRouter.HandleFunc("/patient/{id}", medHandler.GetPatient).Methods("GET")
+	medRouter.HandleFunc("/patient", medHandler.PostPatient).Methods("POST")
+
+	medRouter.HandleFunc("/doctors", medHandler.UpdateDoctor).Methods("PATCH")
+	medRouter.HandleFunc("/doctors/patient", medHandler.GetDoctorPatients).Methods("GET")
 	medRouter.HandleFunc("/doctors", medHandler.GetDoctor).Methods("GET")
+
+	uziRouter := apiRouter.PathPrefix("/uzi").Subrouter()
+	uziRouter.Use(mdlwrs.Log, mdlwrs.Jwt)
 
 	uziRouter.HandleFunc("/echographics/{id}", uziHandler.PatchEchographics).Methods("PATCH")
 	uziRouter.HandleFunc("/echographics/{id}", uziHandler.GetEchographics).Methods("GET")

@@ -4,11 +4,11 @@ import (
 	"log/slog"
 	"net"
 	"os"
+	"pkg/grpclib"
+	"pkg/loglib"
 
 	"med/internal/config"
 	pkgconfig "pkg/config"
-	"pkg/grpclib"
-	"pkg/loglib"
 
 	"med/internal/repository"
 
