@@ -15,6 +15,7 @@ import (
 type UziHandler interface {
 	CreateUzi(ctx context.Context, req *pb.CreateUziIn) (*pb.CreateUziOut, error)
 	GetUzi(ctx context.Context, in *pb.GetUziIn) (*pb.GetUziOut, error)
+	GetEchographic(ctx context.Context, in *pb.GetEchographicIn) (*pb.GetEchographicOut, error)
 	UpdateUzi(ctx context.Context, req *pb.UpdateUziIn) (*pb.UpdateUziOut, error)
 	UpdateEchographic(ctx context.Context, in *pb.UpdateEchographicIn) (*pb.UpdateEchographicOut, error)
 }
@@ -44,15 +45,26 @@ func (h *handler) CreateUzi(ctx context.Context, in *pb.CreateUziIn) (*pb.Create
 	return &pb.CreateUziOut{Id: uuid.String()}, nil
 }
 
+func (h *handler) GetEchographic(ctx context.Context, in *pb.GetEchographicIn) (*pb.GetEchographicOut, error) {
+	echographic, err := h.uziSrv.GetUziEchographicsByID(ctx, uuid.MustParse(in.Id))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Что то пошло не так: %s", err.Error())
+	}
+
+	pbEchographic := domainEchographicToPb(&echographic)
+
+	return &pb.GetEchographicOut{
+		Echographic: pbEchographic,
+	}, nil
+}
+
 func (h *handler) GetUzi(ctx context.Context, in *pb.GetUziIn) (*pb.GetUziOut, error) {
-	uzi, echographic, err := h.uziSrv.GetUziByID(ctx, uuid.MustParse(in.Id))
+	uzi, err := h.uziSrv.GetUziByID(ctx, uuid.MustParse(in.Id))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Что то пошло не так: %s", err.Error())
 	}
 
 	pbUzi := domainUziToPbUzi(&uzi)
-	pbEchographic := domainEchographicToPb(&echographic)
-	pbUzi.Echographic = pbEchographic
 
 	return &pb.GetUziOut{
 		Uzi: pbUzi,

@@ -16,6 +16,7 @@ type SegmentQuery interface {
 	GetSegmentByPK(id uuid.UUID) (entity.Segment, error)
 	GetSegmentsByNodeID(id uuid.UUID) ([]entity.Segment, error)
 	GetSegmentsByImageID(id uuid.UUID) ([]entity.Segment, error)
+	// GetUziIDBySegmentID(id uuid.UUID) (uuid.UUID, error)
 	UpdateSegment(segment entity.Segment) (int64, error)
 	DeleteSegmentByPK(id uuid.UUID) error
 	DeleteSegmentByUziID(id uuid.UUID) (int64, error)
@@ -130,6 +131,26 @@ func (q *segmentQuery) GetSegmentsByImageID(id uuid.UUID) ([]entity.Segment, err
 
 	return segments, nil
 }
+
+// func (q *segmentQuery) GetUziIDBySegmentID(id uuid.UUID) (uuid.UUID, error) {
+// 	query := q.QueryBuilder().
+// 		Select(
+// 			"uzi.id",
+// 		).
+// 		From(segmentTable).
+// 		InnerJoin("image ON image.id = segment.image_id").
+// 		InnerJoin("uzi ON image.uzi_id = uzi.id").
+// 		Where(sq.Eq{
+// 			"segment.id": id,
+// 		})
+
+// 	var uziID uuid.UUID
+// 	if err := q.Runner().Getx(q.Context(), &uziID, query); err != nil {
+// 		return uuid.Nil, err
+// 	}
+
+// 	return uziID, nil
+// }
 
 func (q *segmentQuery) UpdateSegment(segment entity.Segment) (int64, error) {
 	query := q.QueryBuilder().

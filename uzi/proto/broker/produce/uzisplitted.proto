@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "internal/generated/broker/produce/uzisplitted";
 
-message uziSplitted {
+message UziSplitted {
     string uzi_id = 100;
     repeated string pages_id = 200;
   }

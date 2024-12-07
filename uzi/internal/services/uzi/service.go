@@ -15,7 +15,8 @@ import (
 
 type Service interface {
 	CreateUzi(ctx context.Context, uzi domain.Uzi) (uuid.UUID, error)
-	GetUziByID(ctx context.Context, id uuid.UUID) (domain.Uzi, domain.Echographic, error)
+	GetUziByID(ctx context.Context, id uuid.UUID) (domain.Uzi, error)
+	GetUziEchographicsByID(ctx context.Context, id uuid.UUID) (domain.Echographic, error)
 	UpdateUzi(ctx context.Context, id uuid.UUID, update UpdateUzi) (domain.Uzi, error)
 	UpdateEchographic(ctx context.Context, id uuid.UUID, update UpdateEchographic) (domain.Echographic, error)
 }
@@ -59,22 +60,26 @@ func (s *service) CreateUzi(ctx context.Context, uzi domain.Uzi) (uuid.UUID, err
 	return uzi.Id, nil
 }
 
-func (s *service) GetUziByID(ctx context.Context, id uuid.UUID) (domain.Uzi, domain.Echographic, error) {
+func (s *service) GetUziByID(ctx context.Context, id uuid.UUID) (domain.Uzi, error) {
 	uzi, err := s.dao.NewUziQuery(ctx).GetUziByPK(id)
 	if err != nil {
-		return domain.Uzi{}, domain.Echographic{}, fmt.Errorf("get uzi by pk: %w", err)
+		return domain.Uzi{}, fmt.Errorf("get uzi by pk: %w", err)
 	}
 
-	echographic, err := s.dao.NewEchographicQuery(ctx).GetEchographicByPK(id)
+	return uzi.ToDomain(), nil
+}
+
+func (s *service) GetUziEchographicsByID(ctx context.Context, id uuid.UUID) (domain.Echographic, error) {
+	echographics, err := s.dao.NewEchographicQuery(ctx).GetEchographicByPK(id)
 	if err != nil {
-		return domain.Uzi{}, domain.Echographic{}, fmt.Errorf("get echographic by pk: %w", err)
+		return domain.Echographic{}, fmt.Errorf("get uzi echographics pk: %w", err)
 	}
 
-	return uzi.ToDomain(), echographic.ToDomain(), nil
+	return echographics.ToDomain(), nil
 }
 
 func (s *service) UpdateUzi(ctx context.Context, id uuid.UUID, update UpdateUzi) (domain.Uzi, error) {
-	uzi, _, err := s.GetUziByID(ctx, id)
+	uzi, err := s.GetUziByID(ctx, id)
 	if err != nil {
 		return domain.Uzi{}, fmt.Errorf("get uzi by id: %w", err)
 	}
@@ -88,7 +93,7 @@ func (s *service) UpdateUzi(ctx context.Context, id uuid.UUID, update UpdateUzi)
 }
 
 func (s *service) UpdateEchographic(ctx context.Context, id uuid.UUID, update UpdateEchographic) (domain.Echographic, error) {
-	_, echographic, err := s.GetUziByID(ctx, id)
+	echographic, err := s.GetUziEchographicsByID(ctx, id)
 	if err != nil {
 		return domain.Echographic{}, fmt.Errorf("get uzi by id: %w", err)
 	}

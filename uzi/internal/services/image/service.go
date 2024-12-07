@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"uzi/internal/adapters"
+	uzisplittedpb "uzi/internal/generated/broker/produce/uzisplitted"
+
 	"uzi/internal/domain"
 	"uzi/internal/repository"
 	"uzi/internal/repository/entity"
@@ -21,14 +24,17 @@ type Service interface {
 }
 
 type service struct {
-	dao repository.DAO
+	dao     repository.DAO
+	adapter adapters.Adapter
 }
 
 func New(
 	dao repository.DAO,
+	adapter adapters.Adapter,
 ) Service {
 	return &service{
-		dao: dao,
+		dao:     dao,
+		adapter: adapter,
 	}
 }
 
@@ -74,6 +80,7 @@ func (s *service) GetImageSegmentsWithNodes(ctx context.Context, id uuid.UUID) (
 	return entity.Node{}.SliceToDomain(nodes), entity.Segment{}.SliceToDomain(segments), nil
 }
 
+// TODO: возвращать отсюда ID
 // выгрузить из s3
 // засплитить
 // загрузить в psql
@@ -118,6 +125,13 @@ func (s *service) SplitUzi(ctx context.Context, uziID uuid.UUID) error {
 		if err := fileRepo.LoadFile(ctx, filepath.Join(uziID.String(), v.String(), v.String()), splitted[i]); err != nil {
 			return fmt.Errorf("load file to S3: %w", err)
 		}
+	}
+
+	if err := s.adapter.BrokerAdapter.SendUziSplitted(&uzisplittedpb.UziSplitted{
+		UziId:   uziID.String(),
+		PagesId: uuid.UUIDs(ids).Strings(),
+	}); err != nil {
+		return fmt.Errorf("send to uzisplitted topic: %w", err)
 	}
 
 	return nil

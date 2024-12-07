@@ -34,6 +34,9 @@ import (
 	uziprocessedsubscriber "uzi/internal/subs/uziprocessed"
 	uziuploadsubscriber "uzi/internal/subs/uziupload"
 
+	adapters "uzi/internal/adapters"
+	brokeradapter "uzi/internal/adapters/broker"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/minio/minio-go/v7"
@@ -79,11 +82,17 @@ func run() (exitCode int) {
 		return failExitCode
 	}
 
+	producer, err := brokerlib.NewProducer(cfg.Broker.Addrs)
+	if err != nil {
+		slog.Error("init broker producer", slog.Any("err", err))
+	}
+
 	dao := repository.NewRepository(db, client, "uzi")
+	adapter := adapters.New(brokeradapter.New(producer))
 
 	deviceSrv := devicesrv.New(dao)
 	uziSrv := uzisrv.New(dao)
-	imageSrv := imagesrv.New(dao)
+	imageSrv := imagesrv.New(dao, adapter)
 	nodeSrv := nodesrv.New(dao)
 	serviceSrv := segmentsrv.New(dao)
 
