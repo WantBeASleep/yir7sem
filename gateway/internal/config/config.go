@@ -16,7 +16,7 @@ type Config struct {
 }
 
 type App struct {
-	Url string `env:"url" env-default:"localhost:8080"`
+	Url string `env:"APP_URL" env-default:"localhost:8080"`
 }
 
 type JWT struct {

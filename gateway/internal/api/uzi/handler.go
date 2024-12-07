@@ -17,6 +17,7 @@ import (
 	"gateway/internal/repository"
 
 	"github.com/gorilla/mux"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type Handler struct {
@@ -91,8 +92,6 @@ func (h *Handler) PostUzi(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
 		return
 	}
-
-	w.WriteHeader(200)
 }
 
 // TODO: проверить крайние случае, если что то не приходит например(неправильный id)
@@ -134,8 +133,6 @@ func (h *Handler) PatchUzi(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
 		return
 	}
-
-	w.WriteHeader(200)
 }
 
 // PatchEchographics Обновляет эхографику
@@ -192,8 +189,6 @@ func (h *Handler) PatchEchographics(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
 		return
 	}
-
-	w.WriteHeader(200)
 }
 
 // GetUzi получает uzi
@@ -206,7 +201,7 @@ func (h *Handler) PatchEchographics(w http.ResponseWriter, r *http.Request) {
 //	@Param			id		path		string		true	"uzi_id"
 //	@Success		200		{object}	GetUziOut	"uzi"
 //	@Failure		500		{string}	string		"Internal Server Error"
-//	@Router			/uzi/uzi/{id} [get]
+//	@Router			/uzi/uzis/{id} [get]
 func (h *Handler) GetUzi(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -223,8 +218,35 @@ func (h *Handler) GetUzi(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
 		return
 	}
+}
 
-	w.WriteHeader(200)
+// GetEchographics получает uzi
+//
+//	@Summary		получает эхографику uzi
+//	@Description	получает эхографику uzi
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string				true	"access_token"
+//	@Param			id		path		string				true	"uzi_id"
+//	@Success		200		{object}	GetEchographicsOut	"echographics"
+//	@Failure		500		{string}	string				"Internal Server Error"
+//	@Router			/uzi/echographics/{id} [get]
+func (h *Handler) GetEchographics(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	resp, err := h.adapter.UziAdapter.GetEchographic(ctx, &uzipb.GetEchographicIn{Id: id})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+	// TODO: понять почему тут узи возвращается без эхографикой, а тут с
+	// TODO: подумать над content-tpye в ответе(посмотреть в каком порядке выставлять функции для ответа)
+	if err := json.NewEncoder(w).Encode(resp.Echographic); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
 }
 
 // GetUziImages получает id картинок uzi
@@ -253,8 +275,6 @@ func (h *Handler) GetUziImages(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
 		return
 	}
-
-	w.WriteHeader(200)
 }
 
 // GetUziNodeSegments получит ноды и сегменты на указанном изображении
@@ -286,6 +306,246 @@ func (h *Handler) GetUziNodeSegments(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
 		return
 	}
+}
 
-	w.WriteHeader(200)
+// GetUziDevice получит список uzi апппапапратов
+//
+//	@Summary		получит список uzi апппапапратов
+//	@Description	получит список uzi апппапапратов
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string			true	"access_token"
+//	@Success		200		{object}	GetUziDeviceOut	"uzi аппараты"
+//	@Failure		500		{string}	string			"Internal Server Error"
+//	@Router			/uzi/devices [get]
+func (h *Handler) GetUziDevices(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	resp, err := h.adapter.UziAdapter.GetDeviceList(ctx, &emptypb.Empty{})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+}
+
+// PostNodes добавить узел с сегментами
+//
+//	@Summary		добавить узел с сегментами
+//	@Description	добавить узел с сегментами
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string		true	"access_token"
+//	@Param			node	body		PostNodeIn	true	"узел с сегментами"
+//	@Success		200		{object}	PostNodeOut	"id узла"
+//	@Failure		500		{string}	string		"Internal Server Error"
+//	@Router			/uzi/nodes [post]
+func (h *Handler) PostNodes(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var req PostNodeIn
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	segments := make([]*uzipb.CreateNodeIn_NestedSegment, 0, len(req.Segments))
+	for _, v := range req.Segments {
+		segments = append(segments, &uzipb.CreateNodeIn_NestedSegment{
+			ImageId:   v.ImageID.String(),
+			Contor:    v.Contor,
+			Tirads_23: v.Tirads23,
+			Tirads_4:  v.Tirads4,
+			Tirads_5:  v.Tirads5,
+		})
+	}
+
+	resp, err := h.adapter.UziAdapter.CreateNode(ctx, &uzipb.CreateNodeIn{
+		Segments:  segments,
+		Tirads_23: req.Tirads23,
+		Tirads_4:  req.Tirads4,
+		Tirads_5:  req.Tirads5,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+}
+
+// DeleteNode удалит узел
+//
+//	@Summary		удалит узел
+//	@Description	удалит узел
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string	true	"access_token"
+//	@Success		200		{string}	string	"molodec"
+//	@Failure		500		{string}	string	"Internal Server Error"
+//	@Router			/uzi/nodes/{id} [delete]
+func (h *Handler) DeleteNode(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	resp, err := h.adapter.UziAdapter.DeleteNode(ctx, &uzipb.DeleteNodeIn{Id: id})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+}
+
+// PatchNode обновит узел
+//
+//	@Summary		обновит узел
+//	@Description	обновит узел
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			node	body		PatchNodeIn		true	"узел с сегментами"
+//	@Success		200		{object}	PatchNodeOut	"обновленный узел"
+//	@Failure		500		{string}	string			"Internal Server Error"
+//	@Router			/uzi/nodes/{id} [patch]
+func (h *Handler) PatchNode(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	var req PatchNodeIn
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	resp, err := h.adapter.UziAdapter.UpdateNode(ctx, &uzipb.UpdateNodeIn{
+		Id:        id,
+		Tirads_23: req.Tirads23,
+		Tirads_4:  req.Tirads4,
+		Tirads_5:  req.Tirads5,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp.Node); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+}
+
+// TODO: нет валидации что если ноды нет
+// PostSegment добавит новый сегмент к указанному узлу
+//
+//	@Summary		добавит новый сегмент к указанному узлу
+//	@Description	добавит новый сегмент к указанному узлу
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			node	body		PostSegmentIn	true	"сегмент"
+//	@Success		200		{object}	PostSegmentOut	"id узла"
+//	@Failure		500		{string}	string			"Internal Server Error"
+//	@Router			/uzi/segments [post]
+func (h *Handler) PostSegment(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var req PostSegmentIn
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	resp, err := h.adapter.UziAdapter.CreateSegment(ctx, &uzipb.CreateSegmentIn{
+		ImageId:   req.ImageID.String(),
+		NodeId:    req.NodeID.String(),
+		Contor:    req.Contor,
+		Tirads_23: req.Tirads23,
+		Tirads_4:  req.Tirads4,
+		Tirads_5:  req.Tirads5,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+}
+
+// DeleteSegment удалит сегмент
+//
+//	@Summary		удалит сегмент
+//	@Description	удалит сегмент, ЕСЛИ У УЗЛА НЕ ОСТАНЕТСЯ СЕГМЕНТОВ, ОН ТОЖЕ БУДЕТ УДАЛЕН
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string	true	"access_token"
+//	@Success		200		{string}	string	"molodec"
+//	@Failure		500		{string}	string	"Internal Server Error"
+//	@Router			/uzi/segments/{id} [delete]
+func (h *Handler) DeleteSegment(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	resp, err := h.adapter.UziAdapter.DeleteSegment(ctx, &uzipb.DeleteSegmentIn{Id: id})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+}
+
+// PatchSegment обновит сегмент
+//
+//	@Summary		обновит сегмент
+//	@Description	обновит сегмент
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			node	body		PatchSegmentIn	true	"узел с сегментами"
+//	@Success		200		{object}	PatchSegmentOut	"обновленный узел"
+//	@Failure		500		{string}	string			"Internal Server Error"
+//	@Router			/uzi/segments/{id} [patch]
+func (h *Handler) PatchSegment(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	var req PatchSegmentIn
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	resp, err := h.adapter.UziAdapter.UpdateSegment(ctx, &uzipb.UpdateSegmentIn{
+		Id:        id,
+		Tirads_23: req.Tirads23,
+		Tirads_4:  req.Tirads4,
+		Tirads_5:  req.Tirads5,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp.Segment); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
 }

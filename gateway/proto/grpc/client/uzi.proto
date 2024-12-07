@@ -9,8 +9,9 @@ service UziSrv {
 
   rpc createUzi(CreateUziIn) returns (CreateUziOut);
   rpc updateUzi(UpdateUziIn) returns (UpdateUziOut);
-  rpc updateEchographic(UpdateEchographicIn) returns (UpdateEchographicOut);
   rpc getUzi(GetUziIn) returns (GetUziOut);
+  rpc updateEchographic(UpdateEchographicIn) returns (UpdateEchographicOut);
+  rpc getEchographic(GetEchographicIn) returns (GetEchographicOut);
 
   rpc getUziImages(GetUziImagesIn) returns (GetUziImagesOut);
   rpc getImageSegmentsWithNodes(GetImageSegmentsWithNodesIn)
@@ -66,16 +67,19 @@ message UpdateEchographicIn {
 
 message UpdateEchographicOut { Echographic echographic = 400; }
 
+message GetEchographicIn { string id = 100; }
+
+message GetEchographicOut { Echographic echographic = 400; }
+
 // UZI
 
 message Uzi {
   string id = 100;
   string projection = 300;
   bool checked = 400;
-  Echographic echographic = 500;
-  string patient_id = 600;
-  int64 device_id = 700;
-  string create_at = 800;
+  string patient_id = 500;
+  int64 device_id = 600;
+  string create_at = 700;
 }
 
 message CreateUziIn {
@@ -136,10 +140,9 @@ message DeleteSegmentIn { string id = 100; }
 
 message UpdateSegmentIn {
   string id = 100;
-  optional string contor = 300;
-  optional double tirads_23 = 400;
-  optional double tirads_4 = 500;
-  optional double tirads_5 = 600;
+  optional double tirads_23 = 200;
+  optional double tirads_4 = 300;
+  optional double tirads_5 = 400;
 }
 
 message UpdateSegmentOut { Segment segment = 100; }

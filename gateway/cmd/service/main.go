@@ -136,12 +136,24 @@ func run() (exitCode int) {
 	medRouter.HandleFunc("/doctors", medHandler.GetDoctor).Methods("GET")
 
 	uziRouter.HandleFunc("/echographics/{id}", uziHandler.PatchEchographics).Methods("PATCH")
+	uziRouter.HandleFunc("/echographics/{id}", uziHandler.GetEchographics).Methods("GET")
+
+	uziRouter.HandleFunc("/segments/{id}", uziHandler.PatchSegment).Methods("PATCH")
+	uziRouter.HandleFunc("/segments/{id}", uziHandler.DeleteSegment).Methods("DELETE")
+	uziRouter.HandleFunc("/segments", uziHandler.PostSegment).Methods("POST")
+
+	uziRouter.HandleFunc("/nodes/{id}", uziHandler.PatchNode).Methods("PATCH")
+	uziRouter.HandleFunc("/nodes/{id}", uziHandler.DeleteNode).Methods("DELETE")
+	uziRouter.HandleFunc("/nodes", uziHandler.PostNodes).Methods("POST")
 
 	uziRouter.HandleFunc("/images/{id}/nodes-segments", uziHandler.GetUziNodeSegments).Methods("GET")
+
 	uziRouter.HandleFunc("/uzis/{id}/images", uziHandler.GetUziImages).Methods("GET")
 	uziRouter.HandleFunc("/uzis/{id}", uziHandler.GetUzi).Methods("GET")
 	uziRouter.HandleFunc("/uzis/{id}", uziHandler.PatchUzi).Methods("PATCH")
 	uziRouter.HandleFunc("/uzis", uziHandler.PostUzi).Methods("POST")
+
+	uziRouter.HandleFunc("/devices", uziHandler.GetUziDevices).Methods("GET")
 
 	slog.Info("start serve", slog.String("url", cfg.App.Url))
 	if err := http.ListenAndServe(cfg.App.Url, r); err != nil {

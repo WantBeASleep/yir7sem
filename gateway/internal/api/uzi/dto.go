@@ -7,13 +7,12 @@ import (
 )
 
 type Uzi struct {
-	Id          uuid.UUID   `json:"id"`
-	Projection  string      `json:"projection"`
-	Checked     bool        `json:"checked"`
-	Echographic Echographic `json:"echographic"`
-	PatientID   uuid.UUID   `json:"patient_id"`
-	DeviceID    int         `json:"device_id"`
-	CreateAt    time.Time   `json:"create_at"`
+	Id         uuid.UUID `json:"id"`
+	Projection string    `json:"projection"`
+	Checked    bool      `json:"checked"`
+	PatientID  uuid.UUID `json:"patient_id"`
+	DeviceID   int       `json:"device_id"`
+	CreateAt   time.Time `json:"create_at"`
 }
 
 type Echographic struct {
@@ -106,6 +105,12 @@ type GetUziOut struct {
 	Uzi
 }
 
+type GetEchographicsIn struct{}
+
+type GetEchographicsOut struct {
+	Echographic
+}
+
 type GetUziImagesIn struct{}
 
 type GetUziImagesOut struct {
@@ -117,4 +122,71 @@ type GetUziNodeSegmentsIn struct{}
 type GetUziNodeSegmentsOut struct {
 	Nodes    []Node    `json:"nodes"`
 	Segments []Segment `json:"segments"`
+}
+
+type GetUziDeviceIn struct{}
+
+type GetUziDeviceOut struct {
+	Devices []Device `json:"devices"`
+}
+
+type PostNodeIn struct {
+	Segments []struct {
+		ImageID  uuid.UUID `json:"image_id"`
+		Contor   string    `json:"contor"`
+		Tirads23 float64   `json:"tirads23"`
+		Tirads4  float64   `json:"tirads4"`
+		Tirads5  float64   `json:"tirads5"`
+	} `json:"segments"`
+
+	Tirads23 float64 `json:"tirads23"`
+	Tirads4  float64 `json:"tirads4"`
+	Tirads5  float64 `json:"tirads5"`
+}
+
+type PostNodeOut struct {
+	Id uuid.UUID `json:"id"`
+}
+
+type (
+	DeleteNodeIn  struct{}
+	DeleteNodeOut struct{}
+)
+
+type PatchNodeIn struct {
+	Tirads23 *float64 `json:"tirads23"`
+	Tirads4  *float64 `json:"tirads4"`
+	Tirads5  *float64 `json:"tirads5"`
+}
+
+type PatchNodeOut struct {
+	Node
+}
+
+type PostSegmentIn struct {
+	ImageID  uuid.UUID `json:"image_id"`
+	NodeID   uuid.UUID `json:"node_id"`
+	Contor   string    `json:"contor"`
+	Tirads23 float64   `json:"tirads23"`
+	Tirads4  float64   `json:"tirads4"`
+	Tirads5  float64   `json:"tirads5"`
+}
+
+type PostSegmentOut struct {
+	Id uuid.UUID `json:"id"`
+}
+
+type (
+	DeleteSegmentIn  struct{}
+	DeleteSegmentOut struct{}
+)
+
+type PatchSegmentIn struct {
+	Tirads23 *float64 `json:"tirads23"`
+	Tirads4  *float64 `json:"tirads4"`
+	Tirads5  *float64 `json:"tirads5"`
+}
+
+type PatchSegmentOut struct {
+	Segment
 }
