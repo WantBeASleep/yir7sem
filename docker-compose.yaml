@@ -92,3 +92,24 @@ services:
       - 8081:8080
     depends_on:
       - redpanda-0
+
+  ml_service:
+    container_name: ml_service
+    build: 
+      context: ./ml_service/
+      dockerfile: Dockerfile
+    depends_on:
+      - redpanda-0
+
+  auth_service:
+    container_name: auth_service
+    build:
+      context: ./auth/
+      dockerfile: Dockerfile
+    env_file:
+      - ./auth/.env-docker
+    ports:
+      - 50055:50040
+    depends_on:
+      - postgres
+    

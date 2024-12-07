@@ -34,7 +34,6 @@ tasks:
 
   build:
     cmds:
-      - task: codegen
       - task: style
       - go build -v -o bin/service cmd/service/main.go
 

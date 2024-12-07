@@ -19,7 +19,7 @@ func NewProducer(addr []string) (Producer, error) {
 	if err != nil {
 		return nil, fmt.Errorf("create new producer: %w", err)
 	}
-	
+
 	return &producer{
 		prod: prod,
 	}, nil
