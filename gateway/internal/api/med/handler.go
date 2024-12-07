@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"net/http"
 
-	grpcadapters "gateway/internal/adapters/grpc"
+	adapters "gateway/internal/adapters"
 	pb "gateway/internal/generated/grpc/client/med"
 )
 
 type Handler struct {
-	adapter grpcadapters.Adapter
+	adapter adapters.Adapter
 }
 
 func New(
-	adapter grpcadapters.Adapter,
+	adapter adapters.Adapter,
 ) *Handler {
 	return &Handler{
 		adapter: adapter,

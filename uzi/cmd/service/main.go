@@ -31,8 +31,8 @@ import (
 	segmenthandler "uzi/internal/grpc/segment"
 	uzihandler "uzi/internal/grpc/uzi"
 
-	uziprocessedsubscriber "uzi/internal/broker/uziprocessed"
-	uziuploadsubscriber "uzi/internal/broker/uziupload"
+	uziprocessedsubscriber "uzi/internal/subs/uziprocessed"
+	uziuploadsubscriber "uzi/internal/subs/uziupload"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"

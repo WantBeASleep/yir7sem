@@ -4,6 +4,9 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"pkg/brokerlib"
+	"pkg/grpclib"
+	"pkg/loglib"
 
 	_ "gateway/docs"
 
@@ -14,14 +17,11 @@ import (
 
 	"gateway/internal/config"
 	"gateway/internal/repository"
-	"pkg/brokerlib"
+
 	pkgconfig "pkg/config"
-	"pkg/grpclib"
-	"pkg/loglib"
 
+	adapters "gateway/internal/adapters"
 	brokeradapters "gateway/internal/adapters/broker"
-
-	grpcadapters "gateway/internal/adapters/grpc"
 	medgrpcadapter "gateway/internal/adapters/grpc/med"
 	uzigrpcadapter "gateway/internal/adapters/grpc/uzi"
 
@@ -106,14 +106,15 @@ func run() (exitCode int) {
 	medAdapter := medgrpcadapter.New(medConn)
 	uziAdapter := uzigrpcadapter.New(uziConn)
 
-	grpcadapter := grpcadapters.New(
+	adapter := adapters.New(
 		nil,
 		medAdapter,
 		uziAdapter,
+		brokeradapter,
 	)
 
-	medHandler := medhandler.New(grpcadapter)
-	uziHandler := uzihandler.New(grpcadapter, brokeradapter, dao)
+	medHandler := medhandler.New(adapter)
+	uziHandler := uzihandler.New(adapter, dao)
 	// TODO: пробросить ошибки с логированием на верхнем уровне
 	mdlwrs := middleware.New(pubKey)
 

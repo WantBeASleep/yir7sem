@@ -1,8 +1,6 @@
 package brokerlib
 
 import (
-	"fmt"
-
 	"github.com/IBM/sarama"
 )
 
@@ -17,7 +15,7 @@ type producer struct {
 func NewProducer(addr []string) (Producer, error) {
 	prod, err := sarama.NewSyncProducer(addr, nil)
 	if err != nil {
-		return nil, fmt.Errorf("create new producer: %w", err)
+		return nil, err
 	}
 
 	return &producer{
@@ -32,7 +30,7 @@ func (p *producer) Send(topic, key string, payload []byte) error {
 		Value: sarama.ByteEncoder(payload),
 	})
 	if err != nil {
-		return fmt.Errorf("send msg: %w", err)
+		return err
 	}
 
 	return nil

@@ -27,19 +27,19 @@ func ServerCallLoggerInterceptor(
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		slog.WarnContext(ctx, "Server call w/o metadata aborted", slog.String(methodKey, info.FullMethod))
-		return nil, status.Error(codes.Unauthenticated, "request id required")
+		return nil, status.Error(codes.Unauthenticated, "x-request_id required")
 	}
 
 	requestIDArr := md.Get(requestIdKey)
 	if len(requestIDArr) != 1 {
 		slog.WarnContext(ctx, "Server call w/o request id aborted", slog.String(methodKey, info.FullMethod))
-		return nil, status.Error(codes.Unauthenticated, "request id required")
+		return nil, status.Error(codes.Unauthenticated, "x-request_id required")
 	}
 
 	requestID, err := uuid.Parse(requestIDArr[0])
 	if err != nil {
 		slog.WarnContext(ctx, "Server call w/o request id aborted", slog.String(methodKey, info.FullMethod))
-		return nil, status.Error(codes.Unauthenticated, "request id invalid")
+		return nil, status.Error(codes.Unauthenticated, "x-request_id invalid")
 	}
 
 	ctx = ctxlib.PublicSet(ctx, requestIdKey, requestID)

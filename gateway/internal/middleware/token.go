@@ -2,10 +2,8 @@ package middleware
 
 import (
 	"crypto/rsa"
-	"fmt"
 	"log/slog"
 	"net/http"
-
 	"pkg/ctxlib"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -33,13 +31,7 @@ func (m *middlewares) Jwt(next http.Handler) http.Handler {
 			return
 		}
 
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-				return nil, fmt.Errorf("fake token")
-			}
-			return m.publicKey, nil
-		})
-
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) { return m.publicKey, nil })
 		if err != nil || !token.Valid {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
@@ -48,6 +40,9 @@ func (m *middlewares) Jwt(next http.Handler) http.Handler {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			if userID, ok := claims["x-user_id"].(string); ok {
 				r.Header.Set("x-user_id", userID)
+			} else {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
 			}
 		} else {
 			http.Error(w, "Forbidden", http.StatusForbidden)

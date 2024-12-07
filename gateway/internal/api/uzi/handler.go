@@ -9,8 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	brokeradapters "gateway/internal/adapters/broker"
-	grpcadapters "gateway/internal/adapters/grpc"
+	adapters "gateway/internal/adapters"
 	"gateway/internal/domain"
 
 	uziuploadpb "gateway/internal/generated/broker/produce/uziupload"
@@ -21,20 +20,17 @@ import (
 )
 
 type Handler struct {
-	grpcadapter   grpcadapters.Adapter
-	brokeradapter brokeradapters.Adapter
-	dao           repository.DAO
+	adapter adapters.Adapter
+	dao     repository.DAO
 }
 
 func New(
-	grpcadapter grpcadapters.Adapter,
-	brokeradapter brokeradapters.Adapter,
+	adapter adapters.Adapter,
 	dao repository.DAO,
 ) *Handler {
 	return &Handler{
-		grpcadapter:   grpcadapter,
-		brokeradapter: brokeradapter,
-		dao:           dao,
+		adapter: adapter,
+		dao:     dao,
 	}
 }
 
@@ -59,7 +55,7 @@ func (h *Handler) PostUzi(w http.ResponseWriter, r *http.Request) {
 	patientID := r.FormValue("patient_id")
 	deviceID, _ := strconv.Atoi(r.FormValue("device_id"))
 
-	uziResp, err := h.grpcadapter.UziAdapter.CreateUzi(ctx, &uzipb.CreateUziIn{
+	uziResp, err := h.adapter.UziAdapter.CreateUzi(ctx, &uzipb.CreateUziIn{
 		Projection: projection,
 		PatientId:  patientID,
 		DeviceId:   int64(deviceID),
@@ -91,7 +87,7 @@ func (h *Handler) PostUzi(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: нужна тотальная сага тут
-	if err := h.brokeradapter.SendUziUpload(&uziuploadpb.UziUpload{UziId: uziResp.Id}); err != nil {
+	if err := h.adapter.BrokerAdapter.SendUziUpload(&uziuploadpb.UziUpload{UziId: uziResp.Id}); err != nil {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
 		return
 	}
@@ -124,7 +120,7 @@ func (h *Handler) PatchUzi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.grpcadapter.UziAdapter.UpdateUzi(ctx, &uzipb.UpdateUziIn{
+	resp, err := h.adapter.UziAdapter.UpdateUzi(ctx, &uzipb.UpdateUziIn{
 		Id:         id,
 		Projection: req.Projection,
 		Checked:    req.Checked,
@@ -165,7 +161,7 @@ func (h *Handler) PatchEchographics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.grpcadapter.UziAdapter.UpdateEchographic(ctx, &uzipb.UpdateEchographicIn{
+	resp, err := h.adapter.UziAdapter.UpdateEchographic(ctx, &uzipb.UpdateEchographicIn{
 		Echographic: &uzipb.Echographic{
 			Id:              id,
 			LeftLobeLength:  req.LeftLobeLength,
@@ -216,7 +212,7 @@ func (h *Handler) GetUzi(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 
-	resp, err := h.grpcadapter.UziAdapter.GetUzi(ctx, &uzipb.GetUziIn{Id: id})
+	resp, err := h.adapter.UziAdapter.GetUzi(ctx, &uzipb.GetUziIn{Id: id})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
 		return
@@ -247,7 +243,7 @@ func (h *Handler) GetUziImages(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 
-	resp, err := h.grpcadapter.UziAdapter.GetUziImages(ctx, &uzipb.GetUziImagesIn{UziId: id})
+	resp, err := h.adapter.UziAdapter.GetUziImages(ctx, &uzipb.GetUziImagesIn{UziId: id})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
 		return
@@ -277,7 +273,7 @@ func (h *Handler) GetUziNodeSegments(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 
-	resp, err := h.grpcadapter.UziAdapter.GetImageSegmentsWithNodes(
+	resp, err := h.adapter.UziAdapter.GetImageSegmentsWithNodes(
 		ctx,
 		&uzipb.GetImageSegmentsWithNodesIn{Id: id},
 	)
