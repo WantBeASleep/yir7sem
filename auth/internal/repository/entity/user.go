@@ -2,9 +2,9 @@ package entity
 
 import (
 	"database/sql"
+	"pkg/gtclib"
 
 	"auth/internal/domain"
-	"auth/pkg/gtclib"
 
 	"github.com/google/uuid"
 )

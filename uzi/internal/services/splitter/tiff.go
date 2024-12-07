@@ -3,8 +3,8 @@ package splitter
 import (
 	"fmt"
 
+	"pkg/slicer"
 	"uzi/internal/domain"
-	"uzi/pkg/slicer"
 
 	"github.com/chai2010/tiff"
 )

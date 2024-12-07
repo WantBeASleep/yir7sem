@@ -1,14 +1,14 @@
 package config
 
 type Config struct {
-	App    App `yaml:"app"`
+	App    App 
 	DB     DB
 	S3     S3
 	Broker Broker
 }
 
 type App struct {
-	Url string `yaml:"url" env:"url" env-default:"localhost:50060"`
+	Url string `env:"url" env-default:"localhost:50060"`
 }
 
 type DB struct {

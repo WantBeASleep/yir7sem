@@ -2,9 +2,9 @@ package repository
 
 import (
 	"fmt"
+	"pkg/daolib"
 
 	"auth/internal/repository/entity"
-	"auth/pkg/daolib"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"

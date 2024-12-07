@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	"med/internal/domain"
-	"med/pkg/gtclib"
+	"pkg/gtclib"
 
 	"github.com/google/uuid"
 )

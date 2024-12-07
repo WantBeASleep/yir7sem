@@ -9,13 +9,13 @@ import (
 )
 
 type Config struct {
-	App App `yaml:"app"`
-	DB  DB  `yaml:"db"`
-	JWT JWT `yaml:"jwt"`
+	App App
+	DB  DB
+	JWT JWT
 }
 
 type App struct {
-	Url string `yaml:"url" env:"APP_URL" env-default:"localhost:50055"`
+	Url string `env:"APP_URL" env-default:"localhost:50055"`
 }
 
 type DB struct {
@@ -23,8 +23,8 @@ type DB struct {
 }
 
 type JWT struct {
-	AccessTokenTime  time.Duration `yaml:"access_token_time" env:"JWT_TOKEN_AC_TIME" env-default:"5m"`
-	RefreshTokenTime time.Duration `yaml:"refresh_token_time" env:"JWT_TOKEN_RE_TIME" env-default:"24h"`
+	AccessTokenTime  time.Duration `env:"JWT_TOKEN_AC_TIME" env-default:"5m"`
+	RefreshTokenTime time.Duration `env:"JWT_TOKEN_RE_TIME" env-default:"24h"`
 	RsaPublicKey     string        `env:"JWT_KEY_PUBLIC" env-required:"true"`
 	RsaPrivateKey    string        `env:"JWT_KEY_PRIVATE" env-required:"true"`
 }

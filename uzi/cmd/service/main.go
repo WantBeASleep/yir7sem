@@ -7,11 +7,11 @@ import (
 	"net"
 	"os"
 
+	"pkg/brokerlib"
+	pkgconfig "pkg/config"
+	"pkg/grpclib"
+	"pkg/loglib"
 	"uzi/internal/config"
-	"uzi/pkg/brokerlib"
-	pkgconfig "uzi/pkg/config"
-	"uzi/pkg/grpclib"
-	"uzi/pkg/loglib"
 
 	"uzi/internal/repository"
 
@@ -41,10 +41,6 @@ import (
 )
 
 const (
-	defaultCfgPath = "service.yml"
-)
-
-const (
 	successExitCode = 0
 	failExitCode    = 1
 )
@@ -55,7 +51,7 @@ func main() {
 
 func run() (exitCode int) {
 	loglib.InitLogger(loglib.WithDevEnv())
-	cfg, err := pkgconfig.Load[config.Config](defaultCfgPath)
+	cfg, err := pkgconfig.Load[config.Config]()
 	if err != nil {
 		slog.Error("init config", "err", err)
 		return failExitCode

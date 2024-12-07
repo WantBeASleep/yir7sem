@@ -3,7 +3,7 @@ package broker
 import (
 	"fmt"
 
-	"gateway/pkg/brokerlib"
+	"pkg/brokerlib"
 
 	uziuploadpb "gateway/internal/generated/broker/produce/uziupload"
 

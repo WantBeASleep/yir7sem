@@ -3,8 +3,8 @@ package repository
 import (
 	"fmt"
 
+	"pkg/daolib"
 	"uzi/internal/repository/entity"
-	"uzi/pkg/daolib"
 )
 
 const deviceTable = "device"

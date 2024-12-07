@@ -4,11 +4,11 @@ import (
 	"log/slog"
 	"net"
 	"os"
+	"pkg/grpclib"
+	"pkg/loglib"
 
 	"auth/internal/config"
-	pkgconfig "auth/pkg/config"
-	"auth/pkg/grpclib"
-	"auth/pkg/loglib"
+	pkgconfig "pkg/config"
 
 	"auth/internal/repository"
 
@@ -31,10 +31,6 @@ import (
 )
 
 const (
-	defaultCfgPath = "./service.yml"
-)
-
-const (
 	successExitCode = 0
 	failExitCode    = 1
 )
@@ -45,7 +41,7 @@ func main() {
 
 func run() (exitCode int) {
 	loglib.InitLogger(loglib.WithDevEnv())
-	cfg, err := pkgconfig.Load[config.Config](defaultCfgPath)
+	cfg, err := pkgconfig.Load[config.Config]()
 	if err != nil {
 		slog.Error("init config", "err", err)
 		return failExitCode

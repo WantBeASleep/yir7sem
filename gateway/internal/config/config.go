@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	App      App `yaml:"app"`
+	App      App
 	Adapters Adapters
 	S3       S3
 	Broker   Broker
@@ -16,7 +16,7 @@ type Config struct {
 }
 
 type App struct {
-	Url string `yaml:"url" env:"url" env-default:"localhost:8080"`
+	Url string `env:"url" env-default:"localhost:8080"`
 }
 
 type JWT struct {

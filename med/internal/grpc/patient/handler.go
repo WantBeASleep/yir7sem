@@ -6,7 +6,7 @@ import (
 	"med/internal/domain"
 	pb "med/internal/generated/grpc/service"
 	"med/internal/services/patient"
-	"med/pkg/gtclib"
+	"pkg/gtclib"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"

@@ -3,8 +3,8 @@ package repository
 import (
 	"fmt"
 
+	"pkg/daolib"
 	"uzi/internal/repository/entity"
-	"uzi/pkg/daolib"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"

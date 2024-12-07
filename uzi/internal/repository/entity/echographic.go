@@ -3,8 +3,8 @@ package entity
 import (
 	"database/sql"
 
+	"pkg/gtclib"
 	"uzi/internal/domain"
-	"uzi/pkg/gtclib"
 
 	"github.com/google/uuid"
 )

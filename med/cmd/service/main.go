@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"med/internal/config"
-	pkgconfig "med/pkg/config"
-	"med/pkg/grpclib"
-	"med/pkg/loglib"
+	pkgconfig "pkg/config"
+	"pkg/grpclib"
+	"pkg/loglib"
 
 	"med/internal/repository"
 
@@ -29,10 +29,6 @@ import (
 )
 
 const (
-	defaultCfgPath = "service.yml"
-)
-
-const (
 	successExitCode = 0
 	failExitCode    = 1
 )
@@ -43,7 +39,7 @@ func main() {
 
 func run() (exitCode int) {
 	loglib.InitLogger(loglib.WithDevEnv())
-	cfg, err := pkgconfig.Load[config.Config](defaultCfgPath)
+	cfg, err := pkgconfig.Load[config.Config]()
 	if err != nil {
 		slog.Error("init config", "err", err)
 		return failExitCode

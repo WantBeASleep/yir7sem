@@ -1,8 +1,8 @@
 package main
 
 import (
+	"pkg/brokerlib"
 	pb "uzi/internal/generated/broker/produce/uzisplitted"
-	"uzi/pkg/brokerlib"
 
 	"google.golang.org/protobuf/proto"
 )

@@ -14,10 +14,10 @@ import (
 
 	"gateway/internal/config"
 	"gateway/internal/repository"
-	"gateway/pkg/brokerlib"
-	pkgconfig "gateway/pkg/config"
-	"gateway/pkg/grpclib"
-	"gateway/pkg/loglib"
+	"pkg/brokerlib"
+	pkgconfig "pkg/config"
+	"pkg/grpclib"
+	"pkg/loglib"
 
 	brokeradapters "gateway/internal/adapters/broker"
 
@@ -31,10 +31,6 @@ import (
 	"gateway/internal/middleware"
 
 	"github.com/minio/minio-go/v7/pkg/credentials"
-)
-
-const (
-	defaultCfgPath = "service.yml"
 )
 
 const (
@@ -53,7 +49,7 @@ func main() {
 
 func run() (exitCode int) {
 	loglib.InitLogger(loglib.WithDevEnv())
-	cfg, err := pkgconfig.Load[config.Config](defaultCfgPath)
+	cfg, err := pkgconfig.Load[config.Config]()
 	if err != nil {
 		slog.Error("init config", "err", err)
 		return failExitCode

@@ -8,3 +8,7 @@ tasks:
     cmds:
       - for: { var: services }
         cmd: rm -rf {{.ITEM}}/pkg && cp -r pkg {{.ITEM}}/pkg
+  fix-go-mod:
+    cmds:
+      - for: { var: services }
+        cmd: cd {{.ITEM}} && go mod tidy

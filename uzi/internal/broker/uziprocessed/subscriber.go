@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"log/slog"
 
+	"pkg/brokerlib"
 	"uzi/internal/domain"
 	pb "uzi/internal/generated/broker/consume/uziprocessed"
 	"uzi/internal/services/node"
-	"uzi/pkg/brokerlib"
 
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"

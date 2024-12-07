@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"med/internal/repository/entity"
-	"med/pkg/daolib"
+	"pkg/daolib"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
