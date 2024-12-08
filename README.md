@@ -1,5 +1,7 @@
 # Сервис обработки узи МРТ снимков
 
+__РУЧКИ В SWAGGER БЕЗ ПРИПИСКИ API__
+
 ## Общая архитектура
 
 ![all_services_shema](./docs/assets/all_services_shema.png)
@@ -36,7 +38,9 @@ __КАК ЗАПУСТИТЬ?__
         - uziupload
         - uzisplitted
         - uziprocessed
-5) docker compose --profile app up -d
+5) __ОПЦИОНАЛЬНО__: каждое узи должно быть привязанно к uzi_device, нужно добавить это в бд шоб работало
+    * pgAdmin/DataGrip/Расширение vscode для баз данных, заходите в uzidb, таблица `device` добавляете что угодно, этот id потом юзаете при post /uzi/uzis, этот device_id
+6) docker compose --profile app up -d
 
 Если не сносить docker volume's, то операцию нужно будет делать всего 1 раз
 
