@@ -21,6 +21,7 @@ __РУЧКИ В SWAGGER БЕЗ ПРИПИСКИ API__
 _psql db: authdb, meddb, uzidb_. Создаются при инициализации docker volume. Миграции накатываются при запуске контейнера. __ПОРТ 5433__
 
 __КАК ЗАПУСТИТЬ?__
+
 0) добыть веса для нейронки (Г-52 Пн-Вт 13:00 - 13:15) и положить ml_service/ml_service/internal/ml_model/models/cross и all
 
 ![weights_tree](./docs/assets/weights_tree.png)
@@ -33,7 +34,7 @@ __КАК ЗАПУСТИТЬ?__
     + справа сверху `create access key` - вбиваем в него
         - access_key: `NZjt6KmuHQRU7IitYUiW`
         - secret_key: `ql9DoBMKyqMxQm8j5LQuKwnn68KFsGqn5jGbL7uL`
-3) вкладка object browser, создаем бакет uzi
+3) вкладка object browser, создаем бакет `uzi`
 4) создаем топики для redpanda (потом автоматизируем, сейчас я в __`тильте`__)
     + localhost:8081    
     + вкладка topics
@@ -41,11 +42,14 @@ __КАК ЗАПУСТИТЬ?__
         - uziupload
         - uzisplitted
         - uziprocessed
-5) __ОПЦИОНАЛЬНО__: каждое узи должно быть привязанно к uzi_device, нужно добавить это в бд шоб работало
-    * pgAdmin/DataGrip/Расширение vscode для баз данных, заходите в uzidb, таблица `device` добавляете что угодно, этот id потом юзаете при post /uzi/uzis, этот device_id
-6) docker compose --profile app up -d
+5) docker compose --profile app up -d
 
-Если не сносить docker volume's, то операцию нужно будет делать всего 1 раз
+6) __ОПЦИОНАЛЬНО__ (Для тех, кто занимается узи): каждое узи должно быть привязанно к uzi_device, нужно добавить это в бд шоб работало
+    * pgAdmin/DataGrip/Расширение vscode для баз данных, заходите в uzidb, таблица `device` добавляете что угодно, этот id потом юзаете при post /uzi/uzis, этот device_id
+
+    Например, `INSERT INTO device VALUES (1, 1)`
+
+Если не сносить docker volume's, то операции нужно будет делать всего 1 раз, потом можно поднимать все сразу с помощью `docker compose up -d`
 
 _P.S.: хз как сделать это через env'арники, только какая то гига муть с доп контейнером для sh. Накликайте руками, надежднее будет. Ключи можете поменять, тогда не забудьте прокинуть их в сервисы через .env-docker файлы/запускать контейнеры с своими env'арами. В коде никакие ключи гвоздями не прибиты (только bucket)_
 
