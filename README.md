@@ -21,7 +21,10 @@ __РУЧКИ В SWAGGER БЕЗ ПРИПИСКИ API__
 _psql db: authdb, meddb, uzidb_. Создаются при инициализации docker volume. Миграции накатываются при запуске контейнера. __ПОРТ 5433__
 
 __КАК ЗАПУСТИТЬ?__
-0) добыть веса для нейронки (Г-52 Пн-Вт 13:00 - 13:15) и положить ml_service/internal/ml_model/models/cross и all
+0) добыть веса для нейронки (Г-52 Пн-Вт 13:00 - 13:15) и положить ml_service/ml_service/internal/ml_model/models/cross и all
+
+![weights_tree](./docs/assets/weights_tree.png)
+
 1) docker compose --profile deps up -d
 2) создать бакет в минио + access + secret key
     + зайти на localhost:9000
@@ -30,9 +33,9 @@ __КАК ЗАПУСТИТЬ?__
     + справа сверху `create access key` - вбиваем в него
         - access_key: `NZjt6KmuHQRU7IitYUiW`
         - secret_key: `ql9DoBMKyqMxQm8j5LQuKwnn68KFsGqn5jGbL7uL`
-3) вкладка object store, создаем бакет uzi
+3) вкладка object browser, создаем бакет uzi
 4) создаем топики для redpanda (потом автоматизируем, сейчас я в __`тильте`__)
-    + localhost:8081
+    + localhost:8081    
     + вкладка topics
     + создаем 3 топика:
         - uziupload

@@ -2,6 +2,7 @@ from PIL import Image
 import numpy as np
 from io import BytesIO
 
+
 def read_image(data) -> list:
     images = []
     image = Image.open(BytesIO(data))

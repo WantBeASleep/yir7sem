@@ -26,21 +26,6 @@ class SegmentationModel(ModelABC):
         self._model.load_state_dict(torch.load(path, map_location=self.device))
         self._model.eval()
 
-    # @staticmethod
-    # def read_image(path: str) -> list:
-    #     images = []
-    #     image = Image.open(path)
-    #     i = 0
-    #     while True:
-    #         try:
-    #             image.seek(i)
-    #             image_array = np.array(image)
-    #             images.append(image_array)
-    #             i += 1
-    #         except EOFError:
-    #             break
-    #     return images
-
     @staticmethod
     def preprocessing(img: np.ndarray) -> list:
         img = Image.fromarray(img).convert(mode='L')
@@ -320,20 +305,3 @@ class SegmentationModel(ModelABC):
         print('Done!')
 
         return result_masks, rois
-
-    # def save_result(self, image_path: str) -> str:
-    #     """
-    #     Method which saves segmentation result without boxes and classes
-
-    #     image_path = '<folder>/<filename>.<extension>'
-    #     """
-    #     splitted = image_path.split('.')
-    #     file_name = splitted[0]
-    #     extension = splitted[1]
-    #     result_path = f'{file_name}_result.{extension}'
-    #     if len(self.result_masks) > 1:
-    #         imageio.mimwrite(result_path, np.array(self.result_masks))
-    #     elif len(self.result_masks) == 1:
-    #         plt.imsave(result_path, np.array(self.result_masks[0]))
-    #     print('Result saved')
-    #     return result_path

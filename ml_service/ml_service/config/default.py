@@ -1,4 +1,3 @@
-from os import environ
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -18,10 +17,8 @@ class DefaultSettings(BaseSettings):
     segmentation_model_type: str = "cross"
     classification_model_type: str = "cross"
 
-
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding = "utf-8")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
 def get_settings() -> DefaultSettings:
     return DefaultSettings()
-

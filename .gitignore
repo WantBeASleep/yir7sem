@@ -10,7 +10,8 @@ vendor.protogen/*
 bin
 
 # py
-*.lock
+*venv
+*__pycache__
 
 # ml
 *.pkl
