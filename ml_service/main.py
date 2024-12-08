@@ -1,6 +1,4 @@
 from concurrent import futures
-import os
-import time
 
 import grpc
 from minio import Minio
@@ -48,17 +46,6 @@ def run_server():
     server.start()  # Запускаем сервер
     print(f"Server started on port {server_port}")
     server.wait_for_termination()
-
-    # try:
-    #     while True:
-    #             if not os.path.exists(path):
-    #                 print(f"Файл {path} не найден")
-    #             else:
-    #                 print("OK")
-    #             time.sleep(86400)  # Сервер работает бесконечно
-    # except KeyboardInterrupt:
-    #     pass
-    # #     server.stop(0)  # Остановка сервера при прерывании
 
 
 if __name__ == "__main__":

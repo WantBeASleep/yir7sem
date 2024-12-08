@@ -124,6 +124,8 @@ services:
       - redpanda-0
     profiles:
       - app
+    env_file:
+      - ./ml_service/.env-docker
 
   auth_service:
     container_name: auth_service
