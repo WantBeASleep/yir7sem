@@ -28,6 +28,7 @@ import (
 	uzigrpcadapter "gateway/internal/adapters/grpc/uzi"
 
 	authhandler "gateway/internal/api/auth"
+	downloadhandler "gateway/internal/api/download"
 	medhandler "gateway/internal/api/med"
 	uzihandler "gateway/internal/api/uzi"
 
@@ -130,6 +131,7 @@ func run() (exitCode int) {
 	authHandler := authhandler.New(adapter)
 	medHandler := medhandler.New(adapter)
 	uziHandler := uzihandler.New(adapter, dao)
+	downloadHandler := downloadhandler.New(dao)
 
 	// TODO: пробросить ошибки с логированием на верхнем уровне
 	mdlwrs := middleware.New(pubKey)
@@ -142,6 +144,12 @@ func run() (exitCode int) {
 	r.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
 
 	apiRouter := r.PathPrefix("/api").Subrouter()
+
+	downloadRouter := apiRouter.PathPrefix("/download").Subrouter()
+	downloadRouter.Use(mdlwrs.Log, mdlwrs.Jwt)
+
+	downloadRouter.HandleFunc("/uzi/{id}", downloadHandler.GetUzi).Methods("GET")
+	downloadRouter.HandleFunc("/uzi/{uzi_id}/image/{image_id}", downloadHandler.GetImage).Methods("GET")
 
 	authRouter := apiRouter.PathPrefix("/auth").Subrouter()
 	authRouter.Use(mdlwrs.Log)

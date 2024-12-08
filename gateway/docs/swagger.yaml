@@ -600,6 +600,67 @@ paths:
       summary: Зарегистрирует пользователя (врача)
       tags:
       - auth
+  /download/uzi/{id}:
+    get:
+      description: Получение узи
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: id узи
+        in: path
+        name: uzi_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Изображение УЗИ
+          schema:
+            type: file
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Получение узи
+      tags:
+      - download
+  /download/uzi/{uzi_id}/image/{image_id}:
+    get:
+      description: Получение image uzi
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: id узи
+        in: path
+        name: uzi_id
+        required: true
+        type: string
+      - description: id image
+        in: path
+        name: image_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Изображение кадра Узи
+          schema:
+            type: file
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Получение image uzi
+      tags:
+      - download
   /med/card:
     post:
       description: создать карту
