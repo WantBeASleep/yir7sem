@@ -2,6 +2,8 @@ syntax = "proto3";
 
 option go_package = "internal/generated/grpc/service";
 
+import "vendor.protogen/third_party/buf/validate/validate.proto";
+
 service AuthSrv {
   rpc register(RegisterIn) returns (RegisterOut);
   rpc login(LoginIn) returns (LoginOut);
@@ -9,8 +11,16 @@ service AuthSrv {
 }
 
 message RegisterIn {
-  string email = 100;
-  string password = 200;
+  string email = 100 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true
+  ];
+  string password = 200[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.min_len = 8,
+    (buf.validate.field).string.max_len = 30,
+    (buf.validate.field).string.pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$"
+  ];
 }
 
 message RegisterOut {
@@ -18,8 +28,13 @@ message RegisterOut {
 }
 
 message LoginIn {
-    string email = 100;
-    string password = 200; 
+    string email = 100 [    
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.email = true];
+    string password = 200[
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 8
+    ]; 
 }
 
 message LoginOut {
@@ -28,7 +43,11 @@ message LoginOut {
 }
 
 message RefreshIn {
-    string refresh_token = 100;
+    string refresh_token = 100[
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 8,
+        (buf.validate.field).string.max_len = 512
+    ];
 }
 
 message RefreshOut {
