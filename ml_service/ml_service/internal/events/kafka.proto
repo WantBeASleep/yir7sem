@@ -4,8 +4,6 @@ package yir.uzi.kafka;
 
 option go_package = "yir/uzi/api/broker;broker";
 
-message uziUpload { string id = 100; }
-
 message UziProcessed {
   message Node {
       string id = 100;

@@ -11,7 +11,7 @@ class EventsYo:
 
     def run(self):
         consumer_config = {
-            "bootstrap.servers": settings.kafka_host,  # Адрес Kafka-брокера
+            "bootstrap.servers": settings.kafka_host + ":" + str(settings.kafka_port),  # Адрес Kafka-брокера
             "group.id": "mlService",  # Имя consumer group
             "auto.offset.reset": "earliest",  # Начинать с самого начала, если оффсет не найден
             "security.protocol": "PLAINTEXT",  # Установка протокола безопасности на PLAINTEXT для отключения SASL

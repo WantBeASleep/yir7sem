@@ -112,7 +112,7 @@ class uziUseCase:
 
         content = msg_event.SerializeToString()
 
-        producer_config = {"bootstrap.servers": settings.kafka_host}
+        producer_config = {"bootstrap.servers": settings.kafka_host + ":" + str(settings.kafka_port)}
         producer = Producer(producer_config)
 
         producer.produce("uziprocessed", content)
