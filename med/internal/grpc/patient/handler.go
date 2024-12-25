@@ -28,6 +28,18 @@ type handler struct {
 func New(
 	patientSrv patient.Service,
 ) PatientHandler {
+	// validator, err := protovalidate.New(
+	// 	protovalidate.WithDisableLazy(true),
+	// 	protovalidate.WithMessages(
+	// 		&pb.CreatePatientIn{},
+	// 		&pb.GetPatientIn{},
+	// 		&pb.UpdatePatientIn{},
+	// 		&pb.GetDoctorPatientsIn{},
+	// 	),
+	// )
+	// if err != nil {
+	// 	return nil, fmt.Errorf("init validator: %v", err)
+	// }
 	return &handler{
 		patientSrv: patientSrv,
 	}

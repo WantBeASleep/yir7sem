@@ -91,7 +91,16 @@ func run() (exitCode int) {
 		registerHadnler,
 	)
 
-	server := grpc.NewServer(grpc.ChainUnaryInterceptor(grpclib.ServerCallLoggerInterceptor))
+	valInterceptor, err := grpchandler.InitValidator()
+	if err != nil {
+		slog.Error("init validator: %v", err)
+		return failExitCode
+	}
+
+	server := grpc.NewServer(grpc.ChainUnaryInterceptor(
+		grpclib.ServerCallLoggerInterceptor,
+		valInterceptor.Unary(),
+	))
 	pb.RegisterAuthSrvServer(server, handler)
 
 	lis, err := net.Listen("tcp", cfg.App.Url)

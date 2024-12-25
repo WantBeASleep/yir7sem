@@ -3,6 +3,8 @@ syntax = "proto3";
 option go_package = "internal/generated/grpc/service";
 
 import "google/protobuf/empty.proto";
+import "vendor.protogen/third_party/buf/validate/validate.proto";
+
 
 service UziSrv {
   rpc getDeviceList(google.protobuf.Empty) returns (GetDeviceListOut);
@@ -39,7 +41,10 @@ message Device {
 message GetDeviceListOut { repeated Device devices = 100; }
 
 message Echographic {
-  string id = 100;
+  string id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
   optional string contors = 200;
   optional double left_lobe_length = 300;
   optional double left_lobe_width = 400;
@@ -62,84 +67,165 @@ message Echographic {
 
 // Обусловлено что ВСЕ параметры меняются
 message UpdateEchographicIn {
-  Echographic echographic = 100;
+  Echographic echographic = 100[
+    (buf.validate.field).required = true
+  ];
 }
 
 message UpdateEchographicOut { Echographic echographic = 400; }
 
-message GetEchographicIn { string id = 100; }
+message GetEchographicIn { string id = 100[
+  (buf.validate.field).required = true,
+  (buf.validate.field).string.uuid = true
+  ]; 
+}
 
 message GetEchographicOut { Echographic echographic = 400; }
 
 // UZI
 
 message Uzi {
-  string id = 100;
-  string projection = 300;
-  bool checked = 400;
-  string patient_id = 500;
-  int64 device_id = 600;
-  string create_at = 700;
+  string id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string projection = 300[
+    (buf.validate.field).required = true
+  ];
+  bool checked = 400[
+    (buf.validate.field).required = true
+  ];
+  string patient_id = 500[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  int64 device_id = 600[
+    (buf.validate.field).required = true
+  ];
+  string create_at = 700[
+    (buf.validate.field).required = true
+  ];
 }
 
 message CreateUziIn {
-  string projection = 100;
-  string patient_id = 200;
-  int64 device_id = 300;
+  string projection = 100[
+    (buf.validate.field).required = true
+  ];
+  string patient_id = 200[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  int64 device_id = 300[
+    (buf.validate.field).required = true
+  ];
 }
 
 message CreateUziOut { string id = 100; }
 
 message UpdateUziIn {
-  string id = 100;
+  string id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
   optional string projection = 200;
   optional bool checked = 300;
 }
 
 message UpdateUziOut { Uzi uzi = 100; }
 
-message GetUziIn { string id = 100; }
+message GetUziIn { string id = 100[
+  (buf.validate.field).required = true,
+  (buf.validate.field).string.uuid = true
+  ]; 
+}
 
 message GetUziOut { Uzi uzi = 100; }
 
 // IMAGE
 
 message Image {
-  string id = 100;
-  int64 page = 200;
+  string id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  int64 page = 200[
+    (buf.validate.field).required = true
+  ];
 };
 
-message GetUziImagesIn { string uzi_id = 100; }
+message GetUziImagesIn { string uzi_id = 100[
+  (buf.validate.field).required = true,
+  (buf.validate.field).string.uuid = true
+  ]; 
+}
 
 message GetUziImagesOut { repeated Image images = 100; }
 
 // SEGMENT
 
 message Segment {
-  string id = 100;
-  string node_id = 200;
-  string image_id = 300;
-  string contor = 400;
-  double tirads_23 = 500;
-  double tirads_4 = 600;
-  double tirads_5 = 700;
+  string id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string node_id = 200[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string image_id = 300[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string contor = 400[
+    (buf.validate.field).required = true
+  ];
+  double tirads_23 = 500[
+    (buf.validate.field).required = true
+  ];
+  double tirads_4 = 600[
+    (buf.validate.field).required = true
+  ];
+  double tirads_5 = 700[
+    (buf.validate.field).required = true
+  ];
 }
 
 message CreateSegmentIn {
-  string node_id = 100;
-  string image_id = 200;
-  string contor = 300;
-  double tirads_23 = 400;
-  double tirads_4 = 500;
-  double tirads_5 = 600;
+  string node_id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string image_id = 200[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string contor = 300[
+    (buf.validate.field).required = true
+  ];
+  double tirads_23 = 400[
+    (buf.validate.field).required = true
+  ];
+  double tirads_4 = 500[
+    (buf.validate.field).required = true
+  ];
+  double tirads_5 = 600[
+    (buf.validate.field).required = true
+  ];
 }
 
 message CreateSegmentOut { string id = 100; }
 
-message DeleteSegmentIn { string id = 100; }
+message DeleteSegmentIn { string id = 100[
+  (buf.validate.field).required = true,
+  (buf.validate.field).string.uuid = true
+  ]; 
+}
 
 message UpdateSegmentIn {
-  string id = 100;
+  string id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
   optional double tirads_23 = 200;
   optional double tirads_4 = 300;
   optional double tirads_5 = 400;
@@ -159,25 +245,49 @@ message Node {
 
 message CreateNodeIn {
   message NestedSegment {
-    string image_id = 300;
-    string contor = 400;
-    double tirads_23 = 500;
-    double tirads_4 = 600;
-    double tirads_5 = 700;
+    string image_id = 300[
+      (buf.validate.field).required = true,
+      (buf.validate.field).string.uuid = true
+    ];
+    string contor = 400[
+      (buf.validate.field).required = true
+    ];
+    double tirads_23 = 500[
+      (buf.validate.field).required = true
+    ];
+    double tirads_4 = 600[
+      (buf.validate.field).required = true
+    ];
+    double tirads_5 = 700[
+      (buf.validate.field).required = true
+    ];
   }
 
   repeated NestedSegment segments = 200;
-  double tirads_23 = 300;
-  double tirads_4 = 400;
-  double tirads_5 = 500;
+  double tirads_23 = 300[
+    (buf.validate.field).required = true
+  ];
+  double tirads_4 = 400[
+    (buf.validate.field).required = true
+  ];
+  double tirads_5 = 500[
+    (buf.validate.field).required = true
+  ];
 }
 
 message CreateNodeOut { string id = 100; }
 
-message DeleteNodeIn { string id = 100; }
+message DeleteNodeIn { string id = 100[
+  (buf.validate.field).required = true,
+  (buf.validate.field).string.uuid = true
+  ]; 
+}
 
 message UpdateNodeIn {
-  string id = 100;
+  string id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
   optional double tirads_23 = 200;
   optional double tirads_4 = 300;
   optional double tirads_5 = 400;
@@ -185,7 +295,11 @@ message UpdateNodeIn {
 
 message UpdateNodeOut { Node node = 100; }
 
-message GetImageSegmentsWithNodesIn { string id = 100; }
+message GetImageSegmentsWithNodesIn { string id = 100[
+  (buf.validate.field).required = true,
+  (buf.validate.field).string.uuid = true
+  ]; 
+}
 
 message GetImageSegmentsWithNodesOut {
   repeated Node nodes = 100;

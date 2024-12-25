@@ -112,7 +112,16 @@ func run() (exitCode int) {
 		serviceHandler,
 	)
 
-	server := grpc.NewServer(grpc.ChainUnaryInterceptor(grpclib.ServerCallLoggerInterceptor))
+	valInterceptor, err := grpchandler.InitValidator()
+	if err != nil {
+		slog.Error("init validator: %v", err)
+		return failExitCode
+	}
+
+	server := grpc.NewServer(grpc.ChainUnaryInterceptor(
+		grpclib.ServerCallLoggerInterceptor,
+		valInterceptor.Unary(),
+	))
 	pb.RegisterUziSrvServer(server, handler)
 
 	// broker

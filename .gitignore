@@ -1,10 +1,13 @@
 # ide
 .vscode
 .idea
+.task
+.DS_Store
 
 # libs
 vendor.protogen/*
 !vendor.protogen/*.md
+api
 
 # bin
 bin
