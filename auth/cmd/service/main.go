@@ -81,21 +81,9 @@ func run() (exitCode int) {
 	refreshSrv := refreshsrv.New(dao, tokenizerSrv)
 	registerSrv := registersrv.New(dao, passwordSrv)
 
-	loginHadnler, err := loginhadnler.New(loginSrv)
-	if err != nil {
-		slog.Error("init loginHandler: %v", err) //TODO: проверить правильно ли вообще тут начинать возвращать ошибку+ slog - это какая-то модификация обычного log
-		return exitCode
-	}
-	refreshHadnler, err := refreshhadnler.New(refreshSrv)
-	if err != nil {
-		slog.Error("init refreshHandler: %v", err)
-		return exitCode
-	}
-	registerHadnler, err := registerhadnler.New(registerSrv)
-	if err != nil {
-		slog.Error("init registerHandler: %v", err)
-		return exitCode
-	}
+	loginHadnler := loginhadnler.New(loginSrv)
+	refreshHadnler := refreshhadnler.New(refreshSrv)
+	registerHadnler := registerhadnler.New(registerSrv)
 
 	handler := grpchandler.New(
 		loginHadnler,
@@ -103,7 +91,16 @@ func run() (exitCode int) {
 		registerHadnler,
 	)
 
-	server := grpc.NewServer(grpc.ChainUnaryInterceptor(grpclib.ServerCallLoggerInterceptor))
+	valInterceptor, err := grpchandler.InitValidator()
+	if err != nil {
+		slog.Error("init validator: %v", err)
+		return failExitCode
+	}
+
+	server := grpc.NewServer(grpc.ChainUnaryInterceptor(
+		grpclib.ServerCallLoggerInterceptor,
+		valInterceptor.Unary(),
+	))
 	pb.RegisterAuthSrvServer(server, handler)
 
 	lis, err := net.Listen("tcp", cfg.App.Url)
