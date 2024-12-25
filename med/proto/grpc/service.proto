@@ -4,6 +4,7 @@ option go_package = "internal/generated/grpc/service";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "vendor.protogen/third_party/buf/validate/validate.proto";
 
 service MedSrv {
   rpc registerDoctor(RegisterDoctorIn) returns (google.protobuf.Empty);
@@ -20,85 +21,171 @@ service MedSrv {
   rpc updateCard(UpdateCardIn) returns (UpdateCardOut);
 }
 
+//TODO: вынести валидацию почты, id, ограничения размера строки в отдельные сообщения.
+
 message Doctor {
-  string id = 100;
-  string fullname = 200;
-  string org = 300;
-  string job = 400;
+  string id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string fullname = 200[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.max_len = 100
+  ];
+  string org = 300[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.max_len = 100
+  ];
+  string job = 400[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.max_len = 100
+  ];
   optional string desc = 500;
 }
 
 // TODO: ввести entity, переписать тут desc (сделать его опциональным)
-message RegisterDoctorIn { Doctor doctor = 100; }
+message RegisterDoctorIn { Doctor doctor = 100[
+  (buf.validate.field).required = true
+]; }
 
-message GetDoctorIn { string id = 100; }
+message GetDoctorIn { string id = 100[
+  (buf.validate.field).required = true,
+  (buf.validate.field).string.uuid = true
+]; }
 
 message GetDoctorOut { Doctor doctor = 100; }
 
 message UpdateDoctorIn {
-  string id = 100;
-  optional string org = 300;
-  optional string job = 400;
+  string id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  optional string org = 300[
+    (buf.validate.field).string.min_len = 1
+  ];
+  optional string job = 400[
+    (buf.validate.field).string.min_len = 1
+  ];
   optional string desc = 500;
 }
 
 message UpdateDoctorOut { Doctor doctor = 100; }
 
 message Patient {
-  string id = 100;
-  string fullname = 200;
-  string email = 300;
-  string policy = 400;
-  bool active = 500;
-  bool malignancy = 600;
-  optional google.protobuf.Timestamp last_uzi_date = 700;
+  string id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string fullname = 200[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.max_len = 100
+  ];
+  string email = 300[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true
+  ];
+  string policy = 400[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.max_len = 30
+  ];
+  bool active = 500[
+    (buf.validate.field).required = true
+  ];
+  bool malignancy = 600[
+    (buf.validate.field).required = true
+  ];
+  optional google.protobuf.Timestamp last_uzi_date = 700[
+    (buf.validate.field).timestamp.lt_now = true
+  ];
 }
 
 message CreatePatientIn {
-  string fullname = 200;
-  string email = 300;
-  string policy = 400;
-  bool active = 500;
-  bool malignancy = 600;
+  string fullname = 200[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.max_len = 100
+  ];
+  string email = 300[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true
+  ];
+  string policy = 400[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.max_len = 30
+  ];
+  bool active = 500[
+    (buf.validate.field).required = true
+  ];
+  bool malignancy = 600[
+    (buf.validate.field).required = true
+  ];
 }
 
 message CreatePatientOut { string id = 100; }
 
-message GetPatientIn { string id = 100; }
+message GetPatientIn { string id = 100[
+  (buf.validate.field).required = true,
+  (buf.validate.field).string.uuid = true
+]; }
 
 message GetPatientOut { Patient patient = 100; }
 
-message GetDoctorPatientsIn { string doctor_id = 100; }
+message GetDoctorPatientsIn { string doctor_id = 100[
+  (buf.validate.field).required = true
+]; }
 
 message GetDoctorPatientsOut { repeated Patient patients = 100; }
 // TODO: перевести timestamp в других протиках
 message UpdatePatientIn {
-  string doctor_id = 100;
-  string id = 200;
+  string doctor_id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string id = 200[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
   optional bool active = 300;
   optional bool malignancy = 400;
-  optional google.protobuf.Timestamp last_uzi_date = 500;
+  optional google.protobuf.Timestamp last_uzi_date = 500[
+    (buf.validate.field).timestamp.lt_now = true
+  ];
 }
 
 message UpdatePatientOut { Patient patient = 100; }
 
 message Card {
-  string doctor_id = 100;
-  string patient_id = 200;
+  string doctor_id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string patient_id = 200[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
   optional string diagnosis = 300;
 }
 
-message CreateCardIn { Card card = 100; }
+message CreateCardIn { Card card = 100[
+  (buf.validate.field).required = true
+]; }
 
 message GetCardIn {
-  string doctor_id = 100;
-  string patient_id = 200;
+  string doctor_id = 100[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string patient_id = 200[
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
 }
 
 message GetCardOut { Card Card = 100; }
 
 message CreateCardOut { Card card = 100; }
 
-message UpdateCardIn { Card card = 100; }
+message UpdateCardIn { Card card = 100[
+  (buf.validate.field).required = true
+]; }
 
 message UpdateCardOut { Card card = 100; }

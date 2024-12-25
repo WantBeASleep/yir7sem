@@ -74,8 +74,16 @@ func run() (exitCode int) {
 		doctorHandler,
 		cardHandler,
 	)
+	valInterceptor, err := grpchandler.InitValidator()
+	if err != nil {
+		slog.Error("init validator: %v", err)
+		return failExitCode
+	}
 
-	server := grpc.NewServer(grpc.ChainUnaryInterceptor(grpclib.ServerCallLoggerInterceptor))
+	server := grpc.NewServer(grpc.ChainUnaryInterceptor(
+		grpclib.ServerCallLoggerInterceptor,
+		valInterceptor.Unary(),
+	))
 	pb.RegisterMedSrvServer(server, handler)
 
 	lis, err := net.Listen("tcp", cfg.App.Url)
