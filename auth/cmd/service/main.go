@@ -7,6 +7,7 @@ import (
 
 	"github.com/WantBeASleep/goooool/grpclib"
 	"github.com/WantBeASleep/goooool/loglib"
+	observer "github.com/senorUVE/observer-yir/observerlib"
 
 	"auth/internal/config"
 
@@ -81,6 +82,17 @@ func run() (exitCode int) {
 	refreshSrv := refreshsrv.New(dao, tokenizerSrv)
 	registerSrv := registersrv.New(dao, passwordSrv)
 
+	obs, err := observer.NewObserver(cfg.Mongo.URI, cfg.Mongo.Database, "logs")
+	if err != nil {
+		slog.Error("init observer", "err", err)
+		return failExitCode
+	}
+
+	if err := obs.PingMongo(); err != nil {
+		slog.Error("ping MongoDB: %v", err)
+		return failExitCode
+	}
+
 	loginHadnler := loginhadnler.New(loginSrv)
 	refreshHadnler := refreshhadnler.New(refreshSrv)
 	registerHadnler := registerhadnler.New(registerSrv)
@@ -91,7 +103,7 @@ func run() (exitCode int) {
 		registerHadnler,
 	)
 
-	valInterceptor, err := grpchandler.InitValidator()
+	valInterceptor, err := grpchandler.InitValidator(obs)
 	if err != nil {
 		slog.Error("init validator: %v", err)
 		return failExitCode

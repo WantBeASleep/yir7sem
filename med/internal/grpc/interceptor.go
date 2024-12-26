@@ -3,10 +3,14 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"time"
 
 	pb "med/internal/generated/grpc/service"
 
 	"github.com/bufbuild/protovalidate-go"
+
+	obslib "github.com/senorUVE/observer-yir/observerlib"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -15,9 +19,10 @@ import (
 
 type ValidatorInterceptor struct {
 	validator *protovalidate.Validator
+	observer  *obslib.Observer
 }
 
-func InitValidator() (*ValidatorInterceptor, error) {
+func InitValidator(observer *obslib.Observer) (*ValidatorInterceptor, error) {
 	validator, err := protovalidate.New(
 		protovalidate.WithDisableLazy(true),
 		protovalidate.WithMessages(
@@ -40,6 +45,7 @@ func InitValidator() (*ValidatorInterceptor, error) {
 	}
 	return &ValidatorInterceptor{
 			validator: validator,
+			observer:  observer,
 		},
 		nil
 }
@@ -51,9 +57,23 @@ func (vi *ValidatorInterceptor) Unary() grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
-		if err := vi.validator.Validate(req.(proto.Message)); err != nil {
+		start := time.Now()
+		requestID := fmt.Sprintf("%d", start.UnixNano())
+		vi.observer.LogMetrics(ctx, requestID, info.FullMethod, time.Since(start), 0)
+		message, ok := req.(proto.Message)
+		if !ok {
+			vi.observer.LogError(ctx, requestID, "invalid request type", "req is not proto.Message")
+			return nil, status.Errorf(codes.InvalidArgument, "invalid request type")
+		}
+		if err := vi.validator.Validate(message); err != nil {
+			vi.observer.LogError(ctx, requestID, fmt.Sprintf("validation failed: %v", err), "validation")
 			return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("validation failed: %v", err))
 		}
-		return handler(ctx, req)
+		resp, err := handler(ctx, req)
+		if err != nil {
+			vi.observer.LogError(ctx, requestID, err.Error(), fmt.Sprintf("request failed: %v", err))
+		}
+		vi.observer.LogMetrics(ctx, requestID, info.FullMethod, time.Since(start), 200)
+		return resp, err
 	}
 }

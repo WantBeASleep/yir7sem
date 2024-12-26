@@ -9,9 +9,15 @@ import (
 )
 
 type Config struct {
-	App App
-	DB  DB
-	JWT JWT
+	App   App
+	DB    DB
+	JWT   JWT
+	Mongo Mongo
+}
+
+type Mongo struct {
+	URI      string `env:"MONGO_URI" env-required:"true"`
+	Database string `env:"MONGO_DATABASE" env-required:"true"`
 }
 
 type App struct {

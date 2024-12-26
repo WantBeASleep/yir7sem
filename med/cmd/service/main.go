@@ -10,6 +10,8 @@ import (
 
 	"med/internal/config"
 
+	observer "github.com/senorUVE/observer-yir/observerlib"
+
 	pkgconfig "github.com/WantBeASleep/goooool/config"
 
 	"med/internal/repository"
@@ -65,6 +67,17 @@ func run() (exitCode int) {
 	doctorSrv := doctorsrv.New(dao)
 	cardSrv := cardsrv.New(dao)
 
+	obs, err := observer.NewObserver(cfg.Mongo.URI, cfg.Mongo.Database, "logs")
+	if err != nil {
+		slog.Error("init observer", "err", err)
+		return failExitCode
+	}
+
+	if err := obs.PingMongo(); err != nil {
+		slog.Error("ping MongoDB: %v", err)
+		return failExitCode
+	}
+
 	patientHandler := patienthandler.New(patientSrv)
 	doctorHandler := doctorhandler.New(doctorSrv)
 	cardHandler := cardhandler.New(cardSrv)
@@ -74,7 +87,8 @@ func run() (exitCode int) {
 		doctorHandler,
 		cardHandler,
 	)
-	valInterceptor, err := grpchandler.InitValidator()
+
+	valInterceptor, err := grpchandler.InitValidator(obs)
 	if err != nil {
 		slog.Error("init validator: %v", err)
 		return failExitCode

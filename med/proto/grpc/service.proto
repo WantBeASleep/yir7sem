@@ -4,7 +4,8 @@ option go_package = "internal/generated/grpc/service";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
-import "vendor.protogen/third_party/buf/validate/validate.proto";
+import "validate/validate.proto";
+
 
 service MedSrv {
   rpc registerDoctor(RegisterDoctorIn) returns (google.protobuf.Empty);

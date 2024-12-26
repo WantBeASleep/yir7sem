@@ -1,8 +1,9 @@
 package config
 
 type Config struct {
-	App App
-	DB  DB
+	App   App
+	DB    DB
+	Mongo Mongo
 }
 
 type App struct {
@@ -11,4 +12,9 @@ type App struct {
 
 type DB struct {
 	Dsn string `env:"DB_DSN" env-required:"true"`
+}
+
+type Mongo struct {
+	URI      string `env:"MONGO_URI" env-required:"true"`
+	Database string `env:"MONGO_DATABASE" env-required:"true"`
 }

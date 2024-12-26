@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "internal/generated/grpc/service";
 
-import "vendor.protogen/third_party/buf/validate/validate.proto";
+import "validate/validate.proto";
 
 service AuthSrv {
   rpc register(RegisterIn) returns (RegisterOut);
