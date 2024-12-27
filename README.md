@@ -4,7 +4,7 @@ __РУЧКИ В SWAGGER БЕЗ ПРИПИСКИ API__
 
 ## Общая архитектура
 
-![all_services_shema](./docs/assets/all_services_shema.png)
+![all_services_shema](./docs/assets/system_model.png)
 
 Приведенная схема отражает список сервисов.
 
