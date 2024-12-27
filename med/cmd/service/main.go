@@ -75,7 +75,12 @@ func run() (exitCode int) {
 		cardHandler,
 	)
 
-	server := grpc.NewServer(grpc.ChainUnaryInterceptor(grpclib.ServerCallLoggerInterceptor))
+	server := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			grpclib.ServerCallPanicRecoverInterceptor,
+			grpclib.ServerCallLoggerInterceptor,
+		),
+	)
 	pb.RegisterMedSrvServer(server, handler)
 
 	lis, err := net.Listen("tcp", cfg.App.Url)
