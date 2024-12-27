@@ -92,6 +92,11 @@ func (h *Handler) PostUzi(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
 		return
 	}
+
+	if err := json.NewEncoder(w).Encode(uziResp.Id); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
 }
 
 // TODO: проверить крайние случае, если что то не приходит например(неправильный id)
