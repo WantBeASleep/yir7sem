@@ -4,7 +4,7 @@ go 1.23.4
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/WantBeASleep/goooool v1.0.0
+	github.com/WantBeASleep/goooool v1.0.3
 	github.com/chai2010/tiff v0.0.0-20211005095045-4ec2aa243943
 	github.com/golang/protobuf v1.5.4
 	github.com/google/uuid v1.6.0

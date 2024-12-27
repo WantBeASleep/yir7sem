@@ -112,7 +112,12 @@ func run() (exitCode int) {
 		serviceHandler,
 	)
 
-	server := grpc.NewServer(grpc.ChainUnaryInterceptor(grpclib.ServerCallLoggerInterceptor))
+	server := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			grpclib.ServerCallPanicRecoverInterceptor,
+			grpclib.ServerCallLoggerInterceptor,
+		),
+	)
 	pb.RegisterUziSrvServer(server, handler)
 
 	// broker
