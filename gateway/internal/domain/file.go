@@ -15,7 +15,7 @@ func ParseFormatFromExt(s string) (string, error) {
 	switch s {
 	case ".png":
 		return "image/png", nil
-	case ".tiff":
+	case ".tiff", ".tif":
 		return "image/tiff", nil
 	}
 	return "", errors.New("unsupport") // TODO: вынести в ошибку и обработать сверху
