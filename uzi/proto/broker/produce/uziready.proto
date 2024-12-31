@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option go_package = "internal/generated/broker/produce/uzicomplited";
+
+import "google/protobuf/timestamp.proto";
+
+message UziComplited {
+    string uzi_id = 100;
+    google.protobuf.Timestamp date = 200;
+}

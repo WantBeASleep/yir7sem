@@ -165,6 +165,7 @@ func run() (exitCode int) {
 	medRouter.HandleFunc("/card/{id}", medHandler.GetCard).Methods("GET")
 	medRouter.HandleFunc("/card", medHandler.PostCard).Methods("POST")
 
+	medRouter.HandleFunc("/patient/{id}/uzis", medHandler.GetDoctorPatients).Methods("GET")
 	medRouter.HandleFunc("/patient/{id}", medHandler.UpdatePatient).Methods("PATCH")
 	medRouter.HandleFunc("/patient/{id}", medHandler.GetPatient).Methods("GET")
 	medRouter.HandleFunc("/patient", medHandler.PostPatient).Methods("POST")
@@ -189,6 +190,7 @@ func run() (exitCode int) {
 
 	uziRouter.HandleFunc("/images/{id}/nodes-segments", uziHandler.GetUziNodeSegments).Methods("GET")
 
+	uziRouter.HandleFunc("/patient/{id}/uzis", uziHandler.GetPatientUzi).Methods("GET")
 	uziRouter.HandleFunc("/uzis/{id}/images", uziHandler.GetUziImages).Methods("GET")
 	uziRouter.HandleFunc("/uzis/{id}", uziHandler.GetUzi).Methods("GET")
 	uziRouter.HandleFunc("/uzis/{id}", uziHandler.PatchUzi).Methods("PATCH")

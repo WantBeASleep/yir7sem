@@ -225,6 +225,38 @@ func (h *Handler) GetUzi(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetPatientUzi Получить узи пациента
+//
+//	@Summary		Получить узи пациента
+//	@Description	Получить узи пациента
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string	true	"access_token"
+//	@Param			id		path		string	true	"patient_id"
+//	@Success		200		{object}	GetPatientUziOut
+//	@Failure		500		{string}	string	"Internal Server Error"
+//	@Router			/uzi/patient/{id}/uzis [get]
+func (h *Handler) GetPatientUzi(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	res, err := h.adapter.UziAdapter.GetPatientUzis(ctx, &uzipb.GetPatientUzisIn{
+		PatientId: id,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	w.WriteHeader(200)
+}
+
 // GetEchographics получает uzi
 //
 //	@Summary		получает эхографику uzi

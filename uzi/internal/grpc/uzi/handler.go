@@ -15,6 +15,7 @@ import (
 type UziHandler interface {
 	CreateUzi(ctx context.Context, req *pb.CreateUziIn) (*pb.CreateUziOut, error)
 	GetUzi(ctx context.Context, in *pb.GetUziIn) (*pb.GetUziOut, error)
+	GetPatientUzis(ctx context.Context, in *pb.GetPatientUzisIn) (*pb.GetPatientUzisOut, error)
 	GetEchographic(ctx context.Context, in *pb.GetEchographicIn) (*pb.GetEchographicOut, error)
 	UpdateUzi(ctx context.Context, req *pb.UpdateUziIn) (*pb.UpdateUziOut, error)
 	UpdateEchographic(ctx context.Context, in *pb.UpdateEchographicIn) (*pb.UpdateEchographicOut, error)
@@ -69,6 +70,20 @@ func (h *handler) GetUzi(ctx context.Context, in *pb.GetUziIn) (*pb.GetUziOut, e
 	return &pb.GetUziOut{
 		Uzi: pbUzi,
 	}, nil
+}
+
+func (h *handler) GetPatientUzis(ctx context.Context, in *pb.GetPatientUzisIn) (*pb.GetPatientUzisOut, error) {
+	uzis, err := h.uziSrv.GetUzisByPatientID(ctx, uuid.MustParse(in.PatientId))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Что то пошло не так: %s", err.Error())
+	}
+
+	resp := make([]*pb.Uzi, 0, len(uzis))
+	for _, v := range uzis {
+		resp = append(resp, domainUziToPbUzi(&v))
+	}
+
+	return &pb.GetPatientUzisOut{Uzis: resp}, nil
 }
 
 func (h *handler) UpdateUzi(ctx context.Context, in *pb.UpdateUziIn) (*pb.UpdateUziOut, error) {

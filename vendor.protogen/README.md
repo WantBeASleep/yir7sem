@@ -2,7 +2,6 @@
 
 ```
 git clone https://github.com/googleapis/googleapis.git
-git clone https://github.com/grpc-ecosystem/grpc-gateway.git
 git clone https://github.com/bufbuild/protovalidate.git *не забудьте внутреннюю папку перенести*
 ```
 

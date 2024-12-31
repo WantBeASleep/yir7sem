@@ -16,6 +16,7 @@ import (
 type Service interface {
 	CreateUzi(ctx context.Context, uzi domain.Uzi) (uuid.UUID, error)
 	GetUziByID(ctx context.Context, id uuid.UUID) (domain.Uzi, error)
+	GetUzisByPatientID(ctx context.Context, patientID uuid.UUID) ([]domain.Uzi, error)
 	GetUziEchographicsByID(ctx context.Context, id uuid.UUID) (domain.Echographic, error)
 	UpdateUzi(ctx context.Context, id uuid.UUID, update UpdateUzi) (domain.Uzi, error)
 	UpdateEchographic(ctx context.Context, id uuid.UUID, update UpdateEchographic) (domain.Echographic, error)
@@ -67,6 +68,20 @@ func (s *service) GetUziByID(ctx context.Context, id uuid.UUID) (domain.Uzi, err
 	}
 
 	return uzi.ToDomain(), nil
+}
+
+func (s *service) GetUzisByPatientID(ctx context.Context, patientID uuid.UUID) ([]domain.Uzi, error) {
+	uzis, err := s.dao.NewUziQuery(ctx).GetUzisByPatientID(patientID)
+	if err != nil {
+		return nil, fmt.Errorf("get uzi by pk: %w", err)
+	}
+
+	domainUzis := make([]domain.Uzi, 0, len(uzis))
+	for _, v := range uzis {
+		domainUzis = append(domainUzis, v.ToDomain())
+	}
+
+	return domainUzis, nil
 }
 
 func (s *service) GetUziEchographicsByID(ctx context.Context, id uuid.UUID) (domain.Echographic, error) {

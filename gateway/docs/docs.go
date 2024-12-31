@@ -879,6 +879,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/uzi/patient/{id}/uzis": {
+            "get": {
+                "description": "Получить узи пациента",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "uzi"
+                ],
+                "summary": "Получить узи пациента",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "patient_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/uzi.GetPatientUziOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/uzi/segments": {
             "post": {
                 "description": "добавит новый сегмент к указанному узлу",
@@ -1543,6 +1585,29 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_api_uzi.Uzi": {
+            "type": "object",
+            "properties": {
+                "checked": {
+                    "type": "boolean"
+                },
+                "create_at": {
+                    "type": "string"
+                },
+                "device_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "patient_id": {
+                    "type": "string"
+                },
+                "projection": {
+                    "type": "string"
+                }
+            }
+        },
         "med.PostCardIn": {
             "type": "object",
             "properties": {
@@ -1652,6 +1717,17 @@ const docTemplate = `{
                 },
                 "vascularization": {
                     "type": "string"
+                }
+            }
+        },
+        "uzi.GetPatientUziOut": {
+            "type": "object",
+            "properties": {
+                "uzis": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_api_uzi.Uzi"
+                    }
                 }
             }
         },

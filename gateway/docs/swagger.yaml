@@ -232,6 +232,21 @@ definitions:
       tirads23:
         type: number
     type: object
+  internal_api_uzi.Uzi:
+    properties:
+      checked:
+        type: boolean
+      create_at:
+        type: string
+      device_id:
+        type: integer
+      id:
+        type: string
+      patient_id:
+        type: string
+      projection:
+        type: string
+    type: object
   med.PostCardIn:
     properties:
       diagnosis:
@@ -304,6 +319,13 @@ definitions:
         type: string
       vascularization:
         type: string
+    type: object
+  uzi.GetPatientUziOut:
+    properties:
+      uzis:
+        items:
+          $ref: '#/definitions/internal_api_uzi.Uzi'
+        type: array
     type: object
   uzi.GetUziDeviceOut:
     properties:
@@ -1100,6 +1122,34 @@ paths:
           schema:
             type: string
       summary: обновит узел
+      tags:
+      - uzi
+  /uzi/patient/{id}/uzis:
+    get:
+      description: Получить узи пациента
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: patient_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/uzi.GetPatientUziOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Получить узи пациента
       tags:
       - uzi
   /uzi/segments:

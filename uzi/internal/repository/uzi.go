@@ -15,6 +15,7 @@ type UziQuery interface {
 	InsertUzi(uzi entity.Uzi) error
 	CheckExist(id uuid.UUID) (bool, error)
 	GetUziByPK(id uuid.UUID) (entity.Uzi, error)
+	GetUzisByPatientID(patientID uuid.UUID) ([]entity.Uzi, error)
 	UpdateUzi(uzi entity.Uzi) (int64, error)
 }
 
@@ -72,6 +73,29 @@ func (q *uziQuery) GetUziByPK(id uuid.UUID) (entity.Uzi, error) {
 	var uzi entity.Uzi
 	if err := q.Runner().Getx(q.Context(), &uzi, query); err != nil {
 		return entity.Uzi{}, err
+	}
+
+	return uzi, nil
+}
+
+func (q *uziQuery) GetUzisByPatientID(patientID uuid.UUID) ([]entity.Uzi, error) {
+	query := q.QueryBuilder().
+		Select(
+			"id",
+			"projection",
+			"checked",
+			"patient_id",
+			"device_id",
+			"create_at",
+		).
+		From(uziTable).
+		Where(sq.Eq{
+			"patient_id": patientID,
+		})
+
+	var uzi []entity.Uzi
+	if err := q.Runner().Selectx(q.Context(), &uzi, query); err != nil {
+		return nil, err
 	}
 
 	return uzi, nil

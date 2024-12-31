@@ -105,6 +105,12 @@ type GetUziOut struct {
 	Uzi
 }
 
+type GetPatientUziIn struct{}
+
+type GetPatientUziOut struct {
+	Uzis []Uzi `json:"uzis"`
+}
+
 type GetEchographicsIn struct{}
 
 type GetEchographicsOut struct {
