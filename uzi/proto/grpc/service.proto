@@ -23,6 +23,7 @@ service UziSrv {
   rpc updateSegment(UpdateSegmentIn) returns (UpdateSegmentOut);
 
   rpc createNode(CreateNodeIn) returns (CreateNodeOut);
+  rpc getAllNodes(GetAllNodesIn) returns (GetAllNodesOut);
   rpc deleteNode(DeleteNodeIn) returns (google.protobuf.Empty);
   rpc updateNode(UpdateNodeIn) returns (UpdateNodeOut);
 }
@@ -182,6 +183,12 @@ message CreateNodeIn {
 }
 
 message CreateNodeOut { string id = 100; }
+
+message GetAllNodesIn{ string uzi_id = 100; };
+
+message GetAllNodesOut{
+  repeated Node nodes = 100;
+};
 
 message DeleteNodeIn { string id = 100; }
 

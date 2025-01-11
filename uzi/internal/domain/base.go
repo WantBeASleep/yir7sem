@@ -22,11 +22,12 @@ type Image struct {
 }
 
 type Node struct {
-	Id       uuid.UUID `db:"id"`
-	Ai       bool      `db:"ai"`
-	Tirads23 float64   `db:"tirads_23"`
-	Tirads4  float64   `db:"tirads_4"`
-	Tirads5  float64   `db:"tirads_5"`
+	Id       uuid.UUID
+	Ai       bool
+	UziID    uuid.UUID
+	Tirads23 float64
+	Tirads4  float64
+	Tirads5  float64
 }
 
 type Segment struct {

@@ -15,6 +15,7 @@ type NodeQuery interface {
 	InsertNode(node entity.Node) error
 	GetNodeByPK(id uuid.UUID) (entity.Node, error)
 	GetNodesByImageID(id uuid.UUID) ([]entity.Node, error)
+	GetNodesByUziID(id uuid.UUID) ([]entity.Node, error)
 	UpdateNode(node entity.Node) (int64, error)
 	DeleteNodeByPK(id uuid.UUID) error
 }
@@ -33,6 +34,7 @@ func (q *nodeQuery) InsertNode(node entity.Node) error {
 		Columns(
 			"id",
 			"ai",
+			"uzi_id",
 			"tirads_23",
 			"tirads_4",
 			"tirads_5",
@@ -40,6 +42,7 @@ func (q *nodeQuery) InsertNode(node entity.Node) error {
 		Values(
 			node.Id,
 			node.Ai,
+			node.UziID,
 			node.Tirads23,
 			node.Tirads4,
 			node.Tirads5,
@@ -58,6 +61,7 @@ func (q *nodeQuery) GetNodeByPK(id uuid.UUID) (entity.Node, error) {
 		Select(
 			"id",
 			"ai",
+			"uzi_id",
 			"tirads_23",
 			"tirads_4",
 			"tirads_5",
@@ -76,6 +80,30 @@ func (q *nodeQuery) GetNodeByPK(id uuid.UUID) (entity.Node, error) {
 }
 
 func (q *nodeQuery) GetNodesByImageID(id uuid.UUID) ([]entity.Node, error) {
+	query := q.QueryBuilder().
+		Select(
+			"node.id",
+			"node.ai",
+			"node.tirads_23",
+			"node.tirads_4",
+			"node.tirads_5",
+		).
+		From(nodeTable).
+		InnerJoin("segment ON segment.node_id = node.id").
+		InnerJoin("image ON image.id = segment.image_id").
+		Where(sq.Eq{
+			"image.id": id,
+		})
+
+	var uzi []entity.Node
+	if err := q.Runner().Selectx(q.Context(), &uzi, query); err != nil {
+		return nil, err
+	}
+
+	return uzi, nil
+}
+
+func (q *nodeQuery) GetNodesByUziID(id uuid.UUID) ([]entity.Node, error) {
 	query := q.QueryBuilder().
 		Select(
 			"node.id",
