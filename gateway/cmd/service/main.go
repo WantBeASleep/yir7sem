@@ -192,6 +192,7 @@ func run() (exitCode int) {
 
 	uziRouter.HandleFunc("/patient/{id}/uzis", uziHandler.GetPatientUzi).Methods("GET")
 	uziRouter.HandleFunc("/uzis/{id}/images", uziHandler.GetUziImages).Methods("GET")
+	uziRouter.HandleFunc("/uzis/{id}/nodes", uziHandler.GetAllNodes).Methods("GET")
 	uziRouter.HandleFunc("/uzis/{id}", uziHandler.GetUzi).Methods("GET")
 	uziRouter.HandleFunc("/uzis/{id}", uziHandler.PatchUzi).Methods("PATCH")
 	uziRouter.HandleFunc("/uzis", uziHandler.PostUzi).Methods("POST")

@@ -145,9 +145,16 @@ type PostNodeIn struct {
 		Tirads5  float64   `json:"tirads5"`
 	} `json:"segments"`
 
-	Tirads23 float64 `json:"tirads23"`
-	Tirads4  float64 `json:"tirads4"`
-	Tirads5  float64 `json:"tirads5"`
+	UziID    uuid.UUID `json:"uzi_id"`
+	Tirads23 float64   `json:"tirads23"`
+	Tirads4  float64   `json:"tirads4"`
+	Tirads5  float64   `json:"tirads5"`
+}
+
+type GetAllNodesIn struct{}
+
+type GetAllNodesOut struct {
+	Nodes []Node `json:"nodes"`
 }
 
 type PostNodeOut struct {
