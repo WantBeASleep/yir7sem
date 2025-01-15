@@ -52,6 +52,7 @@ class uziUseCase:
 
             nodes[k] = pb_event.UziProcessed.Node(
                 id=formation_uuid,
+                uzi_id=uzi_id,
                 tirads_23=tracked[k][0],
                 tirads_4=tracked[k][1],
                 tirads_5=tracked[k][2],
