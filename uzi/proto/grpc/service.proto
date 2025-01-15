@@ -175,7 +175,8 @@ message CreateNodeIn {
     double tirads_4 = 600;
     double tirads_5 = 700;
   }
-
+// TODO: потом это прокинуть везде, пока только в создании
+  string uzi_id = 100;
   repeated NestedSegment segments = 200;
   double tirads_23 = 300;
   double tirads_4 = 400;

@@ -84,6 +84,7 @@ func (q *nodeQuery) GetNodesByImageID(id uuid.UUID) ([]entity.Node, error) {
 		Select(
 			"node.id",
 			"node.ai",
+			"node.uzi_id",
 			"node.tirads_23",
 			"node.tirads_4",
 			"node.tirads_5",
@@ -106,17 +107,16 @@ func (q *nodeQuery) GetNodesByImageID(id uuid.UUID) ([]entity.Node, error) {
 func (q *nodeQuery) GetNodesByUziID(id uuid.UUID) ([]entity.Node, error) {
 	query := q.QueryBuilder().
 		Select(
-			"node.id",
-			"node.ai",
-			"node.tirads_23",
-			"node.tirads_4",
-			"node.tirads_5",
+			"id",
+			"ai",
+			"uzi_id",
+			"tirads_23",
+			"tirads_4",
+			"tirads_5",
 		).
 		From(nodeTable).
-		InnerJoin("segment ON segment.node_id = node.id").
-		InnerJoin("image ON image.id = segment.image_id").
 		Where(sq.Eq{
-			"image.id": id,
+			"uzi_id": id,
 		})
 
 	var uzi []entity.Node
