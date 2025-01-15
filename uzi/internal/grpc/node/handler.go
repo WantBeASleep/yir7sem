@@ -15,6 +15,7 @@ import (
 
 type NodeHandler interface {
 	CreateNode(ctx context.Context, in *pb.CreateNodeIn) (*pb.CreateNodeOut, error)
+	GetAllNodes(ctx context.Context, in *pb.GetAllNodesIn) (*pb.GetAllNodesOut, error)
 	DeleteNode(ctx context.Context, in *pb.DeleteNodeIn) (*empty.Empty, error)
 	UpdateNode(ctx context.Context, in *pb.UpdateNodeIn) (*pb.UpdateNodeOut, error)
 }
@@ -46,6 +47,7 @@ func (h *handler) CreateNode(ctx context.Context, in *pb.CreateNodeIn) (*pb.Crea
 	nodeID, err := h.nodeSrv.CreateNode(
 		ctx,
 		domain.Node{
+			UziID:    uuid.MustParse(in.UziId),
 			Tirads23: in.Tirads_23,
 			Tirads4:  in.Tirads_4,
 			Tirads5:  in.Tirads_5,
@@ -58,6 +60,22 @@ func (h *handler) CreateNode(ctx context.Context, in *pb.CreateNodeIn) (*pb.Crea
 
 	return &pb.CreateNodeOut{
 		Id: nodeID.String(),
+	}, nil
+}
+
+func (h *handler) GetAllNodes(ctx context.Context, in *pb.GetAllNodesIn) (*pb.GetAllNodesOut, error) {
+	nodes, err := h.nodeSrv.GetAllNodes(ctx, uuid.MustParse(in.UziId))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Что то пошло не так: %s", err.Error())
+	}
+
+	outNodes := make([]*pb.Node, 0, len(nodes))
+	for _, v := range nodes {
+		outNodes = append(outNodes, DomainNodeToPb(&v))
+	}
+
+	return &pb.GetAllNodesOut{
+		Nodes: outNodes,
 	}, nil
 }
 

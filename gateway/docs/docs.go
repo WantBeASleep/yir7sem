@@ -1223,6 +1223,48 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/uzi/uzis/{id}/nodes": {
+            "get": {
+                "description": "получить все узлы узи",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "uzi"
+                ],
+                "summary": "получить все узлы узи",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "access_token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "uzi_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "id узла",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_uzi.GetAllNodesOut"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1491,6 +1533,17 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "internal_api_uzi.GetAllNodesOut": {
+            "type": "object",
+            "properties": {
+                "nodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_api_uzi.Node"
+                    }
                 }
             }
         },
@@ -2022,6 +2075,9 @@ const docTemplate = `{
                 },
                 "tirads5": {
                     "type": "number"
+                },
+                "uzi_id": {
+                    "type": "string"
                 }
             }
         },

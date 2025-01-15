@@ -173,6 +173,13 @@ definitions:
       name:
         type: string
     type: object
+  internal_api_uzi.GetAllNodesOut:
+    properties:
+      nodes:
+        items:
+          $ref: '#/definitions/internal_api_uzi.Node'
+        type: array
+    type: object
   internal_api_uzi.GetUziImagesOut:
     properties:
       images:
@@ -518,6 +525,8 @@ definitions:
         type: number
       tirads23:
         type: number
+      uzi_id:
+        type: string
     type: object
   uzi.PostNodeOut:
     properties:
@@ -1353,6 +1362,34 @@ paths:
           schema:
             type: string
       summary: получает списк id кадров uzi
+      tags:
+      - uzi
+  /uzi/uzis/{id}/nodes:
+    get:
+      description: получить все узлы узи
+      parameters:
+      - description: access_token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: uzi_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: id узла
+          schema:
+            $ref: '#/definitions/internal_api_uzi.GetAllNodesOut'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: получить все узлы узи
       tags:
       - uzi
 swagger: "2.0"

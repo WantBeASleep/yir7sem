@@ -51,6 +51,7 @@ func (h *subscriber) ProcessMessage(ctx context.Context, msg []byte) error {
 	for _, v := range event.Nodes {
 		nodes = append(nodes, domain.Node{
 			Id:       uuid.MustParse(v.Id),
+			UziID:    uuid.MustParse(v.UziId),
 			Tirads23: v.Tirads_23,
 			Tirads4:  v.Tirads_4,
 			Tirads5:  v.Tirads_5,

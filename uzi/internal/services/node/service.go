@@ -17,6 +17,7 @@ import (
 type Service interface {
 	CreateNode(ctx context.Context, node domain.Node, segments []domain.Segment) (uuid.UUID, error)
 	InsertAiNodeWithSegments(ctx context.Context, nodes []domain.Node, segments []domain.Segment) error
+	GetAllNodes(ctx context.Context, id uuid.UUID) ([]domain.Node, error)
 	UpdateNode(ctx context.Context, id uuid.UUID, update UpdateNode) (domain.Node, error)
 	DeleteNode(ctx context.Context, id uuid.UUID) error
 }
@@ -102,6 +103,15 @@ func (s *service) insertNodesWithSegments(ctx context.Context, nodes []domain.No
 	}
 
 	return nil
+}
+
+func (s *service) GetAllNodes(ctx context.Context, id uuid.UUID) ([]domain.Node, error) {
+	nodesDB, err := s.dao.NewNodeQuery(ctx).GetNodesByUziID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return entity.Node{}.SliceToDomain(nodesDB), err
 }
 
 func (s *service) UpdateNode(ctx context.Context, id uuid.UUID, update UpdateNode) (domain.Node, error) {

@@ -402,10 +402,42 @@ func (h *Handler) PostNodes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp, err := h.adapter.UziAdapter.CreateNode(ctx, &uzipb.CreateNodeIn{
+		UziId:     req.UziID.String(),
 		Segments:  segments,
 		Tirads_23: req.Tirads23,
 		Tirads_4:  req.Tirads4,
 		Tirads_5:  req.Tirads5,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
+		return
+	}
+}
+
+// GetAllNodes получить все узлы узи
+//
+//	@Summary		получить все узлы узи
+//	@Description	получить все узлы узи
+//	@Tags			uzi
+//	@Produce		json
+//	@Param			token	header		string		true	"access_token"
+//	@Param			id		path		string					true	"uzi_id"
+//	@Success		200		{object}	GetAllNodesOut	"id узла"
+//	@Failure		500		{string}	string		"Internal Server Error"
+//	@Router			/uzi/uzis/{id}/nodes [get]
+func (h *Handler) GetAllNodes(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := mux.Vars(r)["id"]
+
+	// TODO: в ответе пустые поля будут опущены, убрать теги omitempty.
+	resp, err := h.adapter.UziAdapter.GetAllNodes(ctx, &uzipb.GetAllNodesIn{
+		UziId: id,
 	})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)
