@@ -7,6 +7,7 @@ option go_package = "yir/uzi/api/broker;broker";
 message UziProcessed {
   message Node {
       string id = 100;
+      string uzi_id = 200;
       double tirads_23 = 400;
       double tirads_4 = 500;
       double tirads_5 = 600;
