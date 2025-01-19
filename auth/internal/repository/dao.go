@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/WantBeASleep/goooool/daolib"
+	daolib "github.com/WantBeASleep/med_ml_lib/dao"
 
 	"github.com/jmoiron/sqlx"
 )

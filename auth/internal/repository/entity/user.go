@@ -3,7 +3,7 @@ package entity
 import (
 	"database/sql"
 
-	"github.com/WantBeASleep/goooool/gtclib"
+	"github.com/WantBeASleep/med_ml_lib/gtc"
 
 	"auth/internal/domain"
 
@@ -22,7 +22,7 @@ func (e User) ToDomain() domain.User {
 		Id:       e.Id,
 		Email:    e.Email,
 		Password: e.Password,
-		Token:    gtclib.String.SqlToPointer(e.Token),
+		Token:    gtc.String.SqlToPointer(e.Token),
 	}
 }
 
@@ -31,6 +31,6 @@ func (User) FromDomain(d domain.User) User {
 		Id:       d.Id,
 		Email:    d.Email,
 		Password: d.Password,
-		Token:    gtclib.String.PointerToSql(d.Token),
+		Token:    gtc.String.PointerToSql(d.Token),
 	}
 }

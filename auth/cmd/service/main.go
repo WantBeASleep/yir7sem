@@ -5,12 +5,14 @@ import (
 	"net"
 	"os"
 
-	"github.com/WantBeASleep/goooool/grpclib"
-	"github.com/WantBeASleep/goooool/loglib"
+	authlib "github.com/WantBeASleep/med_ml_lib/auth"
+	grpclib "github.com/WantBeASleep/med_ml_lib/grpc"
+	loglib "github.com/WantBeASleep/med_ml_lib/log"
+
+	"github.com/ilyakaznacheev/cleanenv"
+	_ "github.com/joho/godotenv/autoload"
 
 	"auth/internal/config"
-
-	pkgconfig "github.com/WantBeASleep/goooool/config"
 
 	"auth/internal/repository"
 
@@ -42,11 +44,13 @@ func main() {
 }
 
 func run() (exitCode int) {
-	loglib.InitLogger(loglib.WithDevEnv())
-	cfg, err := pkgconfig.Load[config.Config]()
-	if err != nil {
+	loglib.InitLogger(loglib.WithEnv())
+
+	cfg := config.Config{}
+	if err := cleanenv.ReadEnv(&cfg); err != nil {
 		slog.Error("init config", "err", err)
 		return failExitCode
+
 	}
 
 	pubKey, privKey, err := cfg.ParseRsaKeys()
@@ -93,8 +97,9 @@ func run() (exitCode int) {
 
 	server := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			grpclib.ServerCallPanicRecoverInterceptor,
-			grpclib.ServerCallLoggerInterceptor,
+			authlib.AuthServerCall,
+			loglib.GRPCServerCall,
+			grpclib.PanicRecover,
 		),
 	)
 	pb.RegisterAuthSrvServer(server, handler)
