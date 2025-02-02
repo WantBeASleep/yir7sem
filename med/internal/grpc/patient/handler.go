@@ -40,6 +40,7 @@ func (h *handler) CreatePatient(ctx context.Context, in *pb.CreatePatientIn) (*p
 		Policy:     in.Policy,
 		Active:     in.Active,
 		Malignancy: in.Malignancy,
+		Birthdate:  gtclib.Timestamp.ToTimePointer(in.Birthdate),
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Что то пошло не так: %s", err.Error())

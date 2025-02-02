@@ -22,6 +22,7 @@ type Patient struct {
 	Active      bool
 	Malignancy  bool
 	LastUziDate *time.Time
+	Birthdate   *time.Time
 }
 
 type Card struct {
