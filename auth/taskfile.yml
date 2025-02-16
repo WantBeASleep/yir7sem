@@ -42,6 +42,10 @@ tasks:
       - task: build
       - ./bin/service
 
+  e2e:
+    cmds:
+      - go test -v -count=1 ./tests/e2e/... -tags=e2e
+
   migration-up:
     cmds:
       - goose -dir db/migrations up

@@ -23,6 +23,7 @@ func New(
 	}
 }
 
+// TODO: вынести это в библиотку med_ml_lib, и поменять парс jwt в тестах auth 
 // распарсит токен, положит в хедер x-user_id
 func (m *middlewares) Jwt(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
