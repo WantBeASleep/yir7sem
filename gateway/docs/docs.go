@@ -1383,6 +1383,9 @@ const docTemplate = `{
                 "active": {
                     "type": "boolean"
                 },
+                "birth_date": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -1408,6 +1411,9 @@ const docTemplate = `{
             "properties": {
                 "active": {
                     "type": "boolean"
+                },
+                "birth_date": {
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"
@@ -1491,6 +1497,9 @@ const docTemplate = `{
                 "active": {
                     "type": "boolean"
                 },
+                "birth_date": {
+                    "type": "string"
+                },
                 "last_uzi_date": {
                     "type": "string"
                 },
@@ -1504,6 +1513,9 @@ const docTemplate = `{
             "properties": {
                 "active": {
                     "type": "boolean"
+                },
+                "birth_date": {
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"
@@ -1688,6 +1700,9 @@ const docTemplate = `{
             "properties": {
                 "active": {
                     "type": "boolean"
+                },
+                "birth_date": {
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"

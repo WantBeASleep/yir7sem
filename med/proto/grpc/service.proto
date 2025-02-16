@@ -52,7 +52,7 @@ message Patient {
   bool active = 500;
   bool malignancy = 600;
   optional google.protobuf.Timestamp last_uzi_date = 700;
-  optional google.protobuf.Timestamp birthdate = 800;
+  google.protobuf.Timestamp birthdate = 800;
 }
 
 message CreatePatientIn {
@@ -61,7 +61,7 @@ message CreatePatientIn {
   string policy = 400;
   bool active = 500;
   bool malignancy = 600;
-  optional google.protobuf.Timestamp birthdate = 800;
+  google.protobuf.Timestamp birthdate = 800;
 }
 
 message CreatePatientOut { string id = 100; }

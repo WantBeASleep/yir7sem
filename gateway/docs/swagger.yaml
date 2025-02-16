@@ -74,6 +74,8 @@ definitions:
     properties:
       active:
         type: boolean
+      birth_date:
+        type: string
       email:
         type: string
       full_name:
@@ -91,6 +93,8 @@ definitions:
     properties:
       active:
         type: boolean
+      birth_date:
+        type: string
       email:
         type: string
       full_name:
@@ -144,6 +148,8 @@ definitions:
     properties:
       active:
         type: boolean
+      birth_date:
+        type: string
       last_uzi_date:
         type: string
       malignancy:
@@ -153,6 +159,8 @@ definitions:
     properties:
       active:
         type: boolean
+      birth_date:
+        type: string
       email:
         type: string
       full_name:
@@ -272,6 +280,8 @@ definitions:
     properties:
       active:
         type: boolean
+      birth_date:
+        type: string
       email:
         type: string
       full_name:

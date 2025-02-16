@@ -22,6 +22,7 @@ type Patient struct {
 	Active      bool       `json:"active"`
 	Malignancy  bool       `json:"malignancy"`
 	LastUziDate *time.Time `json:"last_uzi_date"`
+	BirthDate   time.Time  `json:"birth_date"`
 }
 
 type Card struct {
@@ -53,11 +54,12 @@ type GetDoctorPatientsOut struct {
 }
 
 type PostPatientIn struct {
-	FullName   string `json:"full_name"`
-	Email      string `json:"email"`
-	Policy     string `json:"policy"`
-	Active     bool   `json:"active"`
-	Malignancy bool   `json:"malignancy"`
+	FullName   string    `json:"full_name"`
+	Email      string    `json:"email"`
+	Policy     string    `json:"policy"`
+	Active     bool      `json:"active"`
+	Malignancy bool      `json:"malignancy"`
+	Birthdate  time.Time `json:"birth_date"`
 }
 
 type PostPatientOut struct {
@@ -74,6 +76,7 @@ type UpdatePatientIn struct {
 	Active      *bool      `json:"active"`
 	Malignancy  *bool      `json:"malignancy"`
 	LastUziDate *time.Time `json:"last_uzi_date"`
+	Birthdate   time.Time  `json:"birth_date"`
 }
 
 type UpdatePatientOut struct {

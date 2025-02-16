@@ -10,6 +10,7 @@ type UpdatePatient struct {
 	Active      *bool
 	Malignancy  *bool
 	LastUziDate *time.Time
+	Birthdate   time.Time
 }
 
 func (u UpdatePatient) Update(d *domain.Patient) {
@@ -22,4 +23,5 @@ func (u UpdatePatient) Update(d *domain.Patient) {
 	if u.LastUziDate != nil {
 		d.LastUziDate = u.LastUziDate
 	}
+	d.Birthdate = u.Birthdate
 }

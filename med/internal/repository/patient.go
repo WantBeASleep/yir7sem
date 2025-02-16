@@ -68,6 +68,7 @@ func (q *patientQuery) GetPatientByPK(id uuid.UUID) (entity.Patient, error) {
 			"active",
 			"malignancy",
 			"last_uzi_date",
+			"birthdate",
 		).
 		From(patientTable).
 		Where(sq.Eq{

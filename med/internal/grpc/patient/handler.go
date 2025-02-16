@@ -40,7 +40,7 @@ func (h *handler) CreatePatient(ctx context.Context, in *pb.CreatePatientIn) (*p
 		Policy:     in.Policy,
 		Active:     in.Active,
 		Malignancy: in.Malignancy,
-		Birthdate:  gtclib.Timestamp.ToTimePointer(in.Birthdate),
+		Birthdate:  in.Birthdate.AsTime(),
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Что то пошло не так: %s", err.Error())
@@ -81,6 +81,7 @@ func (h *handler) UpdatePatient(ctx context.Context, in *pb.UpdatePatientIn) (*p
 			Active:      in.Active,
 			Malignancy:  in.Malignancy,
 			LastUziDate: gtclib.Timestamp.ToTimePointer(in.LastUziDate),
+			Birthdate:   in.Birthdate.AsTime(),
 		},
 	)
 	if err != nil {

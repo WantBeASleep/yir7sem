@@ -146,10 +146,11 @@ func (h *Handler) PostPatient(w http.ResponseWriter, r *http.Request) {
 
 	res, err := h.adapter.MedAdapter.CreatePatient(ctx, &pb.CreatePatientIn{
 		Fullname:   req.FullName,
-		Email:      req.Email,
-		Policy:     req.Policy,
-		Active:     req.Active,
-		Malignancy: req.Malignancy,
+		Email:       req.Email,
+		Policy:      req.Policy,
+		Active:      req.Active,
+		Malignancy:  req.Malignancy,
+		Birthdate:   gtclib.Timestamp.TimePointerTo(&req.Birthdate),
 	})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)

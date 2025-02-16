@@ -2,12 +2,13 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.12.4
-// source: med.proto
+// source: proto/grpc/service.proto
 
-package med
+package service
 
 import (
 	context "context"
+
 	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -460,5 +461,5 @@ var MedSrv_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "med.proto",
+	Metadata: "proto/grpc/service.proto",
 }

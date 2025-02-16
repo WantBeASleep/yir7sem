@@ -5,6 +5,7 @@ go 1.23.4
 require (
 	github.com/WantBeASleep/goooool v1.0.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/golang/protobuf v1.5.4
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/minio/minio-go/v7 v7.0.81

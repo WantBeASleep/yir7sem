@@ -1377,6 +1377,9 @@
                 "active": {
                     "type": "boolean"
                 },
+                "birth_date": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -1402,6 +1405,9 @@
             "properties": {
                 "active": {
                     "type": "boolean"
+                },
+                "birth_date": {
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"
@@ -1485,6 +1491,9 @@
                 "active": {
                     "type": "boolean"
                 },
+                "birth_date": {
+                    "type": "string"
+                },
                 "last_uzi_date": {
                     "type": "string"
                 },
@@ -1498,6 +1507,9 @@
             "properties": {
                 "active": {
                     "type": "boolean"
+                },
+                "birth_date": {
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"
@@ -1682,6 +1694,9 @@
             "properties": {
                 "active": {
                     "type": "boolean"
+                },
+                "birth_date": {
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"
