@@ -1,11 +1,10 @@
 package repository
 
 import (
-	"github.com/WantBeASleep/goooool/daolib"
-
 	"med/internal/repository/entity"
 
 	sq "github.com/Masterminds/squirrel"
+	daolib "github.com/WantBeASleep/med_ml_lib/dao"
 	"github.com/google/uuid"
 )
 

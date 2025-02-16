@@ -3,7 +3,7 @@ package splitter
 import (
 	"fmt"
 
-	"github.com/WantBeASleep/goooool/slicer"
+	"github.com/WantBeASleep/med_ml_lib/slicer"
 
 	"uzi/internal/domain"
 

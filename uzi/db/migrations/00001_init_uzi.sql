@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE device
 (
-    id   integer      PRIMARY KEY,
+    id   SERIAL       PRIMARY KEY,
     name varchar(255) NOT NULL
 );
 

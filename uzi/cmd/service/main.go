@@ -7,13 +7,15 @@ import (
 	"net"
 	"os"
 
-	"github.com/WantBeASleep/goooool/brokerlib"
-	"github.com/WantBeASleep/goooool/grpclib"
-	"github.com/WantBeASleep/goooool/loglib"
+	authlib "github.com/WantBeASleep/med_ml_lib/auth"
+	grpclib "github.com/WantBeASleep/med_ml_lib/grpc"
 
-	pkgconfig "github.com/WantBeASleep/goooool/config"
+	"github.com/WantBeASleep/med_ml_lib/brokerlib"
+	loglib "github.com/WantBeASleep/med_ml_lib/log"
 
 	"uzi/internal/config"
+
+	"github.com/ilyakaznacheev/cleanenv"
 
 	"uzi/internal/repository"
 
@@ -55,11 +57,13 @@ func main() {
 }
 
 func run() (exitCode int) {
-	loglib.InitLogger(loglib.WithDevEnv())
-	cfg, err := pkgconfig.Load[config.Config]()
-	if err != nil {
+	loglib.InitLogger(loglib.WithEnv())
+
+	cfg := config.Config{}
+	if err := cleanenv.ReadEnv(&cfg); err != nil {
 		slog.Error("init config", "err", err)
 		return failExitCode
+
 	}
 
 	db, err := sqlx.Open("postgres", cfg.DB.Dsn)
@@ -114,8 +118,9 @@ func run() (exitCode int) {
 
 	server := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			grpclib.ServerCallPanicRecoverInterceptor,
-			grpclib.ServerCallLoggerInterceptor,
+			authlib.AuthServerCall,
+			loglib.GRPCServerCall,
+			grpclib.PanicRecover,
 		),
 	)
 	pb.RegisterUziSrvServer(server, handler)

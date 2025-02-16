@@ -3,12 +3,13 @@ version: "3"
 vars:
   VENDOR_PROTOGEN: "../vendor.protogen"
 
-dotenv: [".env"]
+dotenv: [".env.example"]
 
 tasks:
   bin-deps:
     cmds:
-      - GOBIN=$(pwd)/bin go install github.com/pressly/goose/v3/cmd/goose@latest
+      - GOBIN=$(pwd)/bin go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+      - GOBIN=$(pwd)/bin go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
   codegen:
     vars:
@@ -18,10 +19,13 @@ tasks:
         sh: find proto -type f -name "*.proto" | xargs echo
 
     cmds:
+      - task: bin-deps
       - for: { var: proto_files }
         cmd: >
           protoc
           -I {{dir .ITEM}}
+          --plugin=protoc-gen-go=$(pwd)/bin/protoc-gen-go
+          --plugin=protoc-gen-go-grpc=$(pwd)/bin/protoc-gen-go-grpc
           {{range $lib := splitList " " .proto_libs}}-I {{$lib}} {{end}}
           --experimental_allow_proto3_optional
           --go_out . --go-grpc_out .
@@ -29,8 +33,8 @@ tasks:
   style:
     cmds:
       - go fmt ./...
-      - goimports -w .
-      - gofumpt -l -w .
+      - go tool goimports -w .
+      - go tool gofumpt -l -w .
 
   build:
     cmds:
@@ -41,11 +45,14 @@ tasks:
     cmds:
       - task: build
       - ./bin/service
+  e2e:
+    cmds:
+      - go test -v -count=1 ./tests/e2e/... -tags=e2e
 
   migration-up:
     cmds:
-      - goose -dir db/migrations up
+      - go tool goose -dir db/migrations up
 
   migration-down:
     cmds:
-      - goose -dir db/migrations down
+      - go tool goose -dir db/migrations down

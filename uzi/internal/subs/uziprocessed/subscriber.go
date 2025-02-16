@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/WantBeASleep/goooool/brokerlib"
+	"github.com/WantBeASleep/med_ml_lib/brokerlib"
 
 	"uzi/internal/domain"
 	pb "uzi/internal/generated/broker/consume/uziprocessed"

@@ -1,20 +1,9 @@
 version: "3"
 
-vars:
-  services: [gateway, auth, med, uzi]
-
 tasks:
-  inherit-pkg:
+  reboot_deps:
     cmds:
-      - for: { var: services }
-        cmd: rm -rf {{.ITEM}}/pkg && cp -r pkg {{.ITEM}}/pkg
-  fix-go-mod:
-    cmds:
-      - for: { var: services }
-        cmd: cd {{.ITEM}} && go mod tidy
-  install-deps:
-    cmds:
-      - go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-      - go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-      - go install github.com/pressly/goose/v3/cmd/goose@latest
-      - go install github.com/swaggo/swag/cmd/swag@latest
+      - docker compose --profile deps down
+      - docker rmi -f $(docker images -aq)
+      - docker volume rm $(docker volume ls -qf dangling=true)
+      - docker compose --profile deps up -d

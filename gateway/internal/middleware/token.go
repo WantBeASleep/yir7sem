@@ -5,7 +5,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/WantBeASleep/goooool/ctxlib"
+	authlib "github.com/WantBeASleep/med_ml_lib/auth"
+	loglib "github.com/WantBeASleep/med_ml_lib/log"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -23,6 +24,7 @@ func New(
 	}
 }
 
+// TODO: вынести это в библиотку med_ml_lib, и поменять парс jwt в тестах auth
 // распарсит токен, положит в хедер x-user_id
 func (m *middlewares) Jwt(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -54,12 +56,12 @@ func (m *middlewares) Jwt(next http.Handler) http.Handler {
 	})
 }
 
-// залогирует + сделать x-request_id
+// TODO: залогирует + сделать x-request_id (ПЕРЕДЕЛАТЬ)
 func (m *middlewares) Log(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestID := uuid.New()
-		// TODO: подумать над какой то глобавльной переменной x-request_id
-		ctx := ctxlib.PublicSet(r.Context(), "x-request_id", requestID.String())
+		ctx := authlib.WithRequestID(r.Context(), requestID)
+		ctx = loglib.WithField(ctx, "x-request_id", requestID.String())
 
 		slog.InfoContext(ctx, "New request", slog.String("path", r.URL.Path))
 

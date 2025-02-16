@@ -3,7 +3,7 @@ package entity
 import (
 	"database/sql"
 
-	"github.com/WantBeASleep/goooool/gtclib"
+	gtclib "github.com/WantBeASleep/med_ml_lib/gtc"
 
 	"med/internal/domain"
 

@@ -10,6 +10,7 @@ import (
 )
 
 type Service interface {
+	CreateDevice(ctx context.Context, deviceName string) (int, error)
 	GetDeviceList(ctx context.Context) ([]domain.Device, error)
 }
 
@@ -23,6 +24,12 @@ func New(
 	return &service{
 		dao: dao,
 	}
+}
+
+func (s *service) CreateDevice(ctx context.Context, deviceName string) (int, error) {
+	id, err := s.dao.NewDeviceQuery(ctx).CreateDevice(deviceName)
+	// Здесь не нужно оборачивать в строку, так как по вызову сверху и так будет обернуто в строку
+	return id, err
 }
 
 func (s *service) GetDeviceList(ctx context.Context) ([]domain.Device, error) {

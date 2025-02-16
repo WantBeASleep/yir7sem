@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/WantBeASleep/goooool/gtclib"
+	gtclib "github.com/WantBeASleep/med_ml_lib/gtc"
 
 	adapters "gateway/internal/adapters"
 	pb "gateway/internal/generated/grpc/client/med"
@@ -223,7 +223,7 @@ func (h *Handler) UpdatePatient(w http.ResponseWriter, r *http.Request) {
 		Id:          id,
 		Active:      req.Active,
 		Malignancy:  req.Malignancy,
-		LastUziDate: gtclib.Timestamp.TimePointerTo(req.LastUziDate),
+		LastUziDate: gtclib.Timestamp.TimePointerToPointer(req.LastUziDate),
 	})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("что то пошло не так: %v", err), 500)

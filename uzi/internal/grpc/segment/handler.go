@@ -15,6 +15,7 @@ import (
 
 type SegmentHandler interface {
 	CreateSegment(ctx context.Context, in *pb.CreateSegmentIn) (*pb.CreateSegmentOut, error)
+	GetNodeSegments(ctx context.Context, in *pb.GetNodeSegmentsIn) (*pb.GetNodeSegmentsOut, error)
 	DeleteSegment(ctx context.Context, in *pb.DeleteSegmentIn) (*empty.Empty, error)
 	UpdateSegment(ctx context.Context, in *pb.UpdateSegmentIn) (*pb.UpdateSegmentOut, error)
 }
@@ -46,6 +47,22 @@ func (h *handler) CreateSegment(ctx context.Context, in *pb.CreateSegmentIn) (*p
 
 	return &pb.CreateSegmentOut{
 		Id: id.String(),
+	}, nil
+}
+
+func (h *handler) GetNodeSegments(ctx context.Context, in *pb.GetNodeSegmentsIn) (*pb.GetNodeSegmentsOut, error) {
+	segments, err := h.segmentSrv.GetNodeSegments(ctx, uuid.MustParse(in.NodeId))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Что то пошло не так: %s", err.Error())
+	}
+
+	segmentsPb := make([]*pb.Segment, len(segments))
+	for i, seg := range segments {
+		segmentsPb[i] = DomainSegmentToPb(&seg)
+	}
+
+	return &pb.GetNodeSegmentsOut{
+		Segments: segmentsPb,
 	}, nil
 }
 

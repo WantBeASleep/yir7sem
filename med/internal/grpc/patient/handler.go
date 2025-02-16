@@ -3,7 +3,7 @@ package patient
 import (
 	"context"
 
-	"github.com/WantBeASleep/goooool/gtclib"
+	gtclib "github.com/WantBeASleep/med_ml_lib/gtc"
 
 	"med/internal/domain"
 	pb "med/internal/generated/grpc/service"
@@ -79,7 +79,7 @@ func (h *handler) UpdatePatient(ctx context.Context, in *pb.UpdatePatientIn) (*p
 		patient.UpdatePatient{
 			Active:      in.Active,
 			Malignancy:  in.Malignancy,
-			LastUziDate: gtclib.Timestamp.ToTimePointer(in.LastUziDate),
+			LastUziDate: gtclib.Timestamp.PointerToTimePointer(in.LastUziDate),
 		},
 	)
 	if err != nil {

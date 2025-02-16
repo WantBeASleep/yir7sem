@@ -1,7 +1,7 @@
 package patient
 
 import (
-	"github.com/WantBeASleep/goooool/gtclib"
+	gtclib "github.com/WantBeASleep/med_ml_lib/gtc"
 
 	"med/internal/domain"
 	pb "med/internal/generated/grpc/service"
@@ -15,6 +15,6 @@ func domainToPb(d *domain.Patient) *pb.Patient {
 		Policy:      d.Policy,
 		Active:      d.Active,
 		Malignancy:  d.Malignancy,
-		LastUziDate: gtclib.Timestamp.TimePointerTo(d.LastUziDate),
+		LastUziDate: gtclib.Timestamp.TimePointerToPointer(d.LastUziDate),
 	}
 }
