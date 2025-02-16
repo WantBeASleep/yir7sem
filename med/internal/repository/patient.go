@@ -93,6 +93,7 @@ func (q *patientQuery) GetPatientsByDoctorID(id uuid.UUID) ([]entity.Patient, er
 			"patient.active",
 			"patient.malignancy",
 			"patient.last_uzi_date",
+			"patient.birthdate",
 		).
 		From(patientTable).
 		InnerJoin("card ON card.patient_id = patient.id").
@@ -115,6 +116,7 @@ func (q *patientQuery) UpdatePatient(patient entity.Patient) (int64, error) {
 			"active":        patient.Active,
 			"malignancy":    patient.Malignancy,
 			"last_uzi_date": patient.LastUziDate,
+			"birthdate":     patient.Birthdate,
 		}).
 		Where(sq.Eq{
 			"id": patient.Id,

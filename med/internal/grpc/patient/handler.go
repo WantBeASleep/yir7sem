@@ -73,6 +73,10 @@ func (h *handler) GetDoctorPatients(ctx context.Context, in *pb.GetDoctorPatient
 }
 
 func (h *handler) UpdatePatient(ctx context.Context, in *pb.UpdatePatientIn) (*pb.UpdatePatientOut, error) {
+	if in.Birthdate == nil {
+		return nil, status.Errorf(codes.Internal, "Что то пошло не так: empty birthdate")
+	}
+
 	patient, err := h.patientSrv.UpdatePatient(
 		ctx,
 		uuid.MustParse(in.DoctorId),
