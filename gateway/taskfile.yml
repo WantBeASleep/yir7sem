@@ -3,9 +3,14 @@ version: "3"
 vars:
   VENDOR_PROTOGEN: "../vendor.protogen"
 
-dotenv: [".env"]
+dotenv: [".env.example"]
 
 tasks:
+  bin-deps:
+    cmds:
+      - GOBIN=$(pwd)/bin go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+      - GOBIN=$(pwd)/bin go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
   codegen:
     vars:
       proto_libs:
@@ -14,22 +19,25 @@ tasks:
         sh: find proto -type f -name "*.proto" | xargs echo
 
     cmds:
+      - task: bin-deps
       - for: { var: proto_files }
         cmd: >
           protoc
           -I {{dir .ITEM}}
+          --plugin=protoc-gen-go=$(pwd)/bin/protoc-gen-go
+          --plugin=protoc-gen-go-grpc=$(pwd)/bin/protoc-gen-go-grpc
           {{range $lib := splitList " " .proto_libs}}-I {{$lib}} {{end}}
           --experimental_allow_proto3_optional
           --go_out . --go-grpc_out .
           {{.ITEM}}
-      - swag init -g cmd/service/main.go
+      - go tool swag init -g cmd/service/main.go
 
   style:
     cmds:
       - go fmt ./...
-      - goimports -w .
-      - gofumpt -l -w .
-      - swag fmt
+      - go tool goimports -w .
+      - go tool gofumpt -l -w .
+      - go tool swag fmt
 
   build:
     cmds:
@@ -43,11 +51,11 @@ tasks:
 
   migration-up:
     cmds:
-      - goose -dir db/migrations up
+      - go tool goose -dir db/migrations up
 
   migration-down:
     cmds:
-      - goose -dir db/migrations down
+      - go tool goose -dir db/migrations down
 
   default:
     cmds:

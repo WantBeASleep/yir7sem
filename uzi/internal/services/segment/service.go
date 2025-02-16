@@ -14,6 +14,7 @@ import (
 
 type Service interface {
 	CreateSegment(ctx context.Context, segment domain.Segment) (uuid.UUID, error)
+	GetNodeSegments(ctx context.Context, nodeID uuid.UUID) ([]domain.Segment, error)
 	UpdateSegment(ctx context.Context, id uuid.UUID, update UpdateSegment) (domain.Segment, error)
 	DeleteSegment(ctx context.Context, id uuid.UUID) error
 }
@@ -37,6 +38,14 @@ func (s *service) CreateSegment(ctx context.Context, segment domain.Segment) (uu
 	}
 
 	return segment.Id, nil
+}
+
+func (s *service) GetNodeSegments(ctx context.Context, nodeID uuid.UUID) ([]domain.Segment, error) {
+	segments, err := s.dao.NewSegmentQuery(ctx).GetSegmentsByNodeID(nodeID)
+	if err != nil {
+		return nil, fmt.Errorf("get segments by node id: %w", err)
+	}
+	return entity.Segment{}.SliceToDomain(segments), nil
 }
 
 func (s *service) UpdateSegment(ctx context.Context, id uuid.UUID, update UpdateSegment) (domain.Segment, error) {

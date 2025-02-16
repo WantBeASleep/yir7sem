@@ -13,6 +13,7 @@ import (
 )
 
 type DeviceHandler interface {
+	CreateDevice(ctx context.Context, in *pb.CreateDeviceIn) (*pb.CreateDeviceOut, error)
 	GetDeviceList(ctx context.Context, _ *empty.Empty) (*pb.GetDeviceListOut, error)
 }
 
@@ -26,6 +27,15 @@ func New(
 	return &handler{
 		deviceSrv: deviceSrv,
 	}
+}
+
+func (h *handler) CreateDevice(ctx context.Context, in *pb.CreateDeviceIn) (*pb.CreateDeviceOut, error) {
+	deviceID, err := h.deviceSrv.CreateDevice(ctx, in.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Что то пошло не так: create device: %s", err.Error())
+	}
+
+	return &pb.CreateDeviceOut{Id: int64(deviceID)}, nil
 }
 
 func (h *handler) GetDeviceList(ctx context.Context, _ *empty.Empty) (*pb.GetDeviceListOut, error) {

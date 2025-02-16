@@ -5,6 +5,7 @@ option go_package = "internal/generated/grpc/client/uzi";
 import "google/protobuf/empty.proto";
 
 service UziSrv {
+  rpc createDevice(createDeviceIn) returns (createDeviceOut);
   rpc getDeviceList(google.protobuf.Empty) returns (GetDeviceListOut);
 
   rpc createUzi(CreateUziIn) returns (CreateUziOut);
@@ -19,6 +20,7 @@ service UziSrv {
       returns (GetImageSegmentsWithNodesOut);
 
   rpc createSegment(CreateSegmentIn) returns (CreateSegmentOut);
+  rpc getNodeSegments(GetNodeSegmentsIn) returns (GetNodeSegmentsOut);
   rpc deleteSegment(DeleteSegmentIn) returns (google.protobuf.Empty);
   rpc updateSegment(UpdateSegmentIn) returns (UpdateSegmentOut);
 
@@ -36,6 +38,14 @@ message Id { string id = 100; }
 message Device {
   int64 id = 100;
   string name = 200;
+}
+
+message createDeviceIn {
+  string name = 100;
+}
+
+message createDeviceOut {
+  int64 id = 100;
 }
 
 message GetDeviceListOut { repeated Device devices = 100; }
@@ -145,6 +155,10 @@ message CreateSegmentIn {
 }
 
 message CreateSegmentOut { string id = 100; }
+
+message GetNodeSegmentsIn { string node_id = 100; }
+
+message GetNodeSegmentsOut { repeated Segment segments = 100; }
 
 message DeleteSegmentIn { string id = 100; }
 

@@ -50,7 +50,6 @@ func run() (exitCode int) {
 	if err := cleanenv.ReadEnv(&cfg); err != nil {
 		slog.Error("init config", "err", err)
 		return failExitCode
-
 	}
 
 	pubKey, privKey, err := cfg.ParseRsaKeys()

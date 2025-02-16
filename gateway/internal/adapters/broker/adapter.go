@@ -3,7 +3,7 @@ package broker
 import (
 	"fmt"
 
-	"github.com/WantBeASleep/goooool/brokerlib"
+	brokerlib "github.com/WantBeASleep/med_ml_lib/brokerlib"
 
 	pb "gateway/internal/generated/broker/produce/uziupload"
 

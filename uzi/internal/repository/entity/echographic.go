@@ -2,8 +2,9 @@ package entity
 
 import (
 	"database/sql"
-
-	"github.com/WantBeASleep/goooool/gtclib"
+	// TODO: убрать gtclib и сделать pointer
+	// например https://github.com/AlekSi/pointer
+	"github.com/WantBeASleep/med_ml_lib/gtc"
 
 	"uzi/internal/domain"
 
@@ -35,47 +36,47 @@ type Echographic struct {
 func (Echographic) FromDomain(d domain.Echographic) Echographic {
 	return Echographic{
 		Id:              d.Id,
-		Contors:         gtclib.String.PointerToSql(d.Contors),
-		LeftLobeLength:  gtclib.Float64.PointerToSql(d.LeftLobeLength),
-		LeftLobeWidth:   gtclib.Float64.PointerToSql(d.LeftLobeWidth),
-		LeftLobeThick:   gtclib.Float64.PointerToSql(d.LeftLobeThick),
-		LeftLobeVolum:   gtclib.Float64.PointerToSql(d.LeftLobeVolum),
-		RightLobeLength: gtclib.Float64.PointerToSql(d.RightLobeLength),
-		RightLobeWidth:  gtclib.Float64.PointerToSql(d.RightLobeWidth),
-		RightLobeThick:  gtclib.Float64.PointerToSql(d.RightLobeThick),
-		RightLobeVolum:  gtclib.Float64.PointerToSql(d.RightLobeVolum),
-		GlandVolum:      gtclib.Float64.PointerToSql(d.GlandVolum),
-		Isthmus:         gtclib.Float64.PointerToSql(d.Isthmus),
-		Struct:          gtclib.String.PointerToSql(d.Struct),
-		Echogenicity:    gtclib.String.PointerToSql(d.Echogenicity),
-		RegionalLymph:   gtclib.String.PointerToSql(d.RegionalLymph),
-		Vascularization: gtclib.String.PointerToSql(d.Vascularization),
-		Location:        gtclib.String.PointerToSql(d.Location),
-		Additional:      gtclib.String.PointerToSql(d.Additional),
-		Conclusion:      gtclib.String.PointerToSql(d.Conclusion),
+		Contors:         gtc.String.PointerToSql(d.Contors),
+		LeftLobeLength:  gtc.Float64.PointerToSql(d.LeftLobeLength),
+		LeftLobeWidth:   gtc.Float64.PointerToSql(d.LeftLobeWidth),
+		LeftLobeThick:   gtc.Float64.PointerToSql(d.LeftLobeThick),
+		LeftLobeVolum:   gtc.Float64.PointerToSql(d.LeftLobeVolum),
+		RightLobeLength: gtc.Float64.PointerToSql(d.RightLobeLength),
+		RightLobeWidth:  gtc.Float64.PointerToSql(d.RightLobeWidth),
+		RightLobeThick:  gtc.Float64.PointerToSql(d.RightLobeThick),
+		RightLobeVolum:  gtc.Float64.PointerToSql(d.RightLobeVolum),
+		GlandVolum:      gtc.Float64.PointerToSql(d.GlandVolum),
+		Isthmus:         gtc.Float64.PointerToSql(d.Isthmus),
+		Struct:          gtc.String.PointerToSql(d.Struct),
+		Echogenicity:    gtc.String.PointerToSql(d.Echogenicity),
+		RegionalLymph:   gtc.String.PointerToSql(d.RegionalLymph),
+		Vascularization: gtc.String.PointerToSql(d.Vascularization),
+		Location:        gtc.String.PointerToSql(d.Location),
+		Additional:      gtc.String.PointerToSql(d.Additional),
+		Conclusion:      gtc.String.PointerToSql(d.Conclusion),
 	}
 }
 
 func (d Echographic) ToDomain() domain.Echographic {
 	return domain.Echographic{
 		Id:              d.Id,
-		Contors:         gtclib.String.SqlToPointer(d.Contors),
-		LeftLobeLength:  gtclib.Float64.SqlToPointer(d.LeftLobeLength),
-		LeftLobeWidth:   gtclib.Float64.SqlToPointer(d.LeftLobeWidth),
-		LeftLobeThick:   gtclib.Float64.SqlToPointer(d.LeftLobeThick),
-		LeftLobeVolum:   gtclib.Float64.SqlToPointer(d.LeftLobeVolum),
-		RightLobeLength: gtclib.Float64.SqlToPointer(d.RightLobeLength),
-		RightLobeWidth:  gtclib.Float64.SqlToPointer(d.RightLobeWidth),
-		RightLobeThick:  gtclib.Float64.SqlToPointer(d.RightLobeThick),
-		RightLobeVolum:  gtclib.Float64.SqlToPointer(d.RightLobeVolum),
-		GlandVolum:      gtclib.Float64.SqlToPointer(d.GlandVolum),
-		Isthmus:         gtclib.Float64.SqlToPointer(d.Isthmus),
-		Struct:          gtclib.String.SqlToPointer(d.Struct),
-		Echogenicity:    gtclib.String.SqlToPointer(d.Echogenicity),
-		RegionalLymph:   gtclib.String.SqlToPointer(d.RegionalLymph),
-		Vascularization: gtclib.String.SqlToPointer(d.Vascularization),
-		Location:        gtclib.String.SqlToPointer(d.Location),
-		Additional:      gtclib.String.SqlToPointer(d.Additional),
-		Conclusion:      gtclib.String.SqlToPointer(d.Conclusion),
+		Contors:         gtc.String.SqlToPointer(d.Contors),
+		LeftLobeLength:  gtc.Float64.SqlToPointer(d.LeftLobeLength),
+		LeftLobeWidth:   gtc.Float64.SqlToPointer(d.LeftLobeWidth),
+		LeftLobeThick:   gtc.Float64.SqlToPointer(d.LeftLobeThick),
+		LeftLobeVolum:   gtc.Float64.SqlToPointer(d.LeftLobeVolum),
+		RightLobeLength: gtc.Float64.SqlToPointer(d.RightLobeLength),
+		RightLobeWidth:  gtc.Float64.SqlToPointer(d.RightLobeWidth),
+		RightLobeThick:  gtc.Float64.SqlToPointer(d.RightLobeThick),
+		RightLobeVolum:  gtc.Float64.SqlToPointer(d.RightLobeVolum),
+		GlandVolum:      gtc.Float64.SqlToPointer(d.GlandVolum),
+		Isthmus:         gtc.Float64.SqlToPointer(d.Isthmus),
+		Struct:          gtc.String.SqlToPointer(d.Struct),
+		Echogenicity:    gtc.String.SqlToPointer(d.Echogenicity),
+		RegionalLymph:   gtc.String.SqlToPointer(d.RegionalLymph),
+		Vascularization: gtc.String.SqlToPointer(d.Vascularization),
+		Location:        gtc.String.SqlToPointer(d.Location),
+		Additional:      gtc.String.SqlToPointer(d.Additional),
+		Conclusion:      gtc.String.SqlToPointer(d.Conclusion),
 	}
 }

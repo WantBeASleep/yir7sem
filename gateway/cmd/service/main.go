@@ -5,11 +5,14 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/WantBeASleep/goooool/brokerlib"
-	"github.com/WantBeASleep/goooool/grpclib"
-	"github.com/WantBeASleep/goooool/loglib"
+	authlib "github.com/WantBeASleep/med_ml_lib/auth"
+
+	"github.com/WantBeASleep/med_ml_lib/brokerlib"
+	loglib "github.com/WantBeASleep/med_ml_lib/log"
 
 	_ "gateway/docs"
+
+	"github.com/ilyakaznacheev/cleanenv"
 
 	"github.com/gorilla/mux"
 	"github.com/minio/minio-go/v7"
@@ -18,8 +21,6 @@ import (
 
 	"gateway/internal/config"
 	"gateway/internal/repository"
-
-	pkgconfig "github.com/WantBeASleep/goooool/config"
 
 	adapters "gateway/internal/adapters"
 	brokeradapters "gateway/internal/adapters/broker"
@@ -52,11 +53,13 @@ func main() {
 }
 
 func run() (exitCode int) {
-	loglib.InitLogger(loglib.WithDevEnv())
-	cfg, err := pkgconfig.Load[config.Config]()
-	if err != nil {
+	loglib.InitLogger(loglib.WithEnv())
+
+	cfg := config.Config{}
+	if err := cleanenv.ReadEnv(&cfg); err != nil {
 		slog.Error("init config", "err", err)
 		return failExitCode
+
 	}
 
 	pubKey, err := cfg.ParseRsaKeys()
@@ -90,7 +93,10 @@ func run() (exitCode int) {
 	medConn, err := grpc.NewClient(
 		cfg.Adapters.MedUrl,
 		grpc.WithInsecure(),
-		grpc.WithChainUnaryInterceptor(grpclib.ClientCallLogger),
+		grpc.WithChainUnaryInterceptor(
+			authlib.AuthEnrichClientCall,
+			loglib.GRPCClientCall,
+		),
 	)
 	if err != nil {
 		slog.Error("init medConn", "err", err)
@@ -100,7 +106,10 @@ func run() (exitCode int) {
 	uziConn, err := grpc.NewClient(
 		cfg.Adapters.UziUrl,
 		grpc.WithInsecure(),
-		grpc.WithChainUnaryInterceptor(grpclib.ClientCallLogger),
+		grpc.WithChainUnaryInterceptor(
+			authlib.AuthEnrichClientCall,
+			loglib.GRPCClientCall,
+		),
 	)
 	if err != nil {
 		slog.Error("init uziConn", "err", err)
@@ -110,7 +119,10 @@ func run() (exitCode int) {
 	authConn, err := grpc.NewClient(
 		cfg.Adapters.AuthUrl,
 		grpc.WithInsecure(),
-		grpc.WithChainUnaryInterceptor(grpclib.ClientCallLogger),
+		grpc.WithChainUnaryInterceptor(
+			authlib.AuthEnrichClientCall,
+			loglib.GRPCClientCall,
+		),
 	)
 	if err != nil {
 		slog.Error("init uziConn", "err", err)

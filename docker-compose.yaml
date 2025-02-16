@@ -13,7 +13,7 @@ services:
       - .env.example
     volumes:
       - postgres:/var/lib/postgresql/data
-      - ./init-scripts/sql:/docker-entrypoint-initdb.d
+      - ./init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
     ports:
       - "5432:5432"
     restart: always
@@ -24,6 +24,10 @@ services:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 5s
       retries: 5
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: authdb,meddb,uzidb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
 
   minio:
     container_name: minio-s3
@@ -39,7 +43,6 @@ services:
       MINIO_SECRET_KEY: ql9DoBMKyqMxQm8j5LQuKwnn68KFsGqn5jGbL7uL    
     volumes:
       - minio-s3:/data
-      - ./init-mc.sh:/docker-entrypoint-init.d/init-mc.sh:ro
     command: server --address 0.0.0.0:9000 --console-address 0.0.0.0:9001 /data
     profiles:
       - deps
@@ -76,7 +79,6 @@ services:
     container_name: redpanda-0
     volumes:
       - redpanda-0:/var/lib/redpanda/data
-      - ./init-panda.sh:/docker-entrypoint-init.d/init.sh:ro
     ports:
       - 18081:18081
       - 18082:18082
@@ -84,7 +86,7 @@ services:
       - 19644:9644
     profiles:
       - deps
-      - app
+      - app    
   ####################
   # Redpanda Console #
   ####################
