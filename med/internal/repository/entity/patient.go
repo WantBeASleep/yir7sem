@@ -18,6 +18,7 @@ type Patient struct {
 	Active      bool         `db:"active"`
 	Malignancy  bool         `db:"malignancy"`
 	LastUziDate sql.NullTime `db:"last_uzi_date"`
+	Birthdate   sql.NullTime `db:"birthdate"`
 }
 
 // TODO: пройтись по таблице перевести NULLSQL на этот тип
@@ -30,6 +31,7 @@ func (Patient) FromDomain(p domain.Patient) Patient {
 		Active:      p.Active,
 		Malignancy:  p.Malignancy,
 		LastUziDate: gtclib.Time.PointerToSql(p.LastUziDate),
+		Birthdate:   gtclib.Time.PointerToSql(p.Birthdate),
 	}
 }
 
@@ -42,5 +44,6 @@ func (p Patient) ToDomain() domain.Patient {
 		Active:      p.Active,
 		Malignancy:  p.Malignancy,
 		LastUziDate: gtclib.Time.SqlToPointer(p.LastUziDate),
+		Birthdate:   gtclib.Time.SqlToPointer(p.Birthdate),
 	}
 }

@@ -37,6 +37,7 @@ func (q *patientQuery) InsertPatient(patient entity.Patient) error {
 			"active",
 			"malignancy",
 			"last_uzi_date",
+			"birthdate",
 		).
 		Values(
 			patient.Id,
@@ -46,6 +47,7 @@ func (q *patientQuery) InsertPatient(patient entity.Patient) error {
 			patient.Active,
 			patient.Malignancy,
 			patient.LastUziDate,
+			patient.Birthdate,
 		)
 
 	_, err := q.Runner().Execx(q.Context(), query)

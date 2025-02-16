@@ -16,5 +16,6 @@ func domainToPb(d *domain.Patient) *pb.Patient {
 		Active:      d.Active,
 		Malignancy:  d.Malignancy,
 		LastUziDate: gtclib.Timestamp.TimePointerTo(d.LastUziDate),
+		Birthdate:   gtclib.Timestamp.TimePointerTo(d.Birthdate),
 	}
 }
